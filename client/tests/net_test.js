@@ -18,21 +18,21 @@ var client = net.connect({port: 5000},
 });
 client.on('data', function(data) {
     //console.log(data.toString());
-    console.log(typeof data);
-    console.log(util.inspect(data, {colors: true}));
-    console.log(data.length);
+    //console.log(typeof data);
+    //console.log(util.inspect(data, {colors: true}));
+    //console.log(data.length);
 
-    // xblab.parseConnectionBuffer(data, function(err, buf){
-    //     if (err){
-    //         console.log(err);        
-    //     }
-    //     else{
-    //         if (buf){
-    //             console.log(buf);
-    //             //socket.write(buf);
-    //         }
-    //     }
-    // });
+    xblab.parseConnectionBuffer(data, function(err, buf){
+        if (err){
+            console.log(err);        
+        }
+        else{
+            if (buf){
+                console.log(util.inspect(buf, {colors: true, depth: null}));
+                //socket.write(buf);
+            }
+        }
+    });
 
     //client.end();
 });

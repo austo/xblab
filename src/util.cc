@@ -54,7 +54,7 @@ string Util::get_need_cred_buf(){
         throw util_exception("Failed to serialize broadcast.");
     }
 
-    cout << "need cred:\n" << bc.DebugString() << endl;
+    //cout << "need cred:\n" << bc.DebugString() << endl;
 
     return retval;
 }
@@ -71,13 +71,13 @@ string Util::parse_buf(string in){
         throw util_exception("Failed to deserialize broadcast.");
     }
 
-    cout << "parse buf:\n" << bc.DebugString() << endl;
+    //cout << "parse buf:\n" << bc.DebugString() << endl;
 
 
-    stringstream ss;
-    ss << "signature: " << bc.signature() << endl
-         << "data.nonce: " << bc.data().nonce() << endl
-         << "data.type: " << bc.data().type() << endl;
+    // stringstream ss;
+    // ss << "signature: " << bc.signature() << endl
+    //      << "data.nonce: " << bc.data().nonce() << endl
+    //      << "data.type: " << bc.data().type() << endl;
 
     string tst;
     if (!bc.data().SerializeToString(&tst)){
@@ -90,7 +90,8 @@ string Util::parse_buf(string in){
     }
     
 
-    return ss.str();
+    return bc.DebugString();
+
 }
 
 } //namespace xblab

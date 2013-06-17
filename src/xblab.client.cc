@@ -1,4 +1,6 @@
 #include <iostream>
+#include <sstream>
+#include <node_buffer.h>
 #include <botan/botan.h>
 #include "util.h"
 #include "macros.h"
@@ -63,13 +65,21 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
 Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
 
     HandleScope scope;
+
+    // data is binary -> parse from node::Buffer
+    char* content = Buffer::Data(args[0]->ToObject());
+    int contentlength = Buffer::Length(args[0]->ToObject());
+
+    //cout << "contentlength: " << contentlength << endl;
+
     if (!args[1]->IsFunction()){
         THROW("xblab.parseConnectionBuffer requires callback argument");
     }
 
-    string buf = string(*(String::Utf8Value(args[0])));
+    string buf(content, content + contentlength);
 
-    cout << buf << endl;
+
+    //cout << buf << endl;
 
     Local<Function> cb = Local<Function>::Cast(args[1]);
     const unsigned argc = 2;
