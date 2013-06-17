@@ -1,0 +1,13 @@
+{
+    "name": "xblab.client",
+    "description": "secure chat local server for node.js",
+    "author": "Austin Moran <moraustin@gmail.com>",
+    "version": "0.0.1",
+    "dependencies": {
+        "express": "latest",
+        "jade": "latest",
+        "websocket": "latest",
+        "debug": "latest",
+        "stylus": "latest"
+    }
+}

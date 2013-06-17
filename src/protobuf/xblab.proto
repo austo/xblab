@@ -1,0 +1,75 @@
+
+package xblab;
+
+message Broadcast {
+  required string signature = 1;
+
+  enum Type {
+    NEEDCRED = 0;
+    GROUPLIST = 1;
+    GROUPENTRY = 2;
+    BEGIN = 3;
+    BROADCAST = 4;
+    GROUPEXIT = 5;
+    QUIT = 6;
+  }
+
+  message Session {
+    required string pub_key = 1;
+    required fixed32 seed = 2;
+  }
+
+  message Payload {
+    required string content = 1;
+    required fixed32 modulo = 2;
+  }
+
+  message Prologue {
+    required fixed32 modulo = 1;
+  }
+
+  message Data {
+    //type and nonce are required for all messages
+    required Type type = 1;
+    required string nonce = 2;
+    optional Session session = 3;
+    optional Prologue prologue = 4;
+    optional Payload payload = 5;
+  }
+
+  required Data data = 2;
+}
+
+message Transmission {
+  required string signature = 1;
+
+  enum Type {
+    CRED = 0;
+    ENTER = 1;
+    TRANSMIT = 2;
+    EXIT = 3;
+    QUIT = 4;
+  }
+
+  message Credential {
+    required string username = 1;
+    required string password = 2;
+    required string group = 3;
+    required string pub_key = 4;
+  }
+
+  message Payload {
+    required bool intent = 1;
+    required string content = 2;
+  }
+
+  message Data {
+    //type and nonce are required for all messages
+    required Type type = 1;
+    required string nonce = 2;
+    optional Credential credential = 3;
+    optional Payload payload = 4;
+  }
+
+  required Data data = 2;
+}

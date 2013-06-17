@@ -1,0 +1,23 @@
+doctype 5
+html
+    head
+        title xblab
+        script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js')
+        script(src='/js/constants.js')
+        script(src='/js/client.js')
+        link(href='/css/client.css', rel='stylesheet')        
+                    
+    body
+        div#wrapper
+            h1 xblab
+            div#messages
+            div.nic
+                |Your Name
+                input#name(name="name", type="text")
+            textarea#message
+            //input#connect(type="submit", value="Connect")
+            input#send(type="submit", value="Send")        
+        script.
+            $(function(){
+                xblab.Chat.initialize();
+            });

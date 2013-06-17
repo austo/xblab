@@ -1,0 +1,11 @@
+*.sublime-project
+*.sublime-workspace
+build.sh
+/*/build/
+/*/node_modules/
+core
+*.todo
+.DS_Store
+*.pem
+xblab.config.json
+scraps.cc
