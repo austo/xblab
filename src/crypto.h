@@ -31,18 +31,18 @@ public:
     
     static std::string generate_nonce();
     static std::string sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
+    static std::string pub_key_file();
+
 
     #ifndef XBLAB_CLIENT
 
     static std::string key_password();
-    static std::string pub_key_file();
     static std::string priv_key_file();
-
     static std::string sign(std::string message);
-    static bool verify(std::string message, std::string signature);
 
     #endif
 
+    static bool verify(std::string message, std::string signature);
     static bool verify(Botan::RSA_PublicKey* rsakey, std::string message, std::string signature);
     static void generate_key(std::string& pr, std::string& pu);
 };

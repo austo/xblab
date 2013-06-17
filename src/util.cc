@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <vector>
 #include <botan/botan.h>
 #include <botan/bcrypt.h>
 #include <botan/rsa.h>
@@ -32,7 +33,7 @@ string Util::get_need_cred_buf(){
 
     data->set_type(Broadcast::NEEDCRED);
     data->set_nonce(nonce);
-    cout << "nonce: " << data->nonce() << endl;
+    //cout << "nonce: " << data->nonce() << endl;
 
     string sig, datastr;
     if (!data->SerializeToString(&datastr)) {
@@ -53,18 +54,25 @@ string Util::get_need_cred_buf(){
         throw util_exception("Failed to serialize broadcast.");
     }
 
+    cout << "need cred:\n" << bc.DebugString() << endl;
+
     return retval;
 }
 
 #endif
 
 string Util::parse_buf(string in){
+    //cout << in << endl;
+
 
     //TODO: switch on broadcast type
     Broadcast bc;
     if (!bc.ParseFromString(in)){
         throw util_exception("Failed to deserialize broadcast.");
     }
+
+    cout << "parse buf:\n" << bc.DebugString() << endl;
+
 
     stringstream ss;
     ss << "signature: " << bc.signature() << endl
@@ -76,13 +84,11 @@ string Util::parse_buf(string in){
         throw util_exception("Failed to reserialize data.");
     }
 
-#ifndef XBLAB_CLIENT //TODO: no ifdefs in methods!!
 
     if (Crypto::verify(tst, bc.signature())){
         cout << "Hooray!\n";
     }
     
-#endif
 
     return ss.str();
 }

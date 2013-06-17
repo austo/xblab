@@ -17,17 +17,17 @@ using namespace Botan;
 
 namespace xblab {
 
-#ifndef XBLAB_CLIENT //Client has no need for keys stored on filesystem
-
 extern v8::Persistent<v8::String> pub_key_filename;
-extern v8::Persistent<v8::String> priv_key_filename;
-extern v8::Persistent<v8::String> key_passphrase;
-
 
 string Crypto::pub_key_file(){
-    static string retval = string(*(v8::String::Utf8Value(pub_key_filename->ToString())));
+    static string retval = string(*(v8::String::Utf8Value(pub_key_filename)));
     return retval;
 }
+
+#ifndef XBLAB_CLIENT //Client doesn't need private keys stored on filesystem
+
+extern v8::Persistent<v8::String> priv_key_filename;
+extern v8::Persistent<v8::String> key_passphrase;
 
 string Crypto::priv_key_file(){
     static string retval = string(*(v8::String::Utf8Value(priv_key_filename->ToString())));
@@ -56,18 +56,6 @@ string Crypto::sign(string message){
 }
 
 
-bool Crypto::verify(string message, string signature){
-    std::auto_ptr<X509_PublicKey> key(X509::load_key(pub_key_file()));
-    RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
-
-    if(!rsakey) {
-        cout << "BAD KEY!!" << endl;
-        throw crypto_exception("Invalid key");
-    }
-    return verify(rsakey, message, signature);
-}
-
-
 #endif
 
 
@@ -85,6 +73,18 @@ string Crypto::sign(AutoSeeded_RNG& rng, RSA_PrivateKey*& rsakey, string& messag
     stringstream ss;
     ss << base64_encode(signer.signature(rng));
     return ss.str();
+}
+
+
+bool Crypto::verify(string message, string signature){
+    std::auto_ptr<X509_PublicKey> key(X509::load_key(pub_key_file()));
+    RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
+
+    if(!rsakey) {
+        cout << "BAD KEY!!" << endl;
+        throw crypto_exception("Invalid key");
+    }
+    return verify(rsakey, message, signature);
 }
 
 
