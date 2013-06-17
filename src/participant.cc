@@ -1,5 +1,6 @@
 #include "participant.h"
 #include "util.h"
+#include "macros.h"
 #include "crypto.h"
 #include <iostream>
 #include <sstream>
@@ -8,13 +9,6 @@
 #include <botan/rsa.h>
 #include <botan/look_pk.h>
 
-#define THROW_FIELD_EX(prop) { stringstream ss; \
-            ss << "Unable to set value of readonly field \'" \
-            << Util::v8_to_string(prop) << "\'"; \
-            ThrowException(String::New(ss.str().c_str())); }
-
-#define THROW(prop) ThrowException(String::New(prop));
-#define SHA256 "EME1(SHA-256)"
 
 namespace xblab {
 
@@ -43,7 +37,7 @@ Handle<Value> Participant::NewInstance(const Arguments& args){
     return scope.Close(instance);
 }
 
-// args -> username, password, group
+// args -> username, password, group TODO: make object/callback
 Handle<Value> Participant::New(const Arguments& args){
     HandleScope scope; 
     if (args.Length() != 3 || args[0]->IsUndefined()

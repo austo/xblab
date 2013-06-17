@@ -3,6 +3,7 @@
 build.sh
 /*/build/
 /*/node_modules/
+/*/scratch/
 core
 *.todo
 .DS_Store

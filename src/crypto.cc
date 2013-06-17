@@ -131,5 +131,6 @@ void Crypto::generate_key(string& pr, string& pu){
     pu = X509::PEM_encode(key);
 }
 
+//TODO: encrypt/decrypt 
 
 } //namespace xblab
