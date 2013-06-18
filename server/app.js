@@ -43,4 +43,4 @@ net.createServer(function (socket) {
  
 }).listen(5000);
  
-console.log("Chat server running at port 5000\n");
+console.log("xblab server running at port 5000\n");
