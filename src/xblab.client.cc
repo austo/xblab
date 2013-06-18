@@ -66,20 +66,15 @@ Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
 
     HandleScope scope;
 
-    // data is binary -> parse from node::Buffer
-    char* content = Buffer::Data(args[0]->ToObject());
-    int contentlength = Buffer::Length(args[0]->ToObject());
-
-    //cout << "contentlength: " << contentlength << endl;
+    // Parse binary data from node::Buffer
+    char* buf_data = Buffer::Data(args[0]->ToObject());
+    int buf_len = Buffer::Length(args[0]->ToObject());
 
     if (!args[1]->IsFunction()){
         THROW("xblab.parseConnectionBuffer requires callback argument");
     }
 
-    string buf(content, content + contentlength);
-
-
-    //cout << buf << endl;
+    string buf(buf_data, buf_data + buf_len); // copy node::Buffer contents into string
 
     Local<Function> cb = Local<Function>::Cast(args[1]);
     const unsigned argc = 2;
