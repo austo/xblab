@@ -89,55 +89,36 @@ Handle<Value> Xblab::GetConnectionBuffer(const Arguments& args) {
     Local<Value> argv[argc];
 
     try{
-        string cbuf = Util::get_need_cred_buf();
-
+        string cbuf = Util::get_need_cred_buf(); // serialized "NEEDCRED buffer"
         std::vector<unsigned char> bytes(cbuf.begin(), cbuf.end());
         unsigned char *c = &bytes[0];
-
         size_t len = bytes.size();
+        const unsigned buf_argc = 3;
 
-        cout << "len: " << len << endl;
-        // This is Buffer that actually makes heap-allocated raw binary available
-        // to userland code.
-        node::Buffer *slowBuffer = node::Buffer::New(bytes.size());
-
-        // Buffer:Data gives us a yummy void* pointer to play with to our hearts
-        // content.
-        memcpy(node::Buffer::Data(slowBuffer), c, bytes.size());
-
-        // Now we need to create the JS version of the Buffer I was telling you about.
-        // To do that we need to actually pull it from the execution context.
-        // First step is to get a handle to the global object.
-        v8::Local<v8::Object> globalObj = v8::Context::GetCurrent()->Global();
-
-        // Now we need to grab the Buffer constructor function.
-        v8::Local<v8::Function> bufferConstructor = v8::Local<v8::Function>::Cast(globalObj->Get(v8::String::New("Buffer")));
-
-        // Great. We can use this constructor function to allocate new Buffers.
-        // Let's do that now. First we need to provide the correct arguments.
-        // First argument is the JS object Handle for the SlowBuffer.
-        // Second arg is the length of the SlowBuffer.
-        // Third arg is the offset in the SlowBuffer we want the .. "Fast"Buffer to start at.
-        v8::Handle<v8::Value> constructorArgs[3] = { slowBuffer->handle_, v8::Integer::New(bytes.size()), v8::Integer::New(0) };
-
-        // Now we have our constructor, and our constructor args. Let's create the 
-        // damn Buffer already!
-        //v8::Local<v8::Object> actualBuffer = bufferConstructor->NewInstance(3, constructorArgs);
-
-
+        Buffer *slowBuffer = Buffer::New(len);        
+        memcpy(Buffer::Data(slowBuffer), c, len); // Buffer::Data = (void *)
+        
+        // Create JS buffer from node execution context
+        Local<Function> buf_ctor = // Get Buffer constructor
+            Local<Function>::Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer")));
+       
+        Handle<Value> buf_argv[buf_argc] = { 
+                slowBuffer->handle_, // JS SlowBuffer handle
+                Integer::New(len), // SlowBuffer length
+                Integer::New(0) }; // Offset where "FastBuffer" should start
+            
 
         argv[0] = Local<Value>::New(Undefined());
-        argv[1] = bufferConstructor->NewInstance(3, constructorArgs);
+        argv[1] = buf_ctor->NewInstance(buf_argc, buf_argv);
 
-        //Debug
-        //cout << Util::parse_buf(cbuf);
+        // Debug
+        // cout << Util::parse_buf(cbuf);
     }
     catch (util_exception& e){
         argv[0] = Local<Value>::New(String::New(e.what()));
         argv[1] = Local<Value>::New(Undefined());
     }
     cb->Call(Context::GetCurrent()->Global(), argc, argv);
-
     return scope.Close(Undefined());
 }
 
