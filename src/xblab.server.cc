@@ -89,10 +89,16 @@ Handle<Value> Xblab::GetConnectionBuffer(const Arguments& args) {
     Local<Value> argv[argc];
 
     try{
-        string cbuf = Util::get_need_cred_buf(); // serialized "NEEDCRED buffer"
-        std::vector<unsigned char> bytes(cbuf.begin(), cbuf.end());
-        unsigned char *c = &bytes[0];
-        size_t len = bytes.size();
+
+        // TODO: refactor into separate method & investigate Native C++ method
+        string cbuf = Util::get_need_cred_buf(); // serialized "NEEDCRED buffer (binary data)"        
+        /*
+            You could also use cbuf.data() for this next line,
+            but C++11 strings are guaranteed to be
+            allocated contiguously.
+        */
+        const char *c = &cbuf[0]; 
+        size_t len = cbuf.size();
         const unsigned buf_argc = 3;
 
         Buffer *slowBuffer = Buffer::New(len);        

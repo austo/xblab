@@ -62,6 +62,9 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
     return scope.Close(Undefined());
 }
 
+// This method should take in the connection buffer received by the server,
+// then build the appropriate response, whereupon the JS callback
+// (most likely a call to socket.write) is executed. 
 Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
 
     HandleScope scope;

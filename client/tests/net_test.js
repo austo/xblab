@@ -28,7 +28,9 @@ client.on('data', function(data) {
         }
         else{
             if (buf){
-                console.log(util.inspect(buf, {colors: true, depth: null}));
+                //console.log(util.inspect(buf, {colors: true, depth: null}));
+                console.log(JSON.stringify(buf));
+
                 //socket.write(buf);
             }
         }
