@@ -118,6 +118,42 @@ bool Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
 }
 
 
+string Crypto::encrypt(string& publicKey, string& plaintext){
+    AutoSeeded_RNG rng;
+    DataSource_Memory ds(publicKey);
+    X509_PublicKey *rsakey = X509::load_key(ds);
+    PK_Encryptor *enc = new PK_Encryptor_EME(*rsakey, SHA256);    
+
+    const unsigned char* data = (const unsigned char *)&plaintext[0];
+        
+    SecureVector<byte> ciphertext = enc->encrypt(data, plaintext.size(), rng);
+    Pipe pipe(new Base64_Encoder);
+    pipe.process_msg(ciphertext);
+
+    delete enc;    
+    return pipe.read_all_as_string();
+}
+
+string Crypto::decrypt(string& privateKey, string& ciphertext){
+    AutoSeeded_RNG rng;
+
+    DataSource_Memory ds(privateKey);
+    PKCS8_PrivateKey *rsakey = PKCS8::load_key(ds, rng);
+    PK_Decryptor *dec = new PK_Decryptor_EME(*rsakey, SHA256);
+
+    Pipe pipe(new Base64_Decoder);
+    pipe.process_msg(ciphertext);
+    SecureVector<byte> cipherbytes = pipe.read_all();
+    
+    SecureVector<byte> plaintext = dec->decrypt(cipherbytes);
+
+    string retval(plaintext.begin(), plaintext.end());
+
+    delete dec;
+    return retval;
+}
+
+
 string Crypto::generateNonce(){
     SecureVector<byte> buf(NONCE_SIZE);
     AutoSeeded_RNG rng;

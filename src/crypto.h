@@ -30,12 +30,15 @@ class Crypto {
 
 public:
     
+    static std::string publicKeyFile();
     static void generateKey(std::string& pr, std::string& pu);
     static std::string generateNonce();
     static std::string sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
     static bool verify(std::string message, std::string signature);
     static bool verify(Botan::RSA_PublicKey* rsakey, std::string message, std::string signature);
-    static std::string publicKeyFile();
+    static std::string encrypt(std::string& publicKey, std::string& plaintext);
+    static std::string decrypt(std::string& privateKey, std::string& ciphertext);
+
 
     #ifndef XBLAB_CLIENT
 

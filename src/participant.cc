@@ -57,14 +57,16 @@ Handle<Value> Participant::New(const Arguments& args){
 }
 
 
-Handle<Value> Participant::GetHandle(Local<String> property, const AccessorInfo& info){
+Handle<Value>
+Participant::GetHandle(Local<String> property, const AccessorInfo& info){
     // Extract C++ request object from JS wrapper
     Participant* instance = ObjectWrap::Unwrap<Participant>(info.Holder());
     return String::New(instance->handle_.c_str());
 }
 
 
-void Participant::SetHandle(Local<String> property, Local<Value> value, const AccessorInfo& info){
+void
+Participant::SetHandle(Local<String> property, Local<Value> value, const AccessorInfo& info){
     Participant* instance = ObjectWrap::Unwrap<Participant>(info.Holder());
     instance->handle_ = Util::v8ToString(value);
 }
