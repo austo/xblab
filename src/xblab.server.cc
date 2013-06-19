@@ -24,6 +24,7 @@ v8::Persistent<v8::String> connstring;
 v8::Persistent<v8::String> pub_key_filename;
 v8::Persistent<v8::String> priv_key_filename;
 v8::Persistent<v8::String> key_passphrase;
+v8::Persistent<v8::Function> node_buf_ctor;
 
 
 // V8 entry point
@@ -36,6 +37,10 @@ void Xblab::InitAll(Handle<Object> module) {
         std::cerr << e.what() << "\n";
     }
 
+    node_buf_ctor = /* I'm only ugly on the outside */
+        Persistent<Function>::New(Local<Function>::Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));
+
+
     Manager::Init();
     module->Set(String::NewSymbol("createManager"),
         FunctionTemplate::New(CreateManager)->GetFunction());
@@ -43,8 +48,8 @@ void Xblab::InitAll(Handle<Object> module) {
     module->Set(String::NewSymbol("config"),
         FunctionTemplate::New(SetConfig)->GetFunction());
 
-    module->Set(String::NewSymbol("getConnectionBuffer"),
-        FunctionTemplate::New(GetConnectionBuffer)->GetFunction());  
+    module->Set(String::NewSymbol("getConnectionBuffer"), // we should use Node EventEmitter here
+        FunctionTemplate::New(OnConnectionBuf)->GetFunction());  
 }
 
 Handle<Value> Xblab::CreateManager(const Arguments& args) {
@@ -77,7 +82,7 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
     return scope.Close(Undefined());
 }
 
-Handle<Value> Xblab::GetConnectionBuffer(const Arguments& args) {
+Handle<Value> Xblab::OnConnectionBuf(const Arguments& args) {
 
     HandleScope scope;
     if (!args[0]->IsFunction()){
@@ -89,36 +94,20 @@ Handle<Value> Xblab::GetConnectionBuffer(const Arguments& args) {
     Local<Value> argv[argc];
 
     try{
-
-        // TODO: refactor into separate method & investigate Native C++ method
-        string cbuf = Util::get_need_cred_buf(); // serialized "NEEDCRED buffer (binary data)"        
+        string cbuf = Util::NeedCredBuf(); // serialized "NEEDCRED buffer (binary data)"        
         /*
             You could also use cbuf.data() for this next line,
             but C++11 strings are guaranteed to be
             allocated contiguously.
         */
         const char *c = &cbuf[0]; 
-        size_t len = cbuf.size();
-        const unsigned buf_argc = 3;
-
-        Buffer *slowBuffer = Buffer::New(len);        
-        memcpy(Buffer::Data(slowBuffer), c, len); // Buffer::Data = (void *)
-        
-        // Create JS buffer from node execution context
-        Local<Function> buf_ctor = // Get Buffer constructor
-            Local<Function>::Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer")));
-       
-        Handle<Value> buf_argv[buf_argc] = { 
-                slowBuffer->handle_, // JS SlowBuffer handle
-                Integer::New(len), // SlowBuffer length
-                Integer::New(0) }; // Offset where "FastBuffer" should start
-            
+        size_t len = cbuf.size();        
 
         argv[0] = Local<Value>::New(Undefined());
-        argv[1] = buf_ctor->NewInstance(buf_argc, buf_argv);
+        argv[1] = Util::WrapBuf(c, len);
 
         // Debug
-        // cout << Util::parse_buf(cbuf);
+        // cout << Util::ParseBuf(cbuf);
     }
     catch (util_exception& e){
         argv[0] = Local<Value>::New(String::New(e.what()));
@@ -127,7 +116,6 @@ Handle<Value> Xblab::GetConnectionBuffer(const Arguments& args) {
     cb->Call(Context::GetCurrent()->Global(), argc, argv);
     return scope.Close(Undefined());
 }
-
 
 /*
   Intenal class access from JS is difficult due to name mangling in C++

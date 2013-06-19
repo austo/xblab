@@ -1,3 +1,4 @@
+#include <node_buffer.h>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -21,19 +22,20 @@ using namespace Botan;
 
 namespace xblab {
 
+extern v8::Persistent<v8::Function> node_buf_ctor;
+
 Util::Util(){ /* The goal is to keep this a "static" class */ }
 Util::~Util(){}
 
 #ifndef XBLAB_CLIENT
 
-string Util::get_need_cred_buf(){
+string Util::NeedCredBuf(){    
     string nonce = Crypto::generate_nonce();
     Broadcast bc;
     Broadcast::Data *data = new Broadcast::Data();
 
     data->set_type(Broadcast::NEEDCRED);
     data->set_nonce(nonce);
-    //cout << "nonce: " << data->nonce() << endl;
 
     string sig, datastr;
     if (!data->SerializeToString(&datastr)) {
@@ -41,7 +43,6 @@ string Util::get_need_cred_buf(){
     }
     try{
         sig = Crypto::sign(datastr);
-        //cout << "sig: " << sig << endl;
         bc.set_signature(sig);
         bc.set_allocated_data(data); //bc now owns data - no need to free
     }
@@ -54,44 +55,45 @@ string Util::get_need_cred_buf(){
         throw util_exception("Failed to serialize broadcast.");
     }
 
-    //cout << "need cred:\n" << bc.DebugString() << endl;
-
     return retval;
 }
 
 #endif
 
-string Util::parse_buf(string in){
-    //cout << in << endl;
-
+string Util::ParseBuf(string in){
 
     //TODO: switch on broadcast type
     Broadcast bc;
     if (!bc.ParseFromString(in)){
         throw util_exception("Failed to deserialize broadcast.");
-    }
-
-    //cout << "parse buf:\n" << bc.DebugString() << endl;
-
-
-    // stringstream ss;
-    // ss << "signature: " << bc.signature() << endl
-    //      << "data.nonce: " << bc.data().nonce() << endl
-    //      << "data.type: " << bc.data().type() << endl;
+    }    
 
     string tst;
     if (!bc.data().SerializeToString(&tst)){
         throw util_exception("Failed to reserialize data.");
     }
 
-
     if (Crypto::verify(tst, bc.signature())){
         cout << "Hooray!\n";
-    }
-    
+    }    
 
     return bc.DebugString();
+}
 
+v8::Local<v8::Value> Util::WrapBuf(const char *c, size_t len){
+    v8::HandleScope scope;
+    static const unsigned buf_argc = 3;
+
+    node::Buffer *slowBuffer = node::Buffer::New(len);        
+    memcpy(node::Buffer::Data(slowBuffer), c, len); // Buffer::Data = (void *)    
+   
+    v8::Handle<v8::Value> buf_argv[buf_argc] = { 
+        slowBuffer->handle_, // JS SlowBuffer handle
+        v8::Integer::New(len), // SlowBuffer length
+        v8::Integer::New(0) // Offset where "FastBuffer" should start
+    };
+
+    return scope.Close(node_buf_ctor->NewInstance(buf_argc, buf_argv));
 }
 
 } //namespace xblab

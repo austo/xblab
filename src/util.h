@@ -34,11 +34,12 @@ class Util {
         
         #ifndef XBLAB_CLIENT
  
-        static std::string get_need_cred_buf();
+        static std::string NeedCredBuf(); //TODO: decide on naming convention!!
 
         #endif
         
-        static std::string parse_buf(std::string in);
+        static std::string ParseBuf(std::string in);
+        static v8::Local<v8::Value> WrapBuf(const char *c, size_t len);
 
         static std::string v8_to_string(v8::Local<v8::Value> value) {
             v8::String::Utf8Value utf8_value(value);

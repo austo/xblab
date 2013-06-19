@@ -17,27 +17,33 @@ using namespace std;
 
 
 v8::Persistent<v8::String> pub_key_filename;
+v8::Persistent<v8::Function> node_buf_ctor;
 
 // V8 entry point
 void Xblab::InitAll(Handle<Object> module) {
-  try {
-    // Start up crypto - happens only once per addon load
-    Botan::LibraryInitializer init("thread_safe=true");
-  }
-  catch(std::exception& e) {
-    std::cerr << e.what() << "\n";
-  }
+    try {
+        // Start up crypto - happens only once per addon load
+        Botan::LibraryInitializer init("thread_safe=true");
+    }
+    catch(std::exception& e) {
+        std::cerr << e.what() << "\n";
+    }
 
-  Participant::Init();
-  module->Set(String::NewSymbol("createParticipant"),
-      FunctionTemplate::New(CreateParticipant)->GetFunction());
+    //TODO: this code appears in both modules -- look for a better place to initialize it.
+    node_buf_ctor = /* I'm only ugly on the outside */
+        Persistent<Function>::New(Local<Function>::Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));
 
-  module->Set(String::NewSymbol("config"),
+    
+    Participant::Init();
+    module->Set(String::NewSymbol("createParticipant"),
+        FunctionTemplate::New(CreateParticipant)->GetFunction());
+
+    module->Set(String::NewSymbol("config"),
         FunctionTemplate::New(SetConfig)->GetFunction());
 
-  module->Set(String::NewSymbol("parseConnectionBuffer"),
+    module->Set(String::NewSymbol("parseConnectionBuffer"),
         FunctionTemplate::New(ParseConnectionBuffer)->GetFunction());
-   
+     
 }
 
 Handle<Value> Xblab::CreateParticipant(const Arguments& args) {
@@ -46,11 +52,10 @@ Handle<Value> Xblab::CreateParticipant(const Arguments& args) {
 }
 
 Handle<Value> Xblab::SetConfig(const Arguments& args) {
-
     HandleScope scope;
 
     if (!args[0]->IsObject()) {
-        THROW("xblab.config requires object argument");
+            THROW("xblab.config requires object argument");
     }
 
     Handle<Object> cfg = Handle<Object>::Cast(args[0]);
@@ -66,7 +71,6 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
 // then build the appropriate response, whereupon the JS callback
 // (most likely a call to socket.write) is executed. 
 Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
-
     HandleScope scope;
 
     // Parse binary data from node::Buffer
@@ -79,12 +83,18 @@ Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
 
     string buf(buf_data, buf_data + buf_len); // copy node::Buffer contents into string
 
+    /*
+        TODO: this next section should happen after we've formulated
+        the appropriate response, which varies depending on the buffer
+        we've just parsed. In any event, we're going to need to build
+        the response buffer before returning to JS land.
+    */
     Local<Function> cb = Local<Function>::Cast(args[1]);
     const unsigned argc = 2;
     Local<Value> argv[argc];
 
     try{
-        string cbuf = Util::parse_buf(buf);
+        string cbuf = Util::ParseBuf(buf);
         argv[0] = Local<Value>::New(Undefined()); //Error
         argv[1] = Local<Value>::New(String::New(cbuf.c_str()));      
     }
@@ -93,7 +103,6 @@ Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
         argv[1] = Local<Value>::New(Undefined());
     }
     cb->Call(Context::GetCurrent()->Global(), argc, argv);
-
     return scope.Close(Undefined());
 }
 
@@ -101,13 +110,13 @@ Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
 
 
 /*
-  Intenal class access from JS is difficult due to name mangling in C++
-  Use extern C here to initalize module handle.
-  Static class participants are especially problematic, look for a workaround
+    Intenal class access from JS is difficult due to name mangling in C++
+    Use extern C here to initalize module handle.
+    Static class participants are especially problematic, look for a workaround
 */
 extern "C" {
-  static void init(v8::Handle<v8::Object> module) {    
-    xblab::Xblab::InitAll(module);
-  }  
-  NODE_MODULE(xblab, init);
+    static void init(v8::Handle<v8::Object> module) {    
+        xblab::Xblab::InitAll(module);
+    }  
+    NODE_MODULE(xblab, init);
 }

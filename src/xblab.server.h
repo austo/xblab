@@ -12,7 +12,7 @@ public:
   static void InitAll(v8::Handle<v8::Object>); 
   static v8::Handle<v8::Value> CreateManager(const v8::Arguments& args);
   static v8::Handle<v8::Value> SetConfig(const v8::Arguments& args);
-  static v8::Handle<v8::Value> GetConnectionBuffer(const v8::Arguments& args);
+  static v8::Handle<v8::Value> OnConnectionBuf(const v8::Arguments& args);
 
 private:
   Xblab(){};
