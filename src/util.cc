@@ -1,12 +1,15 @@
-#include <node_buffer.h>
 #include <iostream>
 #include <sstream>
 #include <vector>
+
+#include <node_buffer.h>
+
 #include <botan/botan.h>
 #include <botan/bcrypt.h>
 #include <botan/rsa.h>
 #include <botan/pubkey.h>
 #include <botan/look_pk.h>
+
 #include "macros.h"
 #include "util.h"
 #include "crypto.h"
@@ -22,15 +25,15 @@ using namespace Botan;
 
 namespace xblab {
 
-extern v8::Persistent<v8::Function> node_buf_ctor;
+extern v8::Persistent<v8::Function> nodeBufCtor;
 
 Util::Util(){ /* The goal is to keep this a "static" class */ }
 Util::~Util(){}
 
 #ifndef XBLAB_CLIENT
 
-string Util::NeedCredBuf(){    
-    string nonce = Crypto::generate_nonce();
+string Util::needCredBuf(){    
+    string nonce = Crypto::generateNonce();
     Broadcast bc;
     Broadcast::Data *data = new Broadcast::Data();
 
@@ -60,7 +63,7 @@ string Util::NeedCredBuf(){
 
 #endif
 
-string Util::ParseBuf(string in){
+string Util::parseBuf(string in){
 
     //TODO: switch on broadcast type
     Broadcast bc;
@@ -80,20 +83,20 @@ string Util::ParseBuf(string in){
     return bc.DebugString();
 }
 
-v8::Local<v8::Value> Util::WrapBuf(const char *c, size_t len){
+v8::Local<v8::Value> Util::wrapBuf(const char *c, size_t len){
     v8::HandleScope scope;
-    static const unsigned buf_argc = 3;
+    static const unsigned bufArgc = 3;
 
     node::Buffer *slowBuffer = node::Buffer::New(len);        
     memcpy(node::Buffer::Data(slowBuffer), c, len); // Buffer::Data = (void *)    
    
-    v8::Handle<v8::Value> buf_argv[buf_argc] = { 
+    v8::Handle<v8::Value> bufArgv[bufArgc] = { 
         slowBuffer->handle_, // JS SlowBuffer handle
         v8::Integer::New(len), // SlowBuffer length
         v8::Integer::New(0) // Offset where "FastBuffer" should start
     };
 
-    return scope.Close(node_buf_ctor->NewInstance(buf_argc, buf_argv));
+    return scope.Close(nodeBufCtor->NewInstance(bufArgc, bufArgv));
 }
 
 } //namespace xblab

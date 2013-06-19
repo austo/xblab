@@ -24,7 +24,7 @@ v8::Persistent<v8::String> connstring;
 v8::Persistent<v8::String> pub_key_filename;
 v8::Persistent<v8::String> priv_key_filename;
 v8::Persistent<v8::String> key_passphrase;
-v8::Persistent<v8::Function> node_buf_ctor;
+v8::Persistent<v8::Function> nodeBufCtor;
 
 
 // V8 entry point
@@ -37,8 +37,9 @@ void Xblab::InitAll(Handle<Object> module) {
         std::cerr << e.what() << "\n";
     }
 
-    node_buf_ctor = /* I'm only ugly on the outside */
-        Persistent<Function>::New(Local<Function>::Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));
+    nodeBufCtor = /* I'm only ugly on the outside */
+        Persistent<Function>::New(Local<Function>::
+            Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));
 
 
     Manager::Init();
@@ -49,7 +50,7 @@ void Xblab::InitAll(Handle<Object> module) {
         FunctionTemplate::New(SetConfig)->GetFunction());
 
     module->Set(String::NewSymbol("getConnectionBuffer"), // we should use Node EventEmitter here
-        FunctionTemplate::New(OnConnectionBuf)->GetFunction());  
+        FunctionTemplate::New(OnConnection)->GetFunction());  
 }
 
 Handle<Value> Xblab::CreateManager(const Arguments& args) {
@@ -74,15 +75,15 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
     Handle<Value> keypw = cfg->Get(String::New("keyPassphrase"));
 
 
-    connstring = NODE_PSYMBOL(*(String::Utf8Value(constr->ToString())));
-    pub_key_filename = NODE_PSYMBOL(*(String::Utf8Value(pubkfile->ToString())));
-    priv_key_filename = NODE_PSYMBOL(*(String::Utf8Value(privkfile->ToString())));
-    key_passphrase = NODE_PSYMBOL(*(String::Utf8Value(keypw->ToString())));
+    connstring = NODE_PSYMBOL(*(String::Utf8Value(constr)));
+    pub_key_filename = NODE_PSYMBOL(*(String::Utf8Value(pubkfile)));
+    priv_key_filename = NODE_PSYMBOL(*(String::Utf8Value(privkfile)));
+    key_passphrase = NODE_PSYMBOL(*(String::Utf8Value(keypw)));
 
     return scope.Close(Undefined());
 }
 
-Handle<Value> Xblab::OnConnectionBuf(const Arguments& args) {
+Handle<Value> Xblab::OnConnection(const Arguments& args) {
 
     HandleScope scope;
     if (!args[0]->IsFunction()){
@@ -94,20 +95,20 @@ Handle<Value> Xblab::OnConnectionBuf(const Arguments& args) {
     Local<Value> argv[argc];
 
     try{
-        string cbuf = Util::NeedCredBuf(); // serialized "NEEDCRED buffer (binary data)"        
+        string buf = Util::needCredBuf(); // serialized "NEEDCRED buffer (binary data)"        
         /*
-            You could also use cbuf.data() for this next line,
+            You could also use buf.data() for this next line,
             but C++11 strings are guaranteed to be
             allocated contiguously.
         */
-        const char *c = &cbuf[0]; 
-        size_t len = cbuf.size();        
+        const char *c = &buf[0]; 
+        size_t len = buf.size();        
 
         argv[0] = Local<Value>::New(Undefined());
-        argv[1] = Util::WrapBuf(c, len);
+        argv[1] = Util::wrapBuf(c, len);
 
         // Debug
-        // cout << Util::ParseBuf(cbuf);
+        // cout << Util::parseBuf(buf);
     }
     catch (util_exception& e){
         argv[0] = Local<Value>::New(String::New(e.what()));

@@ -1,16 +1,20 @@
-#include <node.h>
-#include "macros.h"
-#include "crypto.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <vector>
 #include <memory>
+
+#include <node.h>
+
 #include <botan/pubkey.h>
 #include <botan/base64.h>
 #include <botan/hex.h>
 #include <botan/lookup.h>
+
+#include "macros.h"
+#include "crypto.h"
+
 
 using namespace std;
 using namespace Botan;
@@ -19,7 +23,7 @@ namespace xblab {
 
 extern v8::Persistent<v8::String> pub_key_filename;
 
-string Crypto::pub_key_file(){
+string Crypto::publicKeyFile(){
     static string retval = string(*(v8::String::Utf8Value(pub_key_filename)));
     return retval;
 }
@@ -29,21 +33,21 @@ string Crypto::pub_key_file(){
 extern v8::Persistent<v8::String> priv_key_filename;
 extern v8::Persistent<v8::String> key_passphrase;
 
-string Crypto::priv_key_file(){
-    static string retval = string(*(v8::String::Utf8Value(priv_key_filename->ToString())));
+string Crypto::privateKeyFile(){
+    static string retval = string(*(v8::String::Utf8Value(priv_key_filename)));
     return retval;
 }
 
-string Crypto::key_password(){
-    static string retval = string(*(v8::String::Utf8Value(key_passphrase->ToString())));
+string Crypto::keyPassPhrase(){
+    static string retval = string(*(v8::String::Utf8Value(key_passphrase)));
     return retval;
 }
 
 
 string Crypto::sign(string message){
     AutoSeeded_RNG rng;
-    string pr = priv_key_file();
-    string pw = key_password();
+    string pr = privateKeyFile();
+    string pw = keyPassPhrase();
     auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(pr, rng, pw));
     RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
 
@@ -77,7 +81,7 @@ string Crypto::sign(AutoSeeded_RNG& rng, RSA_PrivateKey*& rsakey, string& messag
 
 
 bool Crypto::verify(string message, string signature){
-    std::auto_ptr<X509_PublicKey> key(X509::load_key(pub_key_file()));
+    std::auto_ptr<X509_PublicKey> key(X509::load_key(publicKeyFile()));
     RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
 
     if(!rsakey) {
@@ -114,7 +118,7 @@ bool Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
 }
 
 
-string Crypto::generate_nonce(){
+string Crypto::generateNonce(){
     SecureVector<byte> buf(NONCE_SIZE);
     AutoSeeded_RNG rng;
     rng.randomize(buf, buf.size());
@@ -124,7 +128,7 @@ string Crypto::generate_nonce(){
 }
 
 
-void Crypto::generate_key(string& pr, string& pu){    
+void Crypto::generateKey(string& pr, string& pu){    
     AutoSeeded_RNG rng;
     RSA_PrivateKey key(rng, BITSIZE);
     pr = PKCS8::PEM_encode(key);

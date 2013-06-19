@@ -24,11 +24,11 @@ Manager::Manager(string url) {
     try{
 
         // TODO: clean up calling convention
-        Crypto::generate_key(this->priv_key_, this->pub_key_);
-        group_ = Db::get_group(url);
+        Crypto::generateKey(this->priv_key_, this->pub_key_);
+        group_ = Db::getGroup(url);
         
         // We've got the room ID, now get our members
-        members_ = Db::get_members(group_.id);
+        members_ = Db::getMembers(group_.id);
 	 }
 	 catch(exception& e){
 		cout << "Exception caught: " << e.what() << endl;
@@ -83,7 +83,7 @@ Handle<Value> Manager::GetGroupName(Local<String> property, const AccessorInfo& 
 	return String::New(instance->group_.url.c_str());
 }
 
-void Manager::SetGroupName(Local<String> property, Local<Value> value, const AccessorInfo& info) {    
+void Manager::SetGroupName(Local<String> property,Local<Value> value, const AccessorInfo& info) {    
     THROW_FIELD_EX(property); //readonly
 }
 
@@ -108,7 +108,7 @@ Handle<Value> Manager::SayHello(const Arguments& args) {
 void Manager::Encrypt(string in){
     AutoSeeded_RNG rng;
 
-#ifdef __DEBUG
+#ifdef XBLAB_DEBUG
     cout << this->pub_key_ << endl;
 #endif
 
@@ -121,10 +121,12 @@ void Manager::Encrypt(string in){
     PK_Encryptor *enc = new PK_Encryptor_EME(*pub_rsa, SHA256);
     //PK_Decryptor *dec = new PK_Decryptor_EME(*priv_rsa, SHA256);
 
-    vector<byte> bytes(in.begin(), in.end());
-    byte *c = &bytes[0];
+    //vector<byte> bytes(in.begin(), in.end());
+    //byte *c = &bytes[0];
+
+    const unsigned char* data = (const unsigned char *)&in[0];
         
-    SecureVector<byte> ciphertext = enc->encrypt(c, bytes.size(), rng);
+    SecureVector<byte> ciphertext = enc->encrypt(data, in.size(), rng);
     Pipe pipe(new Base64_Encoder);
     pipe.process_msg(ciphertext);
     //pipe.write(ciphertext);

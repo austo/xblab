@@ -1,10 +1,12 @@
-#ifndef __DB_H
-#define __DB_H
+#ifndef DB_H
+#define DB_H
 
 #include <string>
 #include <map>
-#include <node.h>
 #include <exception>
+
+#include <node.h>
+
 #include "group.h"
 #include "member.h"
 
@@ -30,9 +32,9 @@ class Db {
     public:
         Db();
         ~Db();
-        static Group get_group(std::string url);
-        static std::map<int, Member> get_members(int group_id);
-        static std::string conn_str();        
+        static Group getGroup(std::string url);
+        static std::map<int, Member> getMembers(int group_id);
+        static std::string connectionString();        
 
         //static int authenticate_member(std::string, std::string, int);
 

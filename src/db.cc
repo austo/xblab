@@ -15,13 +15,13 @@ extern v8::Persistent<v8::String> connstring;
 Db::Db(){ /* The goal is to keep this a "static" class */ }
 Db::~Db(){}
 
-string Db::conn_str(){
-    static string retval = string(*(v8::String::Utf8Value(connstring->ToString())));
+string Db::connectionString(){
+    static string retval = string(*(v8::String::Utf8Value(connstring)));
     return retval;
 }
 
-Group Db::get_group(string url){ //Calling code responsible for string trimming 
-    connection c(conn_str());
+Group Db::getGroup(string url){ //Calling code responsible for string trimming 
+    connection c(connectionString());
     Group group;
     work txn(c);
     stringstream ss;
@@ -42,8 +42,8 @@ Group Db::get_group(string url){ //Calling code responsible for string trimming
     return group;
 }
 
-map<int, Member> Db::get_members(int group_id){
-    connection c(conn_str());
+map<int, Member> Db::getMembers(int group_id){
+    connection c(connectionString());
     map<int, Member> retval = map<int, Member>();
     work txn(c);
     stringstream ss;

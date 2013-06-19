@@ -1,13 +1,15 @@
-#include "participant.h"
-#include "util.h"
-#include "macros.h"
-#include "crypto.h"
 #include <iostream>
 #include <sstream>
+
 #include <botan/botan.h>
 #include <botan/bcrypt.h>
 #include <botan/rsa.h>
 #include <botan/look_pk.h>
+
+#include "participant.h"
+#include "util.h"
+#include "crypto.h"
+#include "macros.h"
 
 
 namespace xblab {
@@ -46,9 +48,9 @@ Handle<Value> Participant::New(const Arguments& args){
     }
 
     Participant* instance = new Participant(
-        Util::v8_to_string(args[0]),
-        Util::v8_to_string(args[1]),
-        Util::v8_to_string(args[2]));
+        Util::v8ToString(args[0]),
+        Util::v8ToString(args[1]),
+        Util::v8ToString(args[2]));
 
     instance->Wrap(args.This());
     return args.This();
@@ -64,7 +66,7 @@ Handle<Value> Participant::GetHandle(Local<String> property, const AccessorInfo&
 
 void Participant::SetHandle(Local<String> property, Local<Value> value, const AccessorInfo& info){
     Participant* instance = ObjectWrap::Unwrap<Participant>(info.Holder());
-    instance->handle_ = Util::v8_to_string(value);
+    instance->handle_ = Util::v8ToString(value);
 }
 
 //TODO: Sign
@@ -74,7 +76,7 @@ void Participant::SetHandle(Local<String> property, Local<Value> value, const Ac
 Participant::Participant(string username, string password, string group) :
     username_(username), password_(password), group_(group) {
     try{
-        Crypto::generate_key(this->priv_key_, this->pub_key_); //most likely to fail        
+        Crypto::generateKey(this->priv_key_, this->pub_key_); //most likely to fail        
     }
     catch(exception& e){
         cout << "Exception caught: " << e.what() << endl;

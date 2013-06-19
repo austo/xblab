@@ -1,5 +1,5 @@
-#ifndef __UTIL_H
-#define __UTIL_H
+#ifndef UTIL_H
+#define UTIL_H
 
 #include <string>
 #include <map>
@@ -34,16 +34,16 @@ class Util {
         
         #ifndef XBLAB_CLIENT
  
-        static std::string NeedCredBuf(); //TODO: decide on naming convention!!
+        static std::string needCredBuf(); //TODO: decide on naming convention!!
 
         #endif
         
-        static std::string ParseBuf(std::string in);
-        static v8::Local<v8::Value> WrapBuf(const char *c, size_t len);
+        static std::string parseBuf(std::string in);
+        static v8::Local<v8::Value> wrapBuf(const char *c, size_t len);
 
-        static std::string v8_to_string(v8::Local<v8::Value> value) {
-            v8::String::Utf8Value utf8_value(value);
-            return std::string(*utf8_value);
+        static std::string v8ToString(v8::Local<v8::Value> value) {
+            v8::String::Utf8Value utf8Value(value);
+            return std::string(*utf8Value);
         }
 
 

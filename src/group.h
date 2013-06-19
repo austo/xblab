@@ -1,5 +1,5 @@
-#ifndef __GROUP_H
-#define __GROUP_H
+#ifndef GROUP_H
+#define GROUP_H
 
 #include <string>
 

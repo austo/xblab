@@ -1,5 +1,5 @@
-#ifndef __XBLAB_H
-#define __XBLAB_H
+#ifndef XBLAB_H
+#define XBLAB_H
 
 #include <node.h>
 

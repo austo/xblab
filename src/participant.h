@@ -1,5 +1,5 @@
-#ifndef __PARTICIPANT_H
-#define __PARTICIPANT_H
+#ifndef PARTICIPANT_H
+#define PARTICIPANT_H
 
 #include <string>
 #include <node.h>

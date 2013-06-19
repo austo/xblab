@@ -17,7 +17,7 @@ using namespace std;
 
 
 v8::Persistent<v8::String> pub_key_filename;
-v8::Persistent<v8::Function> node_buf_ctor;
+v8::Persistent<v8::Function> nodeBufCtor;
 
 // V8 entry point
 void Xblab::InitAll(Handle<Object> module) {
@@ -30,8 +30,9 @@ void Xblab::InitAll(Handle<Object> module) {
     }
 
     //TODO: this code appears in both modules -- look for a better place to initialize it.
-    node_buf_ctor = /* I'm only ugly on the outside */
-        Persistent<Function>::New(Local<Function>::Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));
+    nodeBufCtor = /* I'm only ugly on the outside */
+        Persistent<Function>::New(Local<Function>::
+            Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));
 
     
     Participant::Init();
@@ -74,14 +75,14 @@ Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
     HandleScope scope;
 
     // Parse binary data from node::Buffer
-    char* buf_data = Buffer::Data(args[0]->ToObject());
-    int buf_len = Buffer::Length(args[0]->ToObject());
+    char* bufData = Buffer::Data(args[0]->ToObject());
+    int bufLen = Buffer::Length(args[0]->ToObject());
 
     if (!args[1]->IsFunction()){
         THROW("xblab.parseConnectionBuffer requires callback argument");
     }
 
-    string buf(buf_data, buf_data + buf_len); // copy node::Buffer contents into string
+    string buf(bufData, bufData + bufLen); // copy node::Buffer contents into string
 
     /*
         TODO: this next section should happen after we've formulated
@@ -94,9 +95,9 @@ Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
     Local<Value> argv[argc];
 
     try{
-        string cbuf = Util::ParseBuf(buf);
+        //string cbuf = Util::parseBuf(buf);
         argv[0] = Local<Value>::New(Undefined()); //Error
-        argv[1] = Local<Value>::New(String::New(cbuf.c_str()));      
+        argv[1] = Local<Value>::New(String::New(Util::parseBuf(buf).c_str()));      
     }
     catch (util_exception& e){
         argv[0] = Local<Value>::New(String::New(e.what()));

@@ -1,9 +1,11 @@
-#ifndef __MANAGER_H
-#define __MANAGER_H
+#ifndef MANAGER_H
+#define MANAGER_H
+
+#include <map>
+#include <string>
 
 #include <node.h>
-#include <string>
-#include <map>
+
 #include "db.h"
 #include "group.h"
 #include "member.h"

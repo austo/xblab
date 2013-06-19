@@ -1,5 +1,5 @@
-#ifndef __MACROS_H
-#define __MACROS_H
+#ifndef MACROS_H
+#define MACROS_H
 
 #include "util.h"
 
@@ -12,7 +12,7 @@
 
 #define THROW_FIELD_EX(prop) { stringstream ss; \
             ss << "Unable to set value of readonly field \'" \
-            << Util::v8_to_string(prop) << "\'"; \
+            << Util::v8ToString(prop) << "\'"; \
             ThrowException(String::New(ss.str().c_str())); }
 
 #define THROW(prop) ThrowException(String::New(prop));

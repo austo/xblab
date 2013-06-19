@@ -1,8 +1,9 @@
-#ifndef __CRYPTO_H
-#define __CRYPTO_H
+#ifndef CRYPTO_H
+#define CRYPTO_H
 
 #include <string>
 #include <exception>
+
 #include <botan/botan.h>
 #include <botan/rsa.h>
 
@@ -29,22 +30,20 @@ class Crypto {
 
 public:
     
-    static std::string generate_nonce();
+    static void generateKey(std::string& pr, std::string& pu);
+    static std::string generateNonce();
     static std::string sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
-    static std::string pub_key_file();
-
+    static bool verify(std::string message, std::string signature);
+    static bool verify(Botan::RSA_PublicKey* rsakey, std::string message, std::string signature);
+    static std::string publicKeyFile();
 
     #ifndef XBLAB_CLIENT
 
-    static std::string key_password();
-    static std::string priv_key_file();
+    static std::string keyPassPhrase();
+    static std::string privateKeyFile();
     static std::string sign(std::string message);
 
-    #endif
-
-    static bool verify(std::string message, std::string signature);
-    static bool verify(Botan::RSA_PublicKey* rsakey, std::string message, std::string signature);
-    static void generate_key(std::string& pr, std::string& pu);
+    #endif    
 };
 
 } //namespace xblab
