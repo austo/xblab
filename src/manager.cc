@@ -104,7 +104,6 @@ Handle<Value> Manager::SayHello(const Arguments& args) {
 
 
 //TODO: Encrypt should take member token, then encrypt with member public key
-//TODO: delete PK_Encryptor/decryptor
 void Manager::Encrypt(string in){
     string ciphertext = Crypto::encrypt(this->pub_key_, in);
     cout << "ciphertext: " << ciphertext << endl;
@@ -112,34 +111,5 @@ void Manager::Encrypt(string in){
     string plaintext = Crypto::decrypt(this->priv_key_, ciphertext);
 
     cout << "resulting plaintext: " << plaintext << endl;
-
-//     AutoSeeded_RNG rng;
-
-// #ifdef XBLAB_DEBUG
-//     cout << this->pub_key_ << endl;
-// #endif
-
-// 	DataSource_Memory ds_pub(this->pub_key_);
-//     //DataSource_Memory ds_priv(this->priv_key_);
-
-//     X509_PublicKey *pub_rsa = X509::load_key(ds_pub);
-//     //PKCS8_PrivateKey *priv_rsa = PKCS8::load_key(ds_priv, rng);
-
-//     PK_Encryptor *enc = new PK_Encryptor_EME(*pub_rsa, SHA256);
-//     //PK_Decryptor *dec = new PK_Decryptor_EME(*priv_rsa, SHA256);
-
-//     //vector<byte> bytes(in.begin(), in.end());
-//     //byte *c = &bytes[0];
-
-//     const unsigned char* data = (const unsigned char *)&in[0];
-        
-//     SecureVector<byte> ciphertext = enc->encrypt(data, in.size(), rng);
-//     Pipe pipe(new Base64_Encoder);
-//     pipe.process_msg(ciphertext);
-//     //pipe.write(ciphertext);
-//     //SecureVector<byte> plaintext = dec->decrypt(ciphertext, ciphertext.size());
-
-//     //string res(ciphertext.begin(), ciphertext.end());
-//     cout << "output: " << pipe.read_all_as_string() << endl;
 }
 } //namespace xblab
