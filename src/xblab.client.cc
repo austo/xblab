@@ -22,18 +22,14 @@ v8::Persistent<v8::Function> nodeBufCtor;
 // V8 entry point
 void Xblab::InitAll(Handle<Object> module) {
     try {
-        // Start up crypto - happens only once per addon load
+        // Start up crypto - happens only once per module load
         Botan::LibraryInitializer init("thread_safe=true");
     }
     catch(std::exception& e) {
         std::cerr << e.what() << "\n";
     }
 
-    //TODO: this code appears in both modules -- look for a better place to initialize it.
-    nodeBufCtor = /* I'm only ugly on the outside */
-        Persistent<Function>::New(Local<Function>::
-            Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));
-
+    nodeBufCtor = XB_NODE_BUFFER_CTOR;
     
     Participant::Init();
     module->Set(String::NewSymbol("createParticipant"),
@@ -52,6 +48,8 @@ Handle<Value> Xblab::CreateParticipant(const Arguments& args) {
     return scope.Close(Participant::NewInstance(args));
 }
 
+
+// TODO: error callback
 Handle<Value> Xblab::SetConfig(const Arguments& args) {
     HandleScope scope;
 
@@ -70,7 +68,11 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
 
 // This method should take in the connection buffer received by the server,
 // then build the appropriate response, whereupon the JS callback
-// (most likely a call to socket.write) is executed. 
+// (most likely a call to socket.write) is executed.
+
+// TODO: Use node::MakeCallback?
+// TODO: Parsing method should take a generic buffer and emit the appropriate
+// response - then use EventEmitter
 Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
     HandleScope scope;
 
@@ -95,7 +97,6 @@ Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
     Local<Value> argv[argc];
 
     try{
-        //string cbuf = Util::parseBuf(buf);
         argv[0] = Local<Value>::New(Undefined()); //Error
         argv[1] = Local<Value>::New(String::New(Util::parseBuf(buf).c_str()));      
     }
@@ -110,11 +111,7 @@ Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
 } //namespace xblab
 
 
-/*
-    Intenal class access from JS is difficult due to name mangling in C++
-    Use extern C here to initalize module handle.
-    Static class participants are especially problematic, look for a workaround
-*/
+// Use extern C here to initalize module handle w/o C++ name mangling.
 extern "C" {
     static void init(v8::Handle<v8::Object> module) {    
         xblab::Xblab::InitAll(module);

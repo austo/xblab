@@ -37,10 +37,7 @@ void Xblab::InitAll(Handle<Object> module) {
         std::cerr << e.what() << "\n";
     }
 
-    nodeBufCtor = /* I'm only ugly on the outside */
-        Persistent<Function>::New(Local<Function>::
-            Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));
-
+    nodeBufCtor = XB_NODE_BUFFER_CTOR;
 
     Manager::Init();
     module->Set(String::NewSymbol("createManager"),
@@ -56,7 +53,6 @@ void Xblab::InitAll(Handle<Object> module) {
 Handle<Value> Xblab::CreateManager(const Arguments& args) {
     HandleScope scope;
     String::Utf8Value s(connstring->ToString());
-    //cout << "v8 -> connection string: " << *s << endl << "privkfile: " << *(String::Utf8Value(priv_key_filename)) << endl;
     return scope.Close(Manager::NewInstance(args));
 }
 
@@ -64,6 +60,7 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
 
     HandleScope scope;
 
+    // TODO: error callback
     if (!args[0]->IsObject()) {
         THROW("xblab.config requires object argument");
     }

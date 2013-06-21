@@ -52,6 +52,7 @@ void Manager::Init() {
 }
 
 // args -> group url
+// TODO: change to JS object ctor
 Handle<Value> Manager::New(const Arguments& args) {
 	HandleScope scope; 
     string url;
@@ -83,7 +84,7 @@ Handle<Value> Manager::GetGroupName(Local<String> property, const AccessorInfo& 
 	return String::New(instance->group_.url.c_str());
 }
 
-void Manager::SetGroupName(Local<String> property,Local<Value> value, const AccessorInfo& info) {    
+void Manager::SetGroupName(Local<String> property, Local<Value> value, const AccessorInfo& info) {    
     THROW_FIELD_EX(property); //readonly
 }
 
@@ -103,7 +104,7 @@ Handle<Value> Manager::SayHello(const Arguments& args) {
 } 
 
 
-//TODO: Encrypt should take member token, then encrypt with member public key
+// TODO: Encrypt should take member token, then encrypt with member public key
 void Manager::Encrypt(string in){
     string ciphertext = Crypto::encrypt(this->pub_key_, in);
     cout << "ciphertext: " << ciphertext << endl;
@@ -112,4 +113,4 @@ void Manager::Encrypt(string in){
 
     cout << "resulting plaintext: " << plaintext << endl;
 }
-} //namespace xblab
+} // namespace xblab
