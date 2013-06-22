@@ -4,7 +4,8 @@ var net = require('net'),
     fs = require('fs'),
     xbcfg = require('./xblab.config'),
     xblab = require('./build/Debug/xblab'),
-    path = require('path');
+    path = require('path'),
+    port = 8888;
 
     //TODO: better way to get applicion root
     console.log(process.cwd());
@@ -27,7 +28,7 @@ net.createServer(function (socket) {
         }
         else{
             if (buf){
-                console.log(buf);
+                // console.log(buf);
                 socket.write(buf);
             }
         }
@@ -41,6 +42,6 @@ net.createServer(function (socket) {
 
     });   
  
-}).listen(5000);
+}).listen(port);
  
-console.log("xblab server running at port 5000\n");
+console.log("xblab server running at port %d.\n", port);

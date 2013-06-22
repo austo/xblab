@@ -9,7 +9,6 @@ namespace xblab {
 class Participant : public node::ObjectWrap {
 
     public:
-        Participant();
         ~Participant(){};
 
         static void Init();
@@ -18,6 +17,8 @@ class Participant : public node::ObjectWrap {
         //v8 property accessors
         static v8::Handle<v8::Value> GetHandle(v8::Local<v8::String>, const v8::AccessorInfo&);
         static void SetHandle(v8::Local<v8::String>, v8::Local<v8::Value>, const v8::AccessorInfo&);
+        static v8::Handle<v8::Value> Pogo(const v8::Arguments& args);
+
 
            
         
@@ -26,6 +27,7 @@ class Participant : public node::ObjectWrap {
 
 
     private:
+        Participant();
         Participant(std::string username, std::string password, std::string group);
         static v8::Persistent<v8::Function> constructor;
         static v8::Handle<v8::Value> New(const v8::Arguments& args);

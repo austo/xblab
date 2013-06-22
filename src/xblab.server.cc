@@ -37,7 +37,7 @@ void Xblab::InitAll(Handle<Object> module) {
         std::cerr << e.what() << "\n";
     }
 
-    nodeBufCtor = XB_NODE_BUFFER_CTOR;
+    nodeBufCtor = JS_NODE_BUF_CTOR;
 
     Manager::Init();
     module->Set(String::NewSymbol("createManager"),

@@ -19,7 +19,7 @@
             ThrowException(String::New(ss.str().c_str())); }
 
 // Get node::Buffer constructor from JS land
-#define XB_NODE_BUFFER_CTOR Persistent<Function>::New(Local<Function>::                \
+#define JS_NODE_BUF_CTOR Persistent<Function>::New(Local<Function>::                \
             Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));     
 
 #define THROW(prop) ThrowException(String::New(prop));

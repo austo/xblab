@@ -1,6 +1,6 @@
 var net = require('net'),
     util = require('util'),
-    xblab = require('../build/Debug/xblab'),
+    xblab = require('./xblab.client'),
     xbcfg = require('../xblab.config'),
     path = require('path');
 
@@ -11,7 +11,7 @@ var net = require('net'),
     xblab.config(xbcfg); //should be async
 
 
-var client = net.connect({port: 5000},
+var client = net.connect({port: 8888},
     function() { //'connect' listener
         console.log('client connected');
         // client.write('world!\r\n');
@@ -30,8 +30,6 @@ client.on('data', function(data) {
             if (buf){
                 //console.log(util.inspect(buf, {colors: true, depth: null}));
                 console.log(JSON.stringify(buf));
-
-                //socket.write(buf);
             }
         }
     });

@@ -29,7 +29,7 @@ void Xblab::InitAll(Handle<Object> module) {
         std::cerr << e.what() << "\n";
     }
 
-    nodeBufCtor = XB_NODE_BUFFER_CTOR;
+    nodeBufCtor = JS_NODE_BUF_CTOR;
     
     Participant::Init();
     module->Set(String::NewSymbol("createParticipant"),
@@ -98,7 +98,12 @@ Handle<Value> Xblab::ParseConnectionBuffer(const Arguments& args) {
 
     try{
         argv[0] = Local<Value>::New(Undefined()); //Error
-        argv[1] = Local<Value>::New(String::New(Util::parseBuf(buf).c_str()));      
+
+        /*
+            TODO: if buffer is okay, get username and password,
+            then initialize Participant
+        */
+        argv[1] = Local<Value>::New(String::New(Util::parseBuf(buf).c_str()));
     }
     catch (util_exception& e){
         argv[0] = Local<Value>::New(String::New(e.what()));

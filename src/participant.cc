@@ -25,16 +25,19 @@ void Participant::Init(){
     tpl->SetClassName(String::NewSymbol("Participant"));
     tpl->InstanceTemplate()->SetInternalFieldCount(1);    
     tpl->InstanceTemplate()->SetAccessor(String::New("handle"), GetHandle, SetHandle);
+    //NODE_SET_PROTOTYPE_METHOD(tpl, "pogo", Pogo);
+
 
     // Prototype    
     constructor = Persistent<Function>::New(tpl->GetFunction());
 }
 
 // Provides static access to JS new
+// TODO: args should be object -> parse and give to New
 Handle<Value> Participant::NewInstance(const Arguments& args){
     HandleScope scope;
-    const unsigned argc = 3;
-    Handle<Value> argv[argc] = { args[0], args[1], args[2] };
+    const unsigned argc = 1;
+    Handle<Value> argv[argc] = { args[0] };
     Local<Object> instance = constructor->NewInstance(argc, argv);
     return scope.Close(instance);
 }
@@ -42,18 +45,34 @@ Handle<Value> Participant::NewInstance(const Arguments& args){
 // args -> username, password, group TODO: make object/callback
 Handle<Value> Participant::New(const Arguments& args){
     HandleScope scope; 
-    if (args.Length() != 3 || args[0]->IsUndefined()
-        || args[1]->IsUndefined() || args[2]->IsUndefined()){
-        THROW("Participant must be initialized with username, password, group.");
-    }
 
-    Participant* instance = new Participant(
+    Participant* instance;
+    if (args[0]->IsUndefined()){
+        instance = new Participant();
+    }
+    else {
+        // args is object, use parameterized ctor
+        instance = new Participant(
         Util::v8ToString(args[0]),
         Util::v8ToString(args[1]),
         Util::v8ToString(args[2]));
+    }   
 
     instance->Wrap(args.This());
-    return args.This();
+    return scope.Close(args.This());
+}
+
+Handle<Value> Participant::Pogo(const Arguments& args) {
+  HandleScope scope;
+
+  Handle<Value> argv[2] = {
+    String::New("pogo"), // event name
+    args[0]->ToString()  // argument
+  };
+
+  node::MakeCallback(args.This(), "emit", 2, argv);
+
+  return Undefined();
 }
 
 
@@ -86,6 +105,15 @@ Participant::Participant(string username, string password, string group) :
     }
 }
 
+Participant::Participant() {
+    try{
+        Crypto::generateKey(this->priv_key_, this->pub_key_); //most likely to fail        
+    }
+    catch(exception& e){
+        cout << "Exception caught: " << e.what() << endl;
+        throw;
+    }
+}
 
 //TODO: Encrypt should take participant token, then encrypt with participant public key
 //TODO: delete PK_Encryptor/decryptor
