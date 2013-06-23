@@ -9,27 +9,20 @@ namespace xblab {
 class Participant : public node::ObjectWrap {
 
     public:
-        ~Participant(){};
 
         //static void Init();
         static v8::Handle<v8::Value> New(const v8::Arguments& args);
-
         static v8::Handle<v8::Value> GetHandle(v8::Local<v8::String>, const v8::AccessorInfo&);
         static void SetHandle(v8::Local<v8::String>, v8::Local<v8::Value>, const v8::AccessorInfo&);
-
-        static v8::Handle<v8::Value> NeedCredentials(const v8::Arguments& args);
-        static v8::Handle<v8::Value> SetConfig(const v8::Arguments& args);
         static v8::Handle<v8::Value> DigestBuffer(const v8::Arguments& args);
-           
-        
-        //TODO: Sign
-        //TODO: Decrypt
+        static v8::Handle<v8::Value> SendCred(const v8::Arguments& args);
+
+        friend class Util;     
 
 
     private:
         Participant();
-        Participant(std::string username, std::string password, std::string group);
-        
+        ~Participant(){};        
 
         std::string username_;
         std::string password_;
@@ -37,7 +30,10 @@ class Participant : public node::ObjectWrap {
         std::string group_;
         std::string pub_key_;
         std::string priv_key_;
-        std::string round_nonce_; //may need to rethink this 
+        // std::string initial_server_key_;
+        std::string session_server_key_;
+        std::string round_nonce_;   //may need to rethink this
+        std::string return_nonce_;
         int round_modulus_;    
 };
 

@@ -441,28 +441,40 @@ class Broadcast_Data : public ::google::protobuf::Message {
   inline ::std::string* release_nonce();
   inline void set_allocated_nonce(::std::string* nonce);
 
-  // optional .xblab.Broadcast.Session session = 3;
+  // optional string return_nonce = 3;
+  inline bool has_return_nonce() const;
+  inline void clear_return_nonce();
+  static const int kReturnNonceFieldNumber = 3;
+  inline const ::std::string& return_nonce() const;
+  inline void set_return_nonce(const ::std::string& value);
+  inline void set_return_nonce(const char* value);
+  inline void set_return_nonce(const char* value, size_t size);
+  inline ::std::string* mutable_return_nonce();
+  inline ::std::string* release_return_nonce();
+  inline void set_allocated_return_nonce(::std::string* return_nonce);
+
+  // optional .xblab.Broadcast.Session session = 4;
   inline bool has_session() const;
   inline void clear_session();
-  static const int kSessionFieldNumber = 3;
+  static const int kSessionFieldNumber = 4;
   inline const ::xblab::Broadcast_Session& session() const;
   inline ::xblab::Broadcast_Session* mutable_session();
   inline ::xblab::Broadcast_Session* release_session();
   inline void set_allocated_session(::xblab::Broadcast_Session* session);
 
-  // optional .xblab.Broadcast.Prologue prologue = 4;
+  // optional .xblab.Broadcast.Prologue prologue = 5;
   inline bool has_prologue() const;
   inline void clear_prologue();
-  static const int kPrologueFieldNumber = 4;
+  static const int kPrologueFieldNumber = 5;
   inline const ::xblab::Broadcast_Prologue& prologue() const;
   inline ::xblab::Broadcast_Prologue* mutable_prologue();
   inline ::xblab::Broadcast_Prologue* release_prologue();
   inline void set_allocated_prologue(::xblab::Broadcast_Prologue* prologue);
 
-  // optional .xblab.Broadcast.Payload payload = 5;
+  // optional .xblab.Broadcast.Payload payload = 6;
   inline bool has_payload() const;
   inline void clear_payload();
-  static const int kPayloadFieldNumber = 5;
+  static const int kPayloadFieldNumber = 6;
   inline const ::xblab::Broadcast_Payload& payload() const;
   inline ::xblab::Broadcast_Payload* mutable_payload();
   inline ::xblab::Broadcast_Payload* release_payload();
@@ -474,6 +486,8 @@ class Broadcast_Data : public ::google::protobuf::Message {
   inline void clear_has_type();
   inline void set_has_nonce();
   inline void clear_has_nonce();
+  inline void set_has_return_nonce();
+  inline void clear_has_return_nonce();
   inline void set_has_session();
   inline void clear_has_session();
   inline void set_has_prologue();
@@ -484,13 +498,14 @@ class Broadcast_Data : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* nonce_;
+  ::std::string* return_nonce_;
   ::xblab::Broadcast_Session* session_;
   ::xblab::Broadcast_Prologue* prologue_;
   ::xblab::Broadcast_Payload* payload_;
   int type_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
 
   friend void  protobuf_AddDesc_xblab_2eproto();
   friend void protobuf_AssignDesc_xblab_2eproto();
@@ -712,7 +727,7 @@ class Transmission_Credential : public ::google::protobuf::Message {
   inline ::std::string* release_password();
   inline void set_allocated_password(::std::string* password);
 
-  // required string group = 3;
+  // optional string group = 3;
   inline bool has_group() const;
   inline void clear_group();
   static const int kGroupFieldNumber = 3;
@@ -820,12 +835,12 @@ class Transmission_Payload : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // required bool intent = 1;
-  inline bool has_intent() const;
-  inline void clear_intent();
-  static const int kIntentFieldNumber = 1;
-  inline bool intent() const;
-  inline void set_intent(bool value);
+  // required bool is_important = 1;
+  inline bool has_is_important() const;
+  inline void clear_is_important();
+  static const int kIsImportantFieldNumber = 1;
+  inline bool is_important() const;
+  inline void set_is_important(bool value);
 
   // required string content = 2;
   inline bool has_content() const;
@@ -841,15 +856,15 @@ class Transmission_Payload : public ::google::protobuf::Message {
 
   // @@protoc_insertion_point(class_scope:xblab.Transmission.Payload)
  private:
-  inline void set_has_intent();
-  inline void clear_has_intent();
+  inline void set_has_is_important();
+  inline void clear_has_is_important();
   inline void set_has_content();
   inline void clear_has_content();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* content_;
-  bool intent_;
+  bool is_important_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
@@ -936,19 +951,31 @@ class Transmission_Data : public ::google::protobuf::Message {
   inline ::std::string* release_nonce();
   inline void set_allocated_nonce(::std::string* nonce);
 
-  // optional .xblab.Transmission.Credential credential = 3;
+  // optional string return_nonce = 3;
+  inline bool has_return_nonce() const;
+  inline void clear_return_nonce();
+  static const int kReturnNonceFieldNumber = 3;
+  inline const ::std::string& return_nonce() const;
+  inline void set_return_nonce(const ::std::string& value);
+  inline void set_return_nonce(const char* value);
+  inline void set_return_nonce(const char* value, size_t size);
+  inline ::std::string* mutable_return_nonce();
+  inline ::std::string* release_return_nonce();
+  inline void set_allocated_return_nonce(::std::string* return_nonce);
+
+  // optional .xblab.Transmission.Credential credential = 4;
   inline bool has_credential() const;
   inline void clear_credential();
-  static const int kCredentialFieldNumber = 3;
+  static const int kCredentialFieldNumber = 4;
   inline const ::xblab::Transmission_Credential& credential() const;
   inline ::xblab::Transmission_Credential* mutable_credential();
   inline ::xblab::Transmission_Credential* release_credential();
   inline void set_allocated_credential(::xblab::Transmission_Credential* credential);
 
-  // optional .xblab.Transmission.Payload payload = 4;
+  // optional .xblab.Transmission.Payload payload = 5;
   inline bool has_payload() const;
   inline void clear_payload();
-  static const int kPayloadFieldNumber = 4;
+  static const int kPayloadFieldNumber = 5;
   inline const ::xblab::Transmission_Payload& payload() const;
   inline ::xblab::Transmission_Payload* mutable_payload();
   inline ::xblab::Transmission_Payload* release_payload();
@@ -960,6 +987,8 @@ class Transmission_Data : public ::google::protobuf::Message {
   inline void clear_has_type();
   inline void set_has_nonce();
   inline void clear_has_nonce();
+  inline void set_has_return_nonce();
+  inline void clear_has_return_nonce();
   inline void set_has_credential();
   inline void clear_has_credential();
   inline void set_has_payload();
@@ -968,12 +997,13 @@ class Transmission_Data : public ::google::protobuf::Message {
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* nonce_;
+  ::std::string* return_nonce_;
   ::xblab::Transmission_Credential* credential_;
   ::xblab::Transmission_Payload* payload_;
   int type_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
 
   friend void  protobuf_AddDesc_xblab_2eproto();
   friend void protobuf_AssignDesc_xblab_2eproto();
@@ -1430,15 +1460,85 @@ inline void Broadcast_Data::set_allocated_nonce(::std::string* nonce) {
   }
 }
 
-// optional .xblab.Broadcast.Session session = 3;
-inline bool Broadcast_Data::has_session() const {
+// optional string return_nonce = 3;
+inline bool Broadcast_Data::has_return_nonce() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void Broadcast_Data::set_has_session() {
+inline void Broadcast_Data::set_has_return_nonce() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void Broadcast_Data::clear_has_session() {
+inline void Broadcast_Data::clear_has_return_nonce() {
   _has_bits_[0] &= ~0x00000004u;
+}
+inline void Broadcast_Data::clear_return_nonce() {
+  if (return_nonce_ != &::google::protobuf::internal::kEmptyString) {
+    return_nonce_->clear();
+  }
+  clear_has_return_nonce();
+}
+inline const ::std::string& Broadcast_Data::return_nonce() const {
+  return *return_nonce_;
+}
+inline void Broadcast_Data::set_return_nonce(const ::std::string& value) {
+  set_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return_nonce_ = new ::std::string;
+  }
+  return_nonce_->assign(value);
+}
+inline void Broadcast_Data::set_return_nonce(const char* value) {
+  set_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return_nonce_ = new ::std::string;
+  }
+  return_nonce_->assign(value);
+}
+inline void Broadcast_Data::set_return_nonce(const char* value, size_t size) {
+  set_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return_nonce_ = new ::std::string;
+  }
+  return_nonce_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Broadcast_Data::mutable_return_nonce() {
+  set_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return_nonce_ = new ::std::string;
+  }
+  return return_nonce_;
+}
+inline ::std::string* Broadcast_Data::release_return_nonce() {
+  clear_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = return_nonce_;
+    return_nonce_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Broadcast_Data::set_allocated_return_nonce(::std::string* return_nonce) {
+  if (return_nonce_ != &::google::protobuf::internal::kEmptyString) {
+    delete return_nonce_;
+  }
+  if (return_nonce) {
+    set_has_return_nonce();
+    return_nonce_ = return_nonce;
+  } else {
+    clear_has_return_nonce();
+    return_nonce_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// optional .xblab.Broadcast.Session session = 4;
+inline bool Broadcast_Data::has_session() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Broadcast_Data::set_has_session() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Broadcast_Data::clear_has_session() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void Broadcast_Data::clear_session() {
   if (session_ != NULL) session_->::xblab::Broadcast_Session::Clear();
@@ -1468,15 +1568,15 @@ inline void Broadcast_Data::set_allocated_session(::xblab::Broadcast_Session* se
   }
 }
 
-// optional .xblab.Broadcast.Prologue prologue = 4;
+// optional .xblab.Broadcast.Prologue prologue = 5;
 inline bool Broadcast_Data::has_prologue() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void Broadcast_Data::set_has_prologue() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void Broadcast_Data::clear_has_prologue() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void Broadcast_Data::clear_prologue() {
   if (prologue_ != NULL) prologue_->::xblab::Broadcast_Prologue::Clear();
@@ -1506,15 +1606,15 @@ inline void Broadcast_Data::set_allocated_prologue(::xblab::Broadcast_Prologue* 
   }
 }
 
-// optional .xblab.Broadcast.Payload payload = 5;
+// optional .xblab.Broadcast.Payload payload = 6;
 inline bool Broadcast_Data::has_payload() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000020u) != 0;
 }
 inline void Broadcast_Data::set_has_payload() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000020u;
 }
 inline void Broadcast_Data::clear_has_payload() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void Broadcast_Data::clear_payload() {
   if (payload_ != NULL) payload_->::xblab::Broadcast_Payload::Clear();
@@ -1800,7 +1900,7 @@ inline void Transmission_Credential::set_allocated_password(::std::string* passw
   }
 }
 
-// required string group = 3;
+// optional string group = 3;
 inline bool Transmission_Credential::has_group() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
@@ -1944,26 +2044,26 @@ inline void Transmission_Credential::set_allocated_pub_key(::std::string* pub_ke
 
 // Transmission_Payload
 
-// required bool intent = 1;
-inline bool Transmission_Payload::has_intent() const {
+// required bool is_important = 1;
+inline bool Transmission_Payload::has_is_important() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void Transmission_Payload::set_has_intent() {
+inline void Transmission_Payload::set_has_is_important() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void Transmission_Payload::clear_has_intent() {
+inline void Transmission_Payload::clear_has_is_important() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void Transmission_Payload::clear_intent() {
-  intent_ = false;
-  clear_has_intent();
+inline void Transmission_Payload::clear_is_important() {
+  is_important_ = false;
+  clear_has_is_important();
 }
-inline bool Transmission_Payload::intent() const {
-  return intent_;
+inline bool Transmission_Payload::is_important() const {
+  return is_important_;
 }
-inline void Transmission_Payload::set_intent(bool value) {
-  set_has_intent();
-  intent_ = value;
+inline void Transmission_Payload::set_is_important(bool value) {
+  set_has_is_important();
+  is_important_ = value;
 }
 
 // required string content = 2;
@@ -2133,15 +2233,85 @@ inline void Transmission_Data::set_allocated_nonce(::std::string* nonce) {
   }
 }
 
-// optional .xblab.Transmission.Credential credential = 3;
-inline bool Transmission_Data::has_credential() const {
+// optional string return_nonce = 3;
+inline bool Transmission_Data::has_return_nonce() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void Transmission_Data::set_has_credential() {
+inline void Transmission_Data::set_has_return_nonce() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void Transmission_Data::clear_has_credential() {
+inline void Transmission_Data::clear_has_return_nonce() {
   _has_bits_[0] &= ~0x00000004u;
+}
+inline void Transmission_Data::clear_return_nonce() {
+  if (return_nonce_ != &::google::protobuf::internal::kEmptyString) {
+    return_nonce_->clear();
+  }
+  clear_has_return_nonce();
+}
+inline const ::std::string& Transmission_Data::return_nonce() const {
+  return *return_nonce_;
+}
+inline void Transmission_Data::set_return_nonce(const ::std::string& value) {
+  set_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return_nonce_ = new ::std::string;
+  }
+  return_nonce_->assign(value);
+}
+inline void Transmission_Data::set_return_nonce(const char* value) {
+  set_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return_nonce_ = new ::std::string;
+  }
+  return_nonce_->assign(value);
+}
+inline void Transmission_Data::set_return_nonce(const char* value, size_t size) {
+  set_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return_nonce_ = new ::std::string;
+  }
+  return_nonce_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Transmission_Data::mutable_return_nonce() {
+  set_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return_nonce_ = new ::std::string;
+  }
+  return return_nonce_;
+}
+inline ::std::string* Transmission_Data::release_return_nonce() {
+  clear_has_return_nonce();
+  if (return_nonce_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = return_nonce_;
+    return_nonce_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Transmission_Data::set_allocated_return_nonce(::std::string* return_nonce) {
+  if (return_nonce_ != &::google::protobuf::internal::kEmptyString) {
+    delete return_nonce_;
+  }
+  if (return_nonce) {
+    set_has_return_nonce();
+    return_nonce_ = return_nonce;
+  } else {
+    clear_has_return_nonce();
+    return_nonce_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// optional .xblab.Transmission.Credential credential = 4;
+inline bool Transmission_Data::has_credential() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void Transmission_Data::set_has_credential() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void Transmission_Data::clear_has_credential() {
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void Transmission_Data::clear_credential() {
   if (credential_ != NULL) credential_->::xblab::Transmission_Credential::Clear();
@@ -2171,15 +2341,15 @@ inline void Transmission_Data::set_allocated_credential(::xblab::Transmission_Cr
   }
 }
 
-// optional .xblab.Transmission.Payload payload = 4;
+// optional .xblab.Transmission.Payload payload = 5;
 inline bool Transmission_Data::has_payload() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000010u) != 0;
 }
 inline void Transmission_Data::set_has_payload() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000010u;
 }
 inline void Transmission_Data::clear_has_payload() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void Transmission_Data::clear_payload() {
   if (payload_ != NULL) payload_->::xblab::Transmission_Payload::Clear();

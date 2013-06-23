@@ -15,7 +15,7 @@ inherits(p, events.EventEmitter);
 console.log(util.inspect(p.prototype, { colors: true, depth: null }));
 
 exports.Participant = p;
-exports.config = xblab.config;
+// exports.config = xblab.config;
 
 // extend prototype
 function inherits(target, source) {

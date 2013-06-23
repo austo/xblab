@@ -32,9 +32,10 @@ message Broadcast {
     //type and nonce are required for all messages
     required Type type = 1;
     required string nonce = 2;
-    optional Session session = 3;
-    optional Prologue prologue = 4;
-    optional Payload payload = 5;
+    optional string return_nonce = 3;
+    optional Session session = 4;
+    optional Prologue prologue = 5;
+    optional Payload payload = 6;
   }
 
   required Data data = 2;
@@ -54,12 +55,12 @@ message Transmission {
   message Credential {
     required string username = 1;
     required string password = 2;
-    required string group = 3;
+    optional string group = 3;
     required string pub_key = 4;
   }
 
   message Payload {
-    required bool intent = 1;
+    required bool is_important = 1;
     required string content = 2;
   }
 
@@ -67,8 +68,9 @@ message Transmission {
     //type and nonce are required for all messages
     required Type type = 1;
     required string nonce = 2;
-    optional Credential credential = 3;
-    optional Payload payload = 4;
+    optional string return_nonce = 3;
+    optional Credential credential = 4;
+    optional Payload payload = 5;
   }
 
   required Data data = 2;

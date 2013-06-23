@@ -123,9 +123,10 @@ void protobuf_AssignDesc_xblab_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Broadcast_Prologue));
   Broadcast_Data_descriptor_ = Broadcast_descriptor_->nested_type(3);
-  static const int Broadcast_Data_offsets_[5] = {
+  static const int Broadcast_Data_offsets_[6] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Broadcast_Data, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Broadcast_Data, nonce_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Broadcast_Data, return_nonce_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Broadcast_Data, session_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Broadcast_Data, prologue_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Broadcast_Data, payload_),
@@ -178,7 +179,7 @@ void protobuf_AssignDesc_xblab_2eproto() {
       sizeof(Transmission_Credential));
   Transmission_Payload_descriptor_ = Transmission_descriptor_->nested_type(1);
   static const int Transmission_Payload_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transmission_Payload, intent_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transmission_Payload, is_important_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transmission_Payload, content_),
   };
   Transmission_Payload_reflection_ =
@@ -193,9 +194,10 @@ void protobuf_AssignDesc_xblab_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Transmission_Payload));
   Transmission_Data_descriptor_ = Transmission_descriptor_->nested_type(2);
-  static const int Transmission_Data_offsets_[4] = {
+  static const int Transmission_Data_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transmission_Data, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transmission_Data, nonce_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transmission_Data, return_nonce_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transmission_Data, credential_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Transmission_Data, payload_),
   };
@@ -273,30 +275,31 @@ void protobuf_AddDesc_xblab_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\013xblab.proto\022\005xblab\"\335\003\n\tBroadcast\022\021\n\tsi"
+    "\n\013xblab.proto\022\005xblab\"\363\003\n\tBroadcast\022\021\n\tsi"
     "gnature\030\001 \002(\t\022#\n\004data\030\002 \002(\0132\025.xblab.Broa"
     "dcast.Data\032(\n\007Session\022\017\n\007pub_key\030\001 \002(\t\022\014"
     "\n\004seed\030\002 \002(\007\032*\n\007Payload\022\017\n\007content\030\001 \002(\t"
     "\022\016\n\006modulo\030\002 \002(\007\032\032\n\010Prologue\022\016\n\006modulo\030\001"
-    " \002(\007\032\275\001\n\004Data\022#\n\004type\030\001 \002(\0162\025.xblab.Broa"
-    "dcast.Type\022\r\n\005nonce\030\002 \002(\t\022)\n\007session\030\003 \001"
-    "(\0132\030.xblab.Broadcast.Session\022+\n\010prologue"
-    "\030\004 \001(\0132\031.xblab.Broadcast.Prologue\022)\n\007pay"
-    "load\030\005 \001(\0132\030.xblab.Broadcast.Payload\"f\n\004"
-    "Type\022\014\n\010NEEDCRED\020\000\022\r\n\tGROUPLIST\020\001\022\016\n\nGRO"
-    "UPENTRY\020\002\022\t\n\005BEGIN\020\003\022\r\n\tBROADCAST\020\004\022\r\n\tG"
-    "ROUPEXIT\020\005\022\010\n\004QUIT\020\006\"\250\003\n\014Transmission\022\021\n"
-    "\tsignature\030\001 \002(\t\022&\n\004data\030\002 \002(\0132\030.xblab.T"
-    "ransmission.Data\032P\n\nCredential\022\020\n\010userna"
-    "me\030\001 \002(\t\022\020\n\010password\030\002 \002(\t\022\r\n\005group\030\003 \002("
-    "\t\022\017\n\007pub_key\030\004 \002(\t\032*\n\007Payload\022\016\n\006intent\030"
-    "\001 \002(\010\022\017\n\007content\030\002 \002(\t\032\237\001\n\004Data\022&\n\004type\030"
-    "\001 \002(\0162\030.xblab.Transmission.Type\022\r\n\005nonce"
-    "\030\002 \002(\t\0222\n\ncredential\030\003 \001(\0132\036.xblab.Trans"
-    "mission.Credential\022,\n\007payload\030\004 \001(\0132\033.xb"
-    "lab.Transmission.Payload\"=\n\004Type\022\010\n\004CRED"
-    "\020\000\022\t\n\005ENTER\020\001\022\014\n\010TRANSMIT\020\002\022\010\n\004EXIT\020\003\022\010\n"
-    "\004QUIT\020\004", 927);
+    " \002(\007\032\323\001\n\004Data\022#\n\004type\030\001 \002(\0162\025.xblab.Broa"
+    "dcast.Type\022\r\n\005nonce\030\002 \002(\t\022\024\n\014return_nonc"
+    "e\030\003 \001(\t\022)\n\007session\030\004 \001(\0132\030.xblab.Broadca"
+    "st.Session\022+\n\010prologue\030\005 \001(\0132\031.xblab.Bro"
+    "adcast.Prologue\022)\n\007payload\030\006 \001(\0132\030.xblab"
+    ".Broadcast.Payload\"f\n\004Type\022\014\n\010NEEDCRED\020\000"
+    "\022\r\n\tGROUPLIST\020\001\022\016\n\nGROUPENTRY\020\002\022\t\n\005BEGIN"
+    "\020\003\022\r\n\tBROADCAST\020\004\022\r\n\tGROUPEXIT\020\005\022\010\n\004QUIT"
+    "\020\006\"\304\003\n\014Transmission\022\021\n\tsignature\030\001 \002(\t\022&"
+    "\n\004data\030\002 \002(\0132\030.xblab.Transmission.Data\032P"
+    "\n\nCredential\022\020\n\010username\030\001 \002(\t\022\020\n\010passwo"
+    "rd\030\002 \002(\t\022\r\n\005group\030\003 \001(\t\022\017\n\007pub_key\030\004 \002(\t"
+    "\0320\n\007Payload\022\024\n\014is_important\030\001 \002(\010\022\017\n\007con"
+    "tent\030\002 \002(\t\032\265\001\n\004Data\022&\n\004type\030\001 \002(\0162\030.xbla"
+    "b.Transmission.Type\022\r\n\005nonce\030\002 \002(\t\022\024\n\014re"
+    "turn_nonce\030\003 \001(\t\0222\n\ncredential\030\004 \001(\0132\036.x"
+    "blab.Transmission.Credential\022,\n\007payload\030"
+    "\005 \001(\0132\033.xblab.Transmission.Payload\"=\n\004Ty"
+    "pe\022\010\n\004CRED\020\000\022\t\n\005ENTER\020\001\022\014\n\010TRANSMIT\020\002\022\010\n"
+    "\004EXIT\020\003\022\010\n\004QUIT\020\004", 977);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "xblab.proto", &protobuf_RegisterTypes);
   Broadcast::default_instance_ = new Broadcast();
@@ -1098,6 +1101,7 @@ void Broadcast_Prologue::Swap(Broadcast_Prologue* other) {
 #ifndef _MSC_VER
 const int Broadcast_Data::kTypeFieldNumber;
 const int Broadcast_Data::kNonceFieldNumber;
+const int Broadcast_Data::kReturnNonceFieldNumber;
 const int Broadcast_Data::kSessionFieldNumber;
 const int Broadcast_Data::kPrologueFieldNumber;
 const int Broadcast_Data::kPayloadFieldNumber;
@@ -1124,6 +1128,7 @@ void Broadcast_Data::SharedCtor() {
   _cached_size_ = 0;
   type_ = 0;
   nonce_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  return_nonce_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   session_ = NULL;
   prologue_ = NULL;
   payload_ = NULL;
@@ -1137,6 +1142,9 @@ Broadcast_Data::~Broadcast_Data() {
 void Broadcast_Data::SharedDtor() {
   if (nonce_ != &::google::protobuf::internal::kEmptyString) {
     delete nonce_;
+  }
+  if (return_nonce_ != &::google::protobuf::internal::kEmptyString) {
+    delete return_nonce_;
   }
   if (this != default_instance_) {
     delete session_;
@@ -1172,6 +1180,11 @@ void Broadcast_Data::Clear() {
     if (has_nonce()) {
       if (nonce_ != &::google::protobuf::internal::kEmptyString) {
         nonce_->clear();
+      }
+    }
+    if (has_return_nonce()) {
+      if (return_nonce_ != &::google::protobuf::internal::kEmptyString) {
+        return_nonce_->clear();
       }
     }
     if (has_session()) {
@@ -1227,12 +1240,29 @@ bool Broadcast_Data::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_session;
+        if (input->ExpectTag(26)) goto parse_return_nonce;
         break;
       }
 
-      // optional .xblab.Broadcast.Session session = 3;
+      // optional string return_nonce = 3;
       case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_return_nonce:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_return_nonce()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->return_nonce().data(), this->return_nonce().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_session;
+        break;
+      }
+
+      // optional .xblab.Broadcast.Session session = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_session:
@@ -1241,12 +1271,12 @@ bool Broadcast_Data::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(34)) goto parse_prologue;
+        if (input->ExpectTag(42)) goto parse_prologue;
         break;
       }
 
-      // optional .xblab.Broadcast.Prologue prologue = 4;
-      case 4: {
+      // optional .xblab.Broadcast.Prologue prologue = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_prologue:
@@ -1255,12 +1285,12 @@ bool Broadcast_Data::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(42)) goto parse_payload;
+        if (input->ExpectTag(50)) goto parse_payload;
         break;
       }
 
-      // optional .xblab.Broadcast.Payload payload = 5;
-      case 5: {
+      // optional .xblab.Broadcast.Payload payload = 6;
+      case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_payload:
@@ -1306,22 +1336,31 @@ void Broadcast_Data::SerializeWithCachedSizes(
       2, this->nonce(), output);
   }
 
-  // optional .xblab.Broadcast.Session session = 3;
+  // optional string return_nonce = 3;
+  if (has_return_nonce()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->return_nonce().data(), this->return_nonce().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      3, this->return_nonce(), output);
+  }
+
+  // optional .xblab.Broadcast.Session session = 4;
   if (has_session()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->session(), output);
+      4, this->session(), output);
   }
 
-  // optional .xblab.Broadcast.Prologue prologue = 4;
+  // optional .xblab.Broadcast.Prologue prologue = 5;
   if (has_prologue()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->prologue(), output);
+      5, this->prologue(), output);
   }
 
-  // optional .xblab.Broadcast.Payload payload = 5;
+  // optional .xblab.Broadcast.Payload payload = 6;
   if (has_payload()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, this->payload(), output);
+      6, this->payload(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -1348,25 +1387,35 @@ void Broadcast_Data::SerializeWithCachedSizes(
         2, this->nonce(), target);
   }
 
-  // optional .xblab.Broadcast.Session session = 3;
+  // optional string return_nonce = 3;
+  if (has_return_nonce()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->return_nonce().data(), this->return_nonce().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->return_nonce(), target);
+  }
+
+  // optional .xblab.Broadcast.Session session = 4;
   if (has_session()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        3, this->session(), target);
+        4, this->session(), target);
   }
 
-  // optional .xblab.Broadcast.Prologue prologue = 4;
+  // optional .xblab.Broadcast.Prologue prologue = 5;
   if (has_prologue()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        4, this->prologue(), target);
+        5, this->prologue(), target);
   }
 
-  // optional .xblab.Broadcast.Payload payload = 5;
+  // optional .xblab.Broadcast.Payload payload = 6;
   if (has_payload()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        5, this->payload(), target);
+        6, this->payload(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -1393,21 +1442,28 @@ int Broadcast_Data::ByteSize() const {
           this->nonce());
     }
 
-    // optional .xblab.Broadcast.Session session = 3;
+    // optional string return_nonce = 3;
+    if (has_return_nonce()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->return_nonce());
+    }
+
+    // optional .xblab.Broadcast.Session session = 4;
     if (has_session()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->session());
     }
 
-    // optional .xblab.Broadcast.Prologue prologue = 4;
+    // optional .xblab.Broadcast.Prologue prologue = 5;
     if (has_prologue()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->prologue());
     }
 
-    // optional .xblab.Broadcast.Payload payload = 5;
+    // optional .xblab.Broadcast.Payload payload = 6;
     if (has_payload()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -1446,6 +1502,9 @@ void Broadcast_Data::MergeFrom(const Broadcast_Data& from) {
     }
     if (from.has_nonce()) {
       set_nonce(from.nonce());
+    }
+    if (from.has_return_nonce()) {
+      set_return_nonce(from.return_nonce());
     }
     if (from.has_session()) {
       mutable_session()->::xblab::Broadcast_Session::MergeFrom(from.session());
@@ -1491,6 +1550,7 @@ void Broadcast_Data::Swap(Broadcast_Data* other) {
   if (other != this) {
     std::swap(type_, other->type_);
     std::swap(nonce_, other->nonce_);
+    std::swap(return_nonce_, other->return_nonce_);
     std::swap(session_, other->session_);
     std::swap(prologue_, other->prologue_);
     std::swap(payload_, other->payload_);
@@ -1950,7 +2010,7 @@ bool Transmission_Credential::MergePartialFromCodedStream(
         break;
       }
 
-      // required string group = 3;
+      // optional string group = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -2020,7 +2080,7 @@ void Transmission_Credential::SerializeWithCachedSizes(
       2, this->password(), output);
   }
 
-  // required string group = 3;
+  // optional string group = 3;
   if (has_group()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->group().data(), this->group().length(),
@@ -2066,7 +2126,7 @@ void Transmission_Credential::SerializeWithCachedSizes(
         2, this->password(), target);
   }
 
-  // required string group = 3;
+  // optional string group = 3;
   if (has_group()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->group().data(), this->group().length(),
@@ -2111,7 +2171,7 @@ int Transmission_Credential::ByteSize() const {
           this->password());
     }
 
-    // required string group = 3;
+    // optional string group = 3;
     if (has_group()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -2181,7 +2241,7 @@ void Transmission_Credential::CopyFrom(const Transmission_Credential& from) {
 }
 
 bool Transmission_Credential::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
+  if ((_has_bits_[0] & 0x0000000b) != 0x0000000b) return false;
 
   return true;
 }
@@ -2210,7 +2270,7 @@ void Transmission_Credential::Swap(Transmission_Credential* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int Transmission_Payload::kIntentFieldNumber;
+const int Transmission_Payload::kIsImportantFieldNumber;
 const int Transmission_Payload::kContentFieldNumber;
 #endif  // !_MSC_VER
 
@@ -2230,7 +2290,7 @@ Transmission_Payload::Transmission_Payload(const Transmission_Payload& from)
 
 void Transmission_Payload::SharedCtor() {
   _cached_size_ = 0;
-  intent_ = false;
+  is_important_ = false;
   content_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -2270,7 +2330,7 @@ Transmission_Payload* Transmission_Payload::New() const {
 
 void Transmission_Payload::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    intent_ = false;
+    is_important_ = false;
     if (has_content()) {
       if (content_ != &::google::protobuf::internal::kEmptyString) {
         content_->clear();
@@ -2287,14 +2347,14 @@ bool Transmission_Payload::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required bool intent = 1;
+      // required bool is_important = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, &intent_)));
-          set_has_intent();
+                 input, &is_important_)));
+          set_has_is_important();
         } else {
           goto handle_uninterpreted;
         }
@@ -2337,9 +2397,9 @@ bool Transmission_Payload::MergePartialFromCodedStream(
 
 void Transmission_Payload::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required bool intent = 1;
-  if (has_intent()) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->intent(), output);
+  // required bool is_important = 1;
+  if (has_is_important()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->is_important(), output);
   }
 
   // required string content = 2;
@@ -2359,9 +2419,9 @@ void Transmission_Payload::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Transmission_Payload::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required bool intent = 1;
-  if (has_intent()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->intent(), target);
+  // required bool is_important = 1;
+  if (has_is_important()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(1, this->is_important(), target);
   }
 
   // required string content = 2;
@@ -2385,8 +2445,8 @@ int Transmission_Payload::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required bool intent = 1;
-    if (has_intent()) {
+    // required bool is_important = 1;
+    if (has_is_important()) {
       total_size += 1 + 1;
     }
 
@@ -2424,8 +2484,8 @@ void Transmission_Payload::MergeFrom(const ::google::protobuf::Message& from) {
 void Transmission_Payload::MergeFrom(const Transmission_Payload& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_intent()) {
-      set_intent(from.intent());
+    if (from.has_is_important()) {
+      set_is_important(from.is_important());
     }
     if (from.has_content()) {
       set_content(from.content());
@@ -2454,7 +2514,7 @@ bool Transmission_Payload::IsInitialized() const {
 
 void Transmission_Payload::Swap(Transmission_Payload* other) {
   if (other != this) {
-    std::swap(intent_, other->intent_);
+    std::swap(is_important_, other->is_important_);
     std::swap(content_, other->content_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
@@ -2476,6 +2536,7 @@ void Transmission_Payload::Swap(Transmission_Payload* other) {
 #ifndef _MSC_VER
 const int Transmission_Data::kTypeFieldNumber;
 const int Transmission_Data::kNonceFieldNumber;
+const int Transmission_Data::kReturnNonceFieldNumber;
 const int Transmission_Data::kCredentialFieldNumber;
 const int Transmission_Data::kPayloadFieldNumber;
 #endif  // !_MSC_VER
@@ -2500,6 +2561,7 @@ void Transmission_Data::SharedCtor() {
   _cached_size_ = 0;
   type_ = 0;
   nonce_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  return_nonce_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   credential_ = NULL;
   payload_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2512,6 +2574,9 @@ Transmission_Data::~Transmission_Data() {
 void Transmission_Data::SharedDtor() {
   if (nonce_ != &::google::protobuf::internal::kEmptyString) {
     delete nonce_;
+  }
+  if (return_nonce_ != &::google::protobuf::internal::kEmptyString) {
+    delete return_nonce_;
   }
   if (this != default_instance_) {
     delete credential_;
@@ -2546,6 +2611,11 @@ void Transmission_Data::Clear() {
     if (has_nonce()) {
       if (nonce_ != &::google::protobuf::internal::kEmptyString) {
         nonce_->clear();
+      }
+    }
+    if (has_return_nonce()) {
+      if (return_nonce_ != &::google::protobuf::internal::kEmptyString) {
+        return_nonce_->clear();
       }
     }
     if (has_credential()) {
@@ -2598,12 +2668,29 @@ bool Transmission_Data::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_credential;
+        if (input->ExpectTag(26)) goto parse_return_nonce;
         break;
       }
 
-      // optional .xblab.Transmission.Credential credential = 3;
+      // optional string return_nonce = 3;
       case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_return_nonce:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_return_nonce()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+            this->return_nonce().data(), this->return_nonce().length(),
+            ::google::protobuf::internal::WireFormat::PARSE);
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(34)) goto parse_credential;
+        break;
+      }
+
+      // optional .xblab.Transmission.Credential credential = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_credential:
@@ -2612,12 +2699,12 @@ bool Transmission_Data::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(34)) goto parse_payload;
+        if (input->ExpectTag(42)) goto parse_payload;
         break;
       }
 
-      // optional .xblab.Transmission.Payload payload = 4;
-      case 4: {
+      // optional .xblab.Transmission.Payload payload = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_payload:
@@ -2663,16 +2750,25 @@ void Transmission_Data::SerializeWithCachedSizes(
       2, this->nonce(), output);
   }
 
-  // optional .xblab.Transmission.Credential credential = 3;
-  if (has_credential()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->credential(), output);
+  // optional string return_nonce = 3;
+  if (has_return_nonce()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->return_nonce().data(), this->return_nonce().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      3, this->return_nonce(), output);
   }
 
-  // optional .xblab.Transmission.Payload payload = 4;
+  // optional .xblab.Transmission.Credential credential = 4;
+  if (has_credential()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      4, this->credential(), output);
+  }
+
+  // optional .xblab.Transmission.Payload payload = 5;
   if (has_payload()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->payload(), output);
+      5, this->payload(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -2699,18 +2795,28 @@ void Transmission_Data::SerializeWithCachedSizes(
         2, this->nonce(), target);
   }
 
-  // optional .xblab.Transmission.Credential credential = 3;
+  // optional string return_nonce = 3;
+  if (has_return_nonce()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8String(
+      this->return_nonce().data(), this->return_nonce().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE);
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->return_nonce(), target);
+  }
+
+  // optional .xblab.Transmission.Credential credential = 4;
   if (has_credential()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        3, this->credential(), target);
+        4, this->credential(), target);
   }
 
-  // optional .xblab.Transmission.Payload payload = 4;
+  // optional .xblab.Transmission.Payload payload = 5;
   if (has_payload()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        4, this->payload(), target);
+        5, this->payload(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -2737,14 +2843,21 @@ int Transmission_Data::ByteSize() const {
           this->nonce());
     }
 
-    // optional .xblab.Transmission.Credential credential = 3;
+    // optional string return_nonce = 3;
+    if (has_return_nonce()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->return_nonce());
+    }
+
+    // optional .xblab.Transmission.Credential credential = 4;
     if (has_credential()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->credential());
     }
 
-    // optional .xblab.Transmission.Payload payload = 4;
+    // optional .xblab.Transmission.Payload payload = 5;
     if (has_payload()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -2784,6 +2897,9 @@ void Transmission_Data::MergeFrom(const Transmission_Data& from) {
     if (from.has_nonce()) {
       set_nonce(from.nonce());
     }
+    if (from.has_return_nonce()) {
+      set_return_nonce(from.return_nonce());
+    }
     if (from.has_credential()) {
       mutable_credential()->::xblab::Transmission_Credential::MergeFrom(from.credential());
     }
@@ -2822,6 +2938,7 @@ void Transmission_Data::Swap(Transmission_Data* other) {
   if (other != this) {
     std::swap(type_, other->type_);
     std::swap(nonce_, other->nonce_);
+    std::swap(return_nonce_, other->return_nonce_);
     std::swap(credential_, other->credential_);
     std::swap(payload_, other->payload_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);

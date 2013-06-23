@@ -103,9 +103,7 @@ Handle<Value> Xblab::OnConnection(const Arguments& args) {
 
         argv[0] = Local<Value>::New(Undefined());
         argv[1] = Util::wrapBuf(c, len);
-
-        // Debug
-        // cout << Util::parseBuf(buf);
+        
     }
     catch (util_exception& e){
         argv[0] = Local<Value>::New(String::New(e.what()));

@@ -15,11 +15,7 @@ function xblabClient (cfg, ws){
     var self = this;
     self.wsClient = ws;
 
-    // TODO: move!!
-    cfg.pubKeyFile = path.join(process.cwd(), cfg.pubKeyFile);
-    xblab.config(cfg); //should be async, not hard coded in ctor
-
-    self.participant = new xblab.Participant();
+    self.participant = new xblab.Participant(cfg);
 
     self.socket = net.connect({port: cfg.remotePort},
         function() {
@@ -43,10 +39,21 @@ function xblabClient (cfg, ws){
     self.wsClient.on('message', function (message) {
         if (message.type === 'utf8') {
             if (cfg.debug){
-                console.log("Received utf-8 message of %s characters.",
-                    message.utf8Data.length);
+                console.log("Received utf-8 message of %s characters. Message: '%s'.",
+                    message.utf8Data.length, message.utf8Data);
             }
+            var userMessage = JSON.parse(message.utf8Data);
+            if (userMessage && userMessage.type){
+                switch(userMessage.type){
+                    case 'CRED':
+                        self.participant.sendCred(userMessage, function(err){
+                            console.log(err);
+                        });
+                        break;      
+                }
+            }            
         }
+        // This should never happen as we are using JSON between local server and page
         else if (message.type === 'binary') {
             if (cfg.debug){
                 console.log("Received binary message of %s bytes.",

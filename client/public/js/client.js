@@ -19,6 +19,13 @@
                     return false;
                 }
             });
+            $('#password').keyup(function(evt) {
+                if ((evt.keyCode || evt.which) == 13) {
+                    ns.Chat.login();
+                    $('#login').dialog('close');
+                    return false;
+                }
+            });
             ns.Chat.socket = ws;      
         },
 
@@ -41,7 +48,20 @@
                     $('#messages')
                         .append(msg)
                         .animate({scrollTop: $('#messages').prop('scrollHeight')}, 0);
-                    }
+                }
+            }
+        },
+
+        login: function(){
+            var un = $('#username').val(),
+                pw = $('#password').val();
+            if (un && pw){
+                var packet = JSON.stringify({
+                    type: 'CRED',
+                    username: un,
+                    password: pw
+                });
+                ns.Chat.socket.send(packet);
             }
         },
 

@@ -7,6 +7,8 @@
 #include <exception>
 #include "group.h"
 #include "member.h"
+#include "protobuf/xblab.pb.h"
+
 
 namespace xblab {
 
@@ -51,7 +53,8 @@ class Util {
 
         #endif
         
-        static MessageType parseBuf(std::string in, void* out);
+        static MessageType parseBroadcast(std::string& in, void* out);
+        static std::string packageParticipantCredentials(void* auxData);
         static v8::Local<v8::Value> wrapBuf(const char *c, size_t len);
 
         static std::string v8ToString(v8::Local<v8::Value> value) {

@@ -4,9 +4,9 @@ var xbcfg = require('../xblab.config'),
     path = require('path');
 
 //TODO: better way to get applicion root
-console.log(process.cwd());
-xbcfg.pubKeyFile = path.join(process.cwd(), xbcfg.pubKeyFile);
-xbcfg.privKeyFile = path.join(process.cwd(), xbcfg.privKeyFile);
+// console.log(process.cwd());
+// xbcfg.pubKeyFile = path.join(process.cwd(), xbcfg.pubKeyFile);
+// xbcfg.privKeyFile = path.join(process.cwd(), xbcfg.privKeyFile);
 
 xblab.config(xbcfg);
 

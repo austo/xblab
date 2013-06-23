@@ -1,16 +1,10 @@
-// Load the TCP Library
 var net = require('net'),
     util = require('util'),
     fs = require('fs'),
     xbcfg = require('./xblab.config'),
     xblab = require('./build/Debug/xblab'),
     path = require('path'),
-    port = 8888;
-
-    //TODO: better way to get applicion root
-    console.log(process.cwd());
-    xbcfg.pubKeyFile = path.join(process.cwd(), xbcfg.pubKeyFile);
-    xbcfg.privKeyFile = path.join(process.cwd(), xbcfg.privKeyFile);
+    port = 8888;    
 
     xblab.config(xbcfg); //should be async
 

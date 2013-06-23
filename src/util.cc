@@ -13,7 +13,7 @@
 #include "macros.h"
 #include "util.h"
 #include "crypto.h"
-#include "protobuf/xblab.pb.h"
+#include "participant.h"
 
 
 using namespace std;
@@ -63,7 +63,61 @@ string Util::needCredBuf(){
 
 #endif
 
-MessageType Util::parseBuf(string in, void* out){
+string Util::packageParticipantCredentials(void* auxData){
+    Participant* participant = (Participant *) auxData;
+    string nonce = Crypto::generateNonce();
+    Transmission trans;
+
+    Transmission::Data *data = new Transmission::Data();
+    Transmission::Credential *cred = new Transmission::Credential();
+
+    data->set_type(Transmission::CRED);
+    data->set_nonce(nonce);
+    data->set_return_nonce(participant->return_nonce_);
+
+    string passhash = Crypto::hashPassword(participant->password_);
+
+    cred->set_username(participant->username_);
+    cred->set_password(passhash);
+    cred->set_pub_key(participant->pub_key_);
+
+    data->set_allocated_credential(cred);
+
+
+    string sig, datastr;
+    if (!data->SerializeToString(&datastr)) {
+        throw util_exception("Failed to serialize broadcast data.");
+    }
+    try{
+        sig = Crypto::sign(participant->priv_key_, datastr);
+        trans.set_signature(sig);
+        trans.set_allocated_data(data);
+    }
+    catch(crypto_exception& e){
+        cout << "crypto exception: " << e.what() << endl;
+    }
+
+    string plaintext;
+    if (!trans.SerializeToString(&plaintext)){
+        throw util_exception("Failed to serialize broadcast.");
+    }
+
+    // cout << trans.DebugString() << endl;
+    // cout << trans.ByteSize() << endl;
+
+    // try {
+
+    //     string ciphertext = Crypto::encrypt(plaintext);
+    // }
+    // catch(exception& e){
+    //     cout << e.what();
+    // }
+
+    return plaintext;
+}
+
+// This is mainly for consumption by the client, so return Broadcast::Type
+MessageType Util::parseBroadcast(string& in, void* auxData){
 
     MessageType retval = INVALID;
     //TODO: switch on broadcast type
@@ -79,12 +133,16 @@ MessageType Util::parseBuf(string in, void* out){
 
     if (Crypto::verify(content, bc.signature())){
         cout << "Hooray!\n";
-    }
-    const Broadcast::Data& data = bc.data();
+        const Broadcast::Data& data = bc.data();
 
-    retval = (MessageType) data.type();    
+        Participant* participant = (Participant *) auxData;
+        participant->return_nonce_ = string(data.nonce());
 
-    return retval;   //bc.DebugString();
+        // TODO: no casts - proper type interrogation
+        retval = (MessageType) data.type();
+    }       
+
+    return retval;
 }
 
 v8::Local<v8::Value> Util::wrapBuf(const char *c, size_t len){

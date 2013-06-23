@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream>
 
 #include <node_buffer.h>
 
@@ -29,32 +30,20 @@ Handle<Value> Participant::New(const Arguments& args){
     HandleScope scope; 
 
     Participant* instance;
-    if (args[0]->IsUndefined()){
-        instance = new Participant();
+    if (!args[0]->IsObject()){
+        THROW("xblab.Participant requires configuration object.");
     }
-    else {
-        // args is object, use parameterized ctor
-        instance = new Participant(
-        Util::v8ToString(args[0]),
-        Util::v8ToString(args[1]),
-        Util::v8ToString(args[2]));
-    }   
+
+    Handle<Object> cfg = Handle<Object>::Cast(args[0]);
+    Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
+
+    pub_key_filename = NODE_PSYMBOL(*(String::Utf8Value(pubkfile)));
+    cout << *(String::Utf8Value(pub_key_filename)) << endl;
+
+    instance = new Participant();   
 
     instance->Wrap(args.This());
     return scope.Close(args.This());
-}
-
-Handle<Value> Participant::NeedCredentials(const Arguments& args) {
-  HandleScope scope;
-
-  Handle<Value> argv[2] = {
-    String::New("cred"), // event name
-    args[0]->ToString()  // argument
-  };
-
-  node::MakeCallback(args.This(), "emit", 2, argv);
-
-  return Undefined();
 }
 
 
@@ -72,23 +61,46 @@ Participant::SetHandle(Local<String> property, Local<Value> value, const Accesso
     instance->handle_ = Util::v8ToString(value);
 }
 
-// TODO: error callback
-Handle<Value> Participant::SetConfig(const Arguments& args) {
+
+Handle<Value> Participant::SendCred(const Arguments& args) {
     HandleScope scope;
 
     if (!args[0]->IsObject()) {
-            THROW("xblab: config() requires object argument");
+        THROW("xblab: sendCred() requires object argument");
     }
 
-    Handle<Object> cfg = Handle<Object>::Cast(args[0]);
-    Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
+    Local<Object> credentials = Local<Object>::Cast(args[0]);
+    Local<Value> username = credentials->Get(String::New("username"));
+    Local<Value> password = credentials->Get(String::New("password"));
 
-    pub_key_filename = NODE_PSYMBOL(*(String::Utf8Value(pubkfile)));
-    cout << *(String::Utf8Value(pub_key_filename)) << endl;
+    Participant* instance = ObjectWrap::Unwrap<Participant>(args.This());
+    instance->username_ = Util::v8ToString(username);
+    instance->password_ = Util::v8ToString(password);
+
+    string buf = Util::packageParticipantCredentials(instance);
+
+    cout << "unencrypted cred size: " << buf.size() << endl;
+
+    ifstream is(Crypto::publicKeyFile().c_str());
+
+    stringstream ss;
+
+    while (is.good()) 
+    {
+        char c = is.get(); 
+        if (is.good())
+            ss << c;
+    }
+    string pk = ss.str();
+    cout << pk;
+    string k = Crypto::encrypt(pk, buf);
+
+    cout << "ciphertext:" << k << endl;
+
+
 
     return scope.Close(Undefined());
 }
-
 
 Handle<Value> Participant::DigestBuffer(const Arguments& args) {
     HandleScope scope;
@@ -105,10 +117,12 @@ Handle<Value> Participant::DigestBuffer(const Arguments& args) {
     
     try {
 
+        Participant* instance = ObjectWrap::Unwrap<Participant>(args.This());
+
         // TODO: parseBuf needs to return a way for us to decide what
         // event to emit, and optionally some data for us to broadcast
-        void* auxData;
-        MessageType messagetype = Util::parseBuf(buf, auxData);
+        
+        MessageType messagetype = Util::parseBroadcast(buf, instance);
         if (messagetype == NEEDCRED){
 
 
@@ -133,21 +147,6 @@ Handle<Value> Participant::DigestBuffer(const Arguments& args) {
 }
 
 
-//TODO: Sign
-//TODO: Decrypt
-
-
-Participant::Participant(string username, string password, string group) :
-    username_(username), password_(password), group_(group) {
-    try{
-        Crypto::generateKey(this->priv_key_, this->pub_key_);       
-    }
-    catch(exception& e){
-        cout << "Exception caught: " << e.what() << endl;
-        throw;
-    }
-}
-
 Participant::Participant() {
     try{
         Crypto::generateKey(this->priv_key_, this->pub_key_);      
@@ -167,6 +166,7 @@ extern "C" {
 
         nodeBufCtor = JS_NODE_BUF_CTOR;
 
+
         try {
             // Start up crypto on module load
             Botan::LibraryInitializer init("thread_safe=true");
@@ -182,13 +182,11 @@ extern "C" {
             Participant::GetHandle, Participant::SetHandle);
 
         // Only methods exposed to JS should go here, emitted events are "private"
-        NODE_SET_PROTOTYPE_METHOD(t, "digestBuffer", Participant::DigestBuffer);    
+        NODE_SET_PROTOTYPE_METHOD(t, "digestBuffer", Participant::DigestBuffer);
+        NODE_SET_PROTOTYPE_METHOD(t, "sendCred", Participant::SendCred);    
 
-        target->Set(String::NewSymbol("Participant"), t->GetFunction());
 
-        // config is accessed in JS through the xblab object
-        target->Set(String::NewSymbol("config"),
-            FunctionTemplate::New(Participant::SetConfig)->GetFunction());
+        target->Set(String::NewSymbol("Participant"), t->GetFunction());        
     }   
     NODE_MODULE(xblab, init);
 }

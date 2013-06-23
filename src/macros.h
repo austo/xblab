@@ -4,12 +4,13 @@
 #include "util.h"
 
 #define BITSIZE 2048
-#define NONCE_SIZE 128
+#define NONCE_SIZE 8
 #define SIG_BUF_SIZE 4096
 #define BCRYPT_WORK_FACTOR 12
 
 #define SHA1 "EMSA1(SHA-1)"
 #define SHA256 "EME1(SHA-256)"
+#define EMESHA1 "EME1(SHA-1)"
 
 
 // HACK - there may be a much nicer way to do this

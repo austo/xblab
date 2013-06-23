@@ -30,19 +30,22 @@ html
                     td
                         |Password:
                     td
-                        input#password                   
+                        input#password(type='password')              
         script.
             $(function(){
-                $('#login').attr('display', 'none');
+                $('#login').hide();
                 $('#login').dialog({
                     autoOpen: false,
                     width: 500,
                     title: 'login to xblab:',
                     buttons: {
                         "Okay": function() {
+                            xblab.Chat.login();
                             $(this).dialog('close');
                         },
-                        "Cancel": function() { $(this).dialog('close'); }
+                        "Cancel": function() {
+                            $(this).dialog('close');
+                        }
                     }
                 });                
                 xblab.Chat.initialize();

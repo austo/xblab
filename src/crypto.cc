@@ -11,6 +11,7 @@
 #include <botan/base64.h>
 #include <botan/hex.h>
 #include <botan/lookup.h>
+#include <botan/bcrypt.h>
 
 #include "macros.h"
 #include "crypto.h"
@@ -61,6 +62,21 @@ string Crypto::sign(string message){
 
 
 #endif
+
+
+string Crypto::sign(string& privateKey, string& message){
+    AutoSeeded_RNG rng;
+    DataSource_Memory ds(privateKey);
+    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(ds, rng));
+    RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
+
+    if(!rsakey){
+        cout << "BAD KEY!!" << endl;
+        throw crypto_exception("Invalid key");
+    }
+
+    return sign(rng, rsakey, message);
+}
 
 
 string Crypto::sign(AutoSeeded_RNG& rng, RSA_PrivateKey*& rsakey, string& message){
@@ -118,11 +134,62 @@ bool Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
 }
 
 
+// TODO: refactor/cleanup - look at options for smaller keys (should read into buffer)
+
+string Crypto::encrypt(string& plaintext){
+
+    std::auto_ptr<X509_PublicKey> key(X509::load_key(publicKeyFile()));
+    RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
+
+    cout << "plaintext: " << plaintext << endl;
+    cout << "plaintext length: " << plaintext.size() << endl;
+
+    //X509_PublicKey *rsakey = X509::load_key(publicKeyFile());
+
+    cout << "got key\n";
+
+
+    if(!rsakey) {
+        cout << "BAD KEY!!" << endl;
+        throw crypto_exception("Invalid key");
+    }
+
+    AutoSeeded_RNG rng;
+
+    cout << "after rng\n";
+
+    PK_Encryptor *enc = new PK_Encryptor_EME(*rsakey, SHA256);    
+
+    cout << "after end\n";
+
+    // Pipe dpipe(new Base64_Decoder);
+    // dpipe.process_msg(plaintext);
+    // SecureVector<byte> pt = dpipe.read_all();
+
+    const unsigned char* data = (const unsigned char *)&plaintext[0];
+    cout << "after cast\n";
+    
+
+    // TODO: try looping this with smaller chunks
+    SecureVector<byte> ciphertext = enc->encrypt(data, plaintext.size(), rng);
+
+    cout << "after enc\n";
+
+    Pipe epipe(new Base64_Encoder);
+    epipe.process_msg(ciphertext);
+
+    delete enc;    
+    return epipe.read_all_as_string();
+}
+
+
 string Crypto::encrypt(string& publicKey, string& plaintext){
     AutoSeeded_RNG rng;
     DataSource_Memory ds(publicKey);
     X509_PublicKey *rsakey = X509::load_key(ds);
-    PK_Encryptor *enc = new PK_Encryptor_EME(*rsakey, SHA256);    
+    PK_Encryptor *enc = new PK_Encryptor_EME(*rsakey, EMESHA1);
+
+    cout << "encryptor max input size: " << enc->maximum_input_size() << endl;
 
     const unsigned char* data = (const unsigned char *)&plaintext[0];
         
@@ -170,6 +237,14 @@ void Crypto::generateKey(string& pr, string& pu){
     pr = PKCS8::PEM_encode(key);
     pu = X509::PEM_encode(key);
 }
+
+
+string Crypto::hashPassword(string& pw){
+    AutoSeeded_RNG rng;
+    return generate_bcrypt(pw, rng, BCRYPT_WORK_FACTOR);
+}
+
+
 
 //TODO: encrypt/decrypt 
 

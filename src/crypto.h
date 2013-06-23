@@ -36,8 +36,13 @@ public:
     static std::string sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
     static bool verify(std::string message, std::string signature);
     static bool verify(Botan::RSA_PublicKey* rsakey, std::string message, std::string signature);
+    static std::string encrypt(std::string& plaintext);
     static std::string encrypt(std::string& publicKey, std::string& plaintext);
     static std::string decrypt(std::string& privateKey, std::string& ciphertext);
+    static std::string sign(std::string& privateKey, std::string& message);
+    static std::string hashPassword(std::string& pw);
+
+
 
 
     #ifndef XBLAB_CLIENT
