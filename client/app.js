@@ -11,7 +11,7 @@ var ws = require('websocket'),
 
 
 app.configure(function(){
-    app.set('port', process.env.XBLAB_PORT || 8888);
+    app.set('port', process.env.XBLAB_PORT || 7777);
     app.set('views', __dirname + '/server/views');
     app.set('view engine', 'jade');
     app.use(express.favicon('./public/img/skull-crossbones.ico'));
@@ -34,7 +34,7 @@ app.get('/', routes.index);
 var server = http.createServer(app);
 
 server.listen(app.get('port'), function(){
-    console.log("xblab server listening on port " + app.get('port'));
+    console.log("xblab relay server listening on port " + app.get('port'));
 });
 
 var router = new ws.router(),

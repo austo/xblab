@@ -63,24 +63,28 @@ string Util::needCredBuf(){
 
 #endif
 
-string Util::parseBuf(string in){
+MessageType Util::parseBuf(string in, void* out){
 
+    MessageType retval = INVALID;
     //TODO: switch on broadcast type
     Broadcast bc;
     if (!bc.ParseFromString(in)){
         throw util_exception("Failed to deserialize broadcast.");
     }    
 
-    string tst;
-    if (!bc.data().SerializeToString(&tst)){
-        throw util_exception("Failed to reserialize data.");
+    string content;
+    if (!bc.data().SerializeToString(&content)){
+        throw util_exception("Failed to reserialize broadcast data.");
     }
 
-    if (Crypto::verify(tst, bc.signature())){
+    if (Crypto::verify(content, bc.signature())){
         cout << "Hooray!\n";
-    }    
+    }
+    const Broadcast::Data& data = bc.data();
 
-    return bc.DebugString();
+    retval = (MessageType) data.type();    
+
+    return retval;   //bc.DebugString();
 }
 
 v8::Local<v8::Value> Util::wrapBuf(const char *c, size_t len){

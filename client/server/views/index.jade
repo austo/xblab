@@ -3,21 +3,47 @@ html
     head
         title xblab
         script(src='https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js')
+        script(src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.1/jquery-ui.min.js')
         script(src='/js/constants.js')
         script(src='/js/client.js')
-        link(href='/css/client.css', rel='stylesheet')        
+        link(href='/css/client.css', rel='stylesheet')
+        link(href='/vendor/jquery-ui-1.10.3.custom.min.css', rel='stylesheet')       
                     
     body
         div#wrapper
             h1 xblab
             div#messages
-            div.nic
-                |Your Name
-                input#name(name="name", type="text")
+            //- div.nic
+            //-     |Your Name
+            //-     input#name(name="name", type="text")
             textarea#message
-            //input#connect(type="submit", value="Connect")
-            input#send(type="submit", value="Send")        
+            //- input#connect(type="submit", value="Connect")
+            input#send(type="submit", value="Send")
+        div#login
+            table
+                tr
+                    td
+                        |Username:
+                    td
+                        input#username
+                tr
+                    td
+                        |Password:
+                    td
+                        input#password                   
         script.
             $(function(){
+                $('#login').attr('display', 'none');
+                $('#login').dialog({
+                    autoOpen: false,
+                    width: 500,
+                    title: 'login to xblab:',
+                    buttons: {
+                        "Okay": function() {
+                            $(this).dialog('close');
+                        },
+                        "Cancel": function() { $(this).dialog('close'); }
+                    }
+                });                
                 xblab.Chat.initialize();
             });

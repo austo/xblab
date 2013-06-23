@@ -102,60 +102,32 @@ Handle<Value> Participant::DigestBuffer(const Arguments& args) {
     }
 
     string buf(bufData, bufData + bufLen); // copy node::Buffer contents into string
+    
+    try {
 
-    /*
-        TODO: this next section should happen after we've formulated
-        the appropriate response, which varies depending on the buffer
-        we've just parsed. In any event, we're going to need to build
-        the response buffer before returning to JS land.
-    */
-    // Local<Function> cb = Local<Function>::Cast(args[1]);
-    //const unsigned argc = 2;
+        // TODO: parseBuf needs to return a way for us to decide what
+        // event to emit, and optionally some data for us to broadcast
+        void* auxData;
+        MessageType messagetype = Util::parseBuf(buf, auxData);
+        if (messagetype == NEEDCRED){
 
-    //Handle<Value> argv[2];
 
-    try{
+            Handle<Value> argv[2] = {
+                String::New("cred"),                        // node::EventEmitter event name
+                String::New("Need credentials, buster!")    // node::EventEmitter argument(s)
+            };
 
-        string bufferResult = Util::parseBuf(buf);
-        Handle<Value> argv[2] = {
-            String::New("cred"), // event name
-            String::New(bufferResult.c_str())  // argument
-        };
-
-        node::MakeCallback(args.This(), "emit", 2, argv);
-
-        // argv[0] = String::New("cred");
-        // argv[1] = String::New(bufferResult.c_str());
-
-        //argv[0] = Local<Value>::New(Undefined()); //Error
-
-        /*
-            TODO: if buffer is okay, get username and password,
-            then initialize Participant
-        */
-        //argv[1] = Local<Value>::New(String::New(Util::parseBuf(buf).c_str()));
+            node::MakeCallback(args.This(), "emit", 2, argv);
+        }
 
     }
     catch (util_exception& e){
-        // // TODO: should be on error
-        // argv[0] = String::New("error");
-
+        
+        // TODO: should errors always be handled in user-supplied callback?
         Local<Function> cb = Local<Function>::Cast(args[1]);
         Local<Value> argv[1] = { String::New(e.what()) };
         cb->Call(Context::GetCurrent()->Global(), 1, argv);
-
-
-
-        // argv[1] = String::New(e.what());
-        // argv[0] = Local<Value>::New(String::New(e.what()));
-        // argv[1] = Local<Value>::New(Undefined());
     }
-
-    // argv[0] = Local<Value>::New(String::New(bufferResult.c_str()));
-
-
-    
-
 
     return scope.Close(Undefined());
 }
@@ -168,7 +140,7 @@ Handle<Value> Participant::DigestBuffer(const Arguments& args) {
 Participant::Participant(string username, string password, string group) :
     username_(username), password_(password), group_(group) {
     try{
-        Crypto::generateKey(this->priv_key_, this->pub_key_); //most likely to fail        
+        Crypto::generateKey(this->priv_key_, this->pub_key_);       
     }
     catch(exception& e){
         cout << "Exception caught: " << e.what() << endl;
@@ -178,7 +150,7 @@ Participant::Participant(string username, string password, string group) :
 
 Participant::Participant() {
     try{
-        Crypto::generateKey(this->priv_key_, this->pub_key_); //most likely to fail        
+        Crypto::generateKey(this->priv_key_, this->pub_key_);      
     }
     catch(exception& e){
         cout << "Exception caught: " << e.what() << endl;
@@ -187,45 +159,38 @@ Participant::Participant() {
 }
 
 
-extern "C"{
-  void init(Handle<Object> target) {
-    HandleScope scope;
+extern "C" {
 
-    // TODO: move to Participant::Init()
+    // TODO: move majority of this code to Participant::Init()
+    void init(Handle<Object> target) {
+        HandleScope scope;
 
-    nodeBufCtor = JS_NODE_BUF_CTOR;
+        nodeBufCtor = JS_NODE_BUF_CTOR;
 
-    try {
-        // Start up crypto - happens only once per module load
-        Botan::LibraryInitializer init("thread_safe=true");
-    }
-    catch(std::exception& e) {
-        std::cerr << e.what() << "\n";
-    }
+        try {
+            // Start up crypto on module load
+            Botan::LibraryInitializer init("thread_safe=true");
+        }
+        catch(std::exception& e) {
+            std::cerr << e.what() << "\n";
+        }
 
+        Local<FunctionTemplate> t = FunctionTemplate::New(Participant::New);
+        t->InstanceTemplate()->SetInternalFieldCount(1);
+        t->SetClassName(String::New("Participant"));
+        t->InstanceTemplate()->SetAccessor(String::New("handle"),
+            Participant::GetHandle, Participant::SetHandle);
 
-    Local<FunctionTemplate> t = FunctionTemplate::New(Participant::New);
-    t->InstanceTemplate()->SetInternalFieldCount(1);
-    t->SetClassName(String::New("Participant"));
-    t->InstanceTemplate()->SetAccessor(String::New("handle"),
-        Participant::GetHandle, Participant::SetHandle);
+        // Only methods exposed to JS should go here, emitted events are "private"
+        NODE_SET_PROTOTYPE_METHOD(t, "digestBuffer", Participant::DigestBuffer);    
 
+        target->Set(String::NewSymbol("Participant"), t->GetFunction());
 
-    NODE_SET_PROTOTYPE_METHOD(t, "digestBuffer", Participant::DigestBuffer);
-    // NODE_SET_PROTOTYPE_METHOD(t, "cred", Participant::NeedCredentials);
-
-    // target->Set(String::NewSymbol("digestBuffer"),
-    //     FunctionTemplate::New(Participant::DigestBuffer)->GetFunction());
-
-    target->Set(String::NewSymbol("Participant"), t->GetFunction());
-
-    target->Set(String::NewSymbol("config"),
-        FunctionTemplate::New(Participant::SetConfig)->GetFunction());
-    
-  }
-  NODE_MODULE(xblab, init);
-
+        // config is accessed in JS through the xblab object
+        target->Set(String::NewSymbol("config"),
+            FunctionTemplate::New(Participant::SetConfig)->GetFunction());
+    }   
+    NODE_MODULE(xblab, init);
 }
 
 } //namespace xblab
-

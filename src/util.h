@@ -10,6 +10,19 @@
 
 namespace xblab {
 
+// Message types enum - global to xblab namespace
+
+enum MessageType {
+    NEEDCRED,
+    GROUPLIST,
+    GROUPENTRY,
+    BEGIN,
+    BROADCAST,
+    GROUPEXIT,
+    QUIT,
+    INVALID
+};
+
 class util_exception : public std::exception {
 public:
     util_exception(){
@@ -38,7 +51,7 @@ class Util {
 
         #endif
         
-        static std::string parseBuf(std::string in);
+        static MessageType parseBuf(std::string in, void* out);
         static v8::Local<v8::Value> wrapBuf(const char *c, size_t len);
 
         static std::string v8ToString(v8::Local<v8::Value> value) {

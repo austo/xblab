@@ -28,14 +28,15 @@ net.createServer(function (socket) {
         }
         else{
             if (buf){
-                // console.log(buf);
+                console.log('%s - sending NEEDCRED buffer to %s',
+                    new Date(), socket.remoteAddress);
                 socket.write(buf);
             }
         }
     });
 
     socket.on('data', function (data) {
-        // send to xblab        
+        console.log(data); // TODO: send to xblab        
     });
  
     socket.on('end', function () {

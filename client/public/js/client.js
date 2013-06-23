@@ -5,7 +5,7 @@
         wsUrl: document.URL.replace(/^https?:\/\//, 'ws://'), //port 80 when using nginx
         initialize: function() {
             var ws = new WebSocket(ns.Chat.wsUrl, xblab.chatProtocol);
-            ws.onmessage = ns.Chat.add;
+            ws.onmessage = ns.Chat.handleMessage;
             ws.onclose = ns.Chat.close;
             
             //Send message on button click or enter
@@ -23,22 +23,28 @@
         },
 
         //Add new message to chat.
-        add: function(data) {
+        handleMessage: function(data) {
             console.log(data);
             if (typeof data.data === 'string' && /^{/.test(data.data)){
                 var res = JSON.parse(data.data);
-                var name = res.name || 'anonymous';
-                var msg = $('<div class="msg"></div>')
-                    .append('<span class="name">' + name + '</span>: ')
-                    .append('<span class="text">' + res.msg + '</span>');
 
-                $('#messages')
-                    .append(msg)
-                    .animate({scrollTop: $('#messages').prop('scrollHeight')}, 0);
+                // May need another dialog permutation - wait for others to arrive
+                if (res.state && res.state === 'NEEDCRED'){
+                    $('#login').dialog('open');
                 }
+                else{
+                    var name = res.name || 'anonymous';
+                    var msg = $('<div class="msg"></div>')
+                        .append('<span class="name">' + name + '</span>: ')
+                        .append('<span class="text">' + res.msg + '</span>');
+
+                    $('#messages')
+                        .append(msg)
+                        .animate({scrollTop: $('#messages').prop('scrollHeight')}, 0);
+                    }
+            }
         },
 
-        //Post message to nacl module, then clear it from the textarea
         //TODO: highlight user-posted messages in chat
         send: function() {
             var packet = JSON.stringify({
