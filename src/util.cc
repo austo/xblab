@@ -97,23 +97,17 @@ string Util::packageParticipantCredentials(void* auxData){
         cout << "crypto exception: " << e.what() << endl;
     }
 
-    string plaintext;
-    if (!trans.SerializeToString(&plaintext)){
+    stringstream plaintext, ciphertext;
+    if (!trans.SerializeToOstream(&plaintext)){
         throw util_exception("Failed to serialize broadcast.");
     }
 
-    // cout << trans.DebugString() << endl;
-    // cout << trans.ByteSize() << endl;
+    // cout << "\ntrans - DebugString:\n" << trans.DebugString() << endl;
+    // cout << "\nplaintext str():\n" << plaintext.str() << endl;
 
-    // try {
+    Crypto::hybridEncrypt(plaintext, ciphertext);
 
-    //     string ciphertext = Crypto::encrypt(plaintext);
-    // }
-    // catch(exception& e){
-    //     cout << e.what();
-    // }
-
-    return plaintext;
+    return ciphertext.str();
 }
 
 // This is mainly for consumption by the client, so return Broadcast::Type

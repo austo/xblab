@@ -11,6 +11,15 @@
 #define SHA1 "EMSA1(SHA-1)"
 #define SHA256 "EME1(SHA-256)"
 #define EMESHA1 "EME1(SHA-1)"
+#define HMACSHA1 "HMAC(SHA-1)"
+#define CAST128 "CAST-128/CBC/PKCS7"
+#define CAST "CAST"
+#define MAC "MAC"
+#define IV "IV"
+#define CASTBYTES 16
+#define MACBYTES 16
+#define IVBYTES 8
+#define MACOUTLEN 12
 
 
 // HACK - there may be a much nicer way to do this

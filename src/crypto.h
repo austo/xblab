@@ -2,9 +2,11 @@
 #define CRYPTO_H
 
 #include <string>
+#include <sstream>
 #include <exception>
 
 #include <botan/botan.h>
+#include <botan/pubkey.h>
 #include <botan/rsa.h>
 
 
@@ -32,13 +34,18 @@ public:
     
     static std::string publicKeyFile();
     static void generateKey(std::string& pr, std::string& pu);
-    static std::string generateNonce();
+    static std::string generateNonce();    
+
     static std::string sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
+
     static bool verify(std::string message, std::string signature);
     static bool verify(Botan::RSA_PublicKey* rsakey, std::string message, std::string signature);
-    static std::string encrypt(std::string& plaintext);
-    static std::string encrypt(std::string& publicKey, std::string& plaintext);
-    static std::string decrypt(std::string& privateKey, std::string& ciphertext);
+
+    static void hybridEncrypt(std::stringstream& in, std::stringstream& out);
+    static std::string hybridEncrypt(std::string& publicKey, std::string& plaintext);
+
+    static std::string hybridDecrypt(std::string& privateKey, std::string& ciphertext);
+    
     static std::string sign(std::string& privateKey, std::string& message);
     static std::string hashPassword(std::string& pw);
 
@@ -51,7 +58,18 @@ public:
     static std::string privateKeyFile();
     static std::string sign(std::string message);
 
-    #endif    
+    #endif
+
+private:
+
+    // Convenience wrappers for Botan Pipe functions
+    static std::string b64Encode(const Botan::SecureVector<unsigned char>&);
+    static Botan::SecureVector<unsigned char> b64Decode(const std::string& in);
+    static Botan::SymmetricKey deriveSymmetricKey(const std::string&, const Botan::SymmetricKey&, unsigned int);
+    static void hybridEncrypt(Botan::RSA_PublicKey* rsakey, std::stringstream& in, std::stringstream& out);
+
+    static void hybridDecrypt(Botan::AutoSeeded_RNG&,
+        Botan::RSA_PrivateKey*&, std::stringstream&, std::stringstream&);
 };
 
 } //namespace xblab

@@ -78,27 +78,8 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
     instance->password_ = Util::v8ToString(password);
 
     string buf = Util::packageParticipantCredentials(instance);
-
-    cout << "unencrypted cred size: " << buf.size() << endl;
-
-    ifstream is(Crypto::publicKeyFile().c_str());
-
-    stringstream ss;
-
-    while (is.good()) 
-    {
-        char c = is.get(); 
-        if (is.good())
-            ss << c;
-    }
-    string pk = ss.str();
-    cout << pk;
-    string k = Crypto::encrypt(pk, buf);
-
-    cout << "ciphertext:" << k << endl;
-
-
-
+    cout << "packageParticipantCredentials result:\n" << buf << endl;
+    
     return scope.Close(Undefined());
 }
 

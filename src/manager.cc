@@ -106,10 +106,10 @@ Handle<Value> Manager::SayHello(const Arguments& args) {
 
 // TODO: Encrypt should take member token, then encrypt with member public key
 void Manager::Encrypt(string in){
-    string ciphertext = Crypto::encrypt(this->pub_key_, in);
-    cout << "ciphertext: " << ciphertext << endl;
+    string ciphertext = Crypto::hybridEncrypt(this->pub_key_, in);
+    // cout << "ciphertext: " << ciphertext << endl;
 
-    string plaintext = Crypto::decrypt(this->priv_key_, ciphertext);
+    string plaintext = Crypto::hybridDecrypt(this->priv_key_, ciphertext);
 
     cout << "resulting plaintext: " << plaintext << endl;
 }
