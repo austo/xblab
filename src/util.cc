@@ -66,7 +66,7 @@ string Util::needCredBuf(string& nonce){
 
 // TODO: error handling
 // Mainly for server use
-void Util::parseTransmission(string lastNonce, string& ciphertext, void* users){
+void Util::parseTransmission(string lastNonce, string& ciphertext){
 
     string buf = Crypto::hybridDecrypt(ciphertext);
 
@@ -87,9 +87,9 @@ void Util::parseTransmission(string lastNonce, string& ciphertext, void* users){
     cout << "incoming return nonce: " << retNonce << endl;
     cout << "saved return nonce: " << lastNonce << endl;
 
-    if (!users == NULL){
-        cout << "users is null.\n";
-    }
+    // if (!users == NULL){
+    //     cout << "users is null.\n";
+    // }
 
     if (lastNonce == retNonce){
 

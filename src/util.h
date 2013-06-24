@@ -50,7 +50,7 @@ class Util {
         #ifndef XBLAB_CLIENT
  
         static std::string needCredBuf(std::string& nonce);
-        static void parseTransmission(std::string lastNonce, std::string& buf, void* data);
+        static void parseTransmission(std::string lastNonce, std::string& buf);
 
         #endif
         

@@ -6,8 +6,9 @@ var xbcfg = require('../xblab.config'),
 
 xblab.config(xbcfg);
 
-// xblab.CreateManager() is a stand in for new Manager()
-var mgr = new xblab.Manager('xchat');
+// xblab.createManager() is a stand in for new Manager()
+var mgr = xblab.createManager('xchat');
+//var mgr = new xblab.Manager('xchat');
 
 assert.equal(typeof mgr.on, 'function',
     'xblab.Manager not inheriting from EventEmitter');

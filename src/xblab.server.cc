@@ -29,7 +29,7 @@ v8::Persistent<v8::Function> nodeBufCtor;
 
 // V8 entry point
 // Repeat declaration of static member(s) to make visible to extern C
-std::map<int, User>* Xblab::CurrentUsers;
+v8::Persistent<v8::Object> Xblab::pHandle_;
 void Xblab::InitAll(Handle<Object> module) {
     try {
         // Start crypto on module load
@@ -41,7 +41,13 @@ void Xblab::InitAll(Handle<Object> module) {
 
     nodeBufCtor = JS_NODE_BUF_CTOR;
 
-    CurrentUsers = new map<int, User>();
+    // Create state-holding instance
+    Xblab* instance = new Xblab();
+    Local<ObjectTemplate> t = ObjectTemplate::New();
+    t->SetInternalFieldCount(1);   
+    Local<Object> holder = t->NewInstance();    
+    instance->Wrap(holder);
+    pHandle_ = Persistent<Object>::New(holder);
 
     Manager::Init(module);
     module->Set(String::NewSymbol("createManager"),
@@ -61,6 +67,9 @@ void Xblab::InitAll(Handle<Object> module) {
 // Stand-in for Manager::New
 Handle<Value> Xblab::CreateManager(const Arguments& args) {
     HandleScope scope;
+    
+    Xblab* instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
+    instance->proveExistence();
     // String::Utf8Value s(connstring->ToString());
     return scope.Close(Manager::NewInstance(args));
 }
@@ -163,7 +172,7 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
 
 
         // TODO: pass users
-        Util::parseTransmission(Util::v8ToString(lastNonce), buf, CurrentUsers);
+        Util::parseTransmission(Util::v8ToString(lastNonce), buf);
     }
     catch (util_exception& e){
         
@@ -174,6 +183,10 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
     }
 
     return scope.Close(Undefined());
+}
+
+void Xblab::proveExistence(){
+    cout << "I\'ve been unwrapped!\n";
 }
 
 
