@@ -49,21 +49,20 @@ class Util {
         
         #ifndef XBLAB_CLIENT
  
-        static std::string needCredBuf(); //TODO: decide on naming convention!!
+        static std::string needCredBuf(std::string& nonce);
 
         #endif
         
         static MessageType parseBroadcast(std::string& in, void* out);
         static std::string packageParticipantCredentials(void* auxData);
+        static void parseTransmission(std::string lastNonce, std::string& buf);
+
         static v8::Local<v8::Value> wrapBuf(const char *c, size_t len);
 
         static std::string v8ToString(v8::Local<v8::Value> value) {
             v8::String::Utf8Value utf8Value(value);
             return std::string(*utf8Value);
         }
-
-
-        //static int authenticate_member(std::string, std::string, int);
 
     private:
         

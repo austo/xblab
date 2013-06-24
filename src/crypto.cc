@@ -27,7 +27,7 @@ string Crypto::publicKeyFile(){
     return retval;
 }
 
-#ifndef XBLAB_CLIENT //Client doesn't need private keys stored on filesystem
+#ifndef XBLAB_CLIENT // Client doesn't need private keys stored on filesystem
 
 extern v8::Persistent<v8::String> priv_key_filename;
 extern v8::Persistent<v8::String> key_passphrase;
@@ -88,6 +88,20 @@ string Crypto::sign(AutoSeeded_RNG& rng, RSA_PrivateKey*& rsakey, string& messag
     stringstream ss;
     ss << base64_encode(signer.signature(rng));
     return ss.str();
+}
+
+
+bool Crypto::verify(string publicKey, string message, string signature){
+    DataSource_Memory ds(publicKey);
+
+    std::auto_ptr<X509_PublicKey> key(X509::load_key(ds));
+    RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
+
+    if(!rsakey) {
+        cout << "BAD KEY!!" << endl;
+        throw crypto_exception("Invalid key");
+    }
+    return verify(rsakey, message, signature);
 }
 
 
@@ -217,6 +231,27 @@ void Crypto::hybridEncrypt(RSA_PublicKey* rsakey, stringstream& in, stringstream
 }
 
 
+string Crypto::hybridDecrypt(string& ciphertext){
+    AutoSeeded_RNG rng;
+    string pr = privateKeyFile();
+    string pw = keyPassPhrase();
+    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(pr, rng, pw));
+    RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
+
+    if(!rsakey){
+        cout << "BAD KEY!!" << endl;
+        throw crypto_exception("Invalid key");
+    }
+
+    // cout << "after got key\n";
+    stringstream ctstream(ciphertext);
+    stringstream ptstream;
+    hybridDecrypt(rng, rsakey, ctstream, ptstream);
+
+    return ptstream.str();
+}
+
+
 string Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
     AutoSeeded_RNG rng;
     DataSource_Memory ds(privateKey);
@@ -228,7 +263,7 @@ string Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
         throw crypto_exception("Invalid key");
     }
 
-    cout << "after got key\n";
+    // cout << "after got key\n";
     stringstream ctstream(ciphertext);
     stringstream ptstream;
     hybridDecrypt(rng, rsakey, ctstream, ptstream);

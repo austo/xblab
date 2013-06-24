@@ -22,15 +22,29 @@ net.createServer(function (socket) {
         }
         else{
             if (buf){
-                console.log('%s - sending NEEDCRED buffer to %s',
-                    new Date(), socket.remoteAddress);
-                socket.write(buf);
+                // console.log(buf);
+                if (buf.nonce && buf.buffer){
+                    socket.lastNonce = buf.nonce;
+                    console.log('%s - sending NEEDCRED buffer to %s',
+                        new Date(), socket.remoteAddress);
+                    socket.write(buf.buffer);
+                }
+                
+                // console.log(socket);
             }
         }
     });
 
     socket.on('data', function (data) {
-        console.log(data); // TODO: send to xblab        
+        console.log(data);     
+
+        xblab.digestBuffer({
+            nonce: socket.lastNonce,
+            buffer: data
+        },
+        function (err){
+            console.log(err);
+        });
     });
  
     socket.on('end', function () {

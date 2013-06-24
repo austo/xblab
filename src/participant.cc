@@ -61,7 +61,7 @@ Participant::SetHandle(Local<String> property, Local<Value> value, const Accesso
     instance->handle_ = Util::v8ToString(value);
 }
 
-
+// TODO: error handling!
 Handle<Value> Participant::SendCred(const Arguments& args) {
     HandleScope scope;
 
@@ -78,7 +78,7 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
     instance->password_ = Util::v8ToString(password);
 
     string buf = Util::packageParticipantCredentials(instance);
-    cout << "packageParticipantCredentials result:\n" << buf << endl;
+    // cout << "packageParticipantCredentials result:\n" << buf << endl;
 
     const char *c = &buf[0];
     size_t len = buf.size();
@@ -96,13 +96,13 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
 Handle<Value> Participant::DigestBuffer(const Arguments& args) {
     HandleScope scope;
 
+    if (!args[0]->IsObject() || !args[1]->IsFunction()){
+        THROW("xblab: digestBuffer() requires buffer and callback argument");
+    }
+
     // Parse binary data from node::Buffer
     char* bufData = Buffer::Data(args[0]->ToObject());
-    int bufLen = Buffer::Length(args[0]->ToObject());
-
-    if (!args[1]->IsFunction()){
-        THROW("xblab: digestBuffer() requires callback argument");
-    }
+    int bufLen = Buffer::Length(args[0]->ToObject());    
 
     string buf(bufData, bufData + bufLen); // copy node::Buffer contents into string
     

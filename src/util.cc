@@ -32,8 +32,8 @@ Util::~Util(){}
 
 #ifndef XBLAB_CLIENT
 
-string Util::needCredBuf(){    
-    string nonce = Crypto::generateNonce();
+string Util::needCredBuf(string& nonce){    
+    nonce = Crypto::generateNonce();
     Broadcast bc;
     Broadcast::Data *data = new Broadcast::Data();
 
@@ -120,13 +120,12 @@ MessageType Util::parseBroadcast(string& in, void* auxData){
         throw util_exception("Failed to deserialize broadcast.");
     }    
 
-    string content;
-    if (!bc.data().SerializeToString(&content)){
+    string datastr;
+    if (!bc.data().SerializeToString(&datastr)){
         throw util_exception("Failed to reserialize broadcast data.");
     }
 
-    if (Crypto::verify(content, bc.signature())){
-        cout << "Hooray!\n";
+    if (Crypto::verify(datastr, bc.signature())){
         const Broadcast::Data& data = bc.data();
 
         Participant* participant = (Participant *) auxData;
@@ -137,6 +136,45 @@ MessageType Util::parseBroadcast(string& in, void* auxData){
     }       
 
     return retval;
+}
+
+// TODO: error handling
+// Mainly for server use
+void Util::parseTransmission(string lastNonce, string& ciphertext){
+
+    string buf = Crypto::hybridDecrypt(ciphertext);
+
+    //TODO: switch on transmission type
+    Transmission trans;
+    if (!trans.ParseFromString(buf)){
+        throw util_exception("Failed to deserialize transmission.");
+    }    
+
+    string datastr;
+    if (!trans.data().SerializeToString(&datastr)){
+        throw util_exception("Failed to reserialize transmission data.");
+    }
+
+    const Transmission::Data& data = trans.data();
+
+    string retNonce(data.return_nonce());
+    cout << "incoming return nonce: " << retNonce << endl;
+    cout << "saved return nonce: " << lastNonce << endl;
+
+    if (lastNonce == retNonce){
+
+        // TODO: switch
+        if (data.type() == Transmission::CRED){
+            const Transmission::Credential& cred = data.credential();
+            string pubkey(cred.pub_key());
+
+            if (Crypto::verify(pubkey, datastr, trans.signature())){
+                cout << "Hooray!\n";
+                // Build user?
+                // Get credential info
+            }
+        }
+    }
 }
 
 v8::Local<v8::Value> Util::wrapBuf(const char *c, size_t len){

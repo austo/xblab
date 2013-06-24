@@ -117,7 +117,7 @@ Handle<Value> Manager::SayHello(const Arguments& args) {
 
     node::MakeCallback(args.This(), "emit", 2, argv);
 
-	return scope.Close(Undefined()); //String::New(ss.str().c_str()));
+	return scope.Close(String::New(ss.str().c_str())); //String::New(ss.str().c_str()));
 } 
 
 

@@ -18,7 +18,7 @@ namespace xblab {
 /*
     C-style global configuration items
     May be used from other classes but need to be defined extern
-    TODO: is there a cleaner way to do this?
+    TODO: use object template?
 */
 v8::Persistent<v8::String> connstring;
 v8::Persistent<v8::String> pub_key_filename;
@@ -47,14 +47,20 @@ void Xblab::InitAll(Handle<Object> module) {
         FunctionTemplate::New(SetConfig)->GetFunction());
 
     module->Set(String::NewSymbol("getConnectionBuffer"),
-        FunctionTemplate::New(OnConnection)->GetFunction());    
+        FunctionTemplate::New(OnConnection)->GetFunction());
+
+    module->Set(String::NewSymbol("digestBuffer"),
+        FunctionTemplate::New(DigestBuffer)->GetFunction());   
 }
 
+
+// Stand-in for Manager::New
 Handle<Value> Xblab::CreateManager(const Arguments& args) {
     HandleScope scope;
     // String::Utf8Value s(connstring->ToString());
     return scope.Close(Manager::NewInstance(args));
 }
+
 
 Handle<Value> Xblab::SetConfig(const Arguments& args) {
 
@@ -80,6 +86,7 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
     return scope.Close(Undefined());
 }
 
+
 Handle<Value> Xblab::OnConnection(const Arguments& args) {
 
     HandleScope scope;
@@ -92,17 +99,24 @@ Handle<Value> Xblab::OnConnection(const Arguments& args) {
     Local<Value> argv[argc];
 
     try{
-        string buf = Util::needCredBuf(); // serialized "NEEDCRED buffer (binary data)"        
+        string nonce;
+        string buf = Util::needCredBuf(nonce); // serialized "NEEDCRED buffer     
         /*
             You could also use buf.data() for this next line,
             but C++11 strings are guaranteed to be
             allocated contiguously.
         */
         const char *c = &buf[0]; 
-        size_t len = buf.size();        
+        size_t len = buf.size();
+
+        // Send packet with transmission nonce and binary protocol buffer
+        // Currently, responsibility for keeping track of unattached users lies with JS
+        Local<Object> packet = Object::New();
+        packet->Set(String::NewSymbol("nonce"), String::New(nonce.c_str()));
+        packet->Set(String::NewSymbol("buffer"), Util::wrapBuf(c, len));
 
         argv[0] = Local<Value>::New(Undefined());
-        argv[1] = Util::wrapBuf(c, len);
+        argv[1] = packet;
         
     }
     catch (util_exception& e){
@@ -114,39 +128,47 @@ Handle<Value> Xblab::OnConnection(const Arguments& args) {
 }
 
 
-// Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
-//     HandleScope scope;
 
-//     // Parse binary data from node::Buffer
-//     char* bufData = Buffer::Data(args[0]->ToObject());
-//     int bufLen = Buffer::Length(args[0]->ToObject());
+Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
+    HandleScope scope;
 
-//     if (!args[1]->IsFunction()){
-//         THROW("xblab: digestBuffer() requires callback argument");
-//     }
+    if (!args[0]->IsObject() || !args[1]->IsFunction()){
+        THROW("xblab: digestBuffer() requires buffer and callback argument");
+    }
 
-//     string buf(bufData, bufData + bufLen); // copy node::Buffer contents into string
+    Local<Object> packet = args[0]->ToObject();
+    Local<Value> lastNonce = packet->Get(String::New("nonce"));
+    Local<Value> buffer = packet->Get(String::New("buffer"));
+
+    // Parse binary data from node::Buffer
+    char* bufData = Buffer::Data(buffer->ToObject());
+    int bufLen = Buffer::Length(buffer->ToObject());     
+
+    string buf(bufData, bufData + bufLen);
     
-//     try {
+    try {
 
-//         // TODO: parseBuf needs to return a way for us to decide what
-//         // event to emit, and optionally some data for us to broadcast
-        
-//         // Util is responsible for deciding when to create manager?
-//         // No, that should be done in JS, leaving us free to assume this is a pre-chat event
-//         // Types of events: get rooms, join chat
-//         Util::parseTransmission(buf);
-//     }
-//     catch (util_exception& e){
-        
-//         // TODO: should errors always be handled in user-supplied callback?
-//         Local<Function> cb = Local<Function>::Cast(args[1]);
-//         Local<Value> argv[1] = { String::New(e.what()) };
-//         cb->Call(Context::GetCurrent()->Global(), 1, argv);
-//     }
+        // TODO: how to compare nonces when user has not yet entered a group?
 
-//     return scope.Close(Undefined());
-// }
+        // TODO: parseBuf needs to return a way for us to decide what
+        // event to emit, and optionally some data for us to broadcast
+        
+        // Util is responsible for deciding when to create manager?
+        // No, that should be done in JS, leaving us free to assume this is a pre-chat event
+        // Types of events: get rooms, join chat
+
+        Util::parseTransmission(Util::v8ToString(lastNonce), buf);
+    }
+    catch (util_exception& e){
+        
+        // TODO: should errors always be handled in user-supplied callback?
+        Local<Function> cb = Local<Function>::Cast(args[1]);
+        Local<Value> argv[1] = { String::New(e.what()) };
+        cb->Call(Context::GetCurrent()->Global(), 1, argv);
+    }
+
+    return scope.Close(Undefined());
+}
 
 
 /*

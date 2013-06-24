@@ -39,12 +39,15 @@ public:
     static std::string sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
 
     static bool verify(std::string message, std::string signature);
+    static bool verify(std::string publicKey, std::string message, std::string signature);
     static bool verify(Botan::RSA_PublicKey* rsakey, std::string message, std::string signature);
 
     static void hybridEncrypt(std::stringstream& in, std::stringstream& out);
     static std::string hybridEncrypt(std::string& publicKey, std::string& plaintext);
 
     static std::string hybridDecrypt(std::string& privateKey, std::string& ciphertext);
+    static std::string hybridDecrypt(std::string& ciphertext);
+
     
     static std::string sign(std::string& privateKey, std::string& message);
     static std::string hashPassword(std::string& pw);

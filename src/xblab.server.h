@@ -13,6 +13,8 @@ public:
   static v8::Handle<v8::Value> SetConfig(const v8::Arguments& args);
   static v8::Handle<v8::Value> CreateManager(const v8::Arguments& args);
   static v8::Handle<v8::Value> OnConnection(const v8::Arguments& args);
+  static v8::Handle<v8::Value> DigestBuffer(const v8::Arguments& args);
+
 
 private:
   Xblab(){};
