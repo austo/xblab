@@ -4,9 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "group.h"
-
 namespace xblab {
+
+// Used by Manager for tracking users once they have joined a chat
 
 struct Member {
     Member(){};
@@ -18,8 +18,7 @@ struct Member {
     std::string public_key;
     std::string round_nonce;      
     int round_modulus;
-    std::vector<Group> groups;
-
+    bool present;
 };
 } //namespace xblab
 

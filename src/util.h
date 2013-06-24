@@ -50,12 +50,12 @@ class Util {
         #ifndef XBLAB_CLIENT
  
         static std::string needCredBuf(std::string& nonce);
+        static void parseTransmission(std::string lastNonce, std::string& buf, void* data);
 
         #endif
         
         static MessageType parseBroadcast(std::string& in, void* out);
-        static std::string packageParticipantCredentials(void* auxData);
-        static void parseTransmission(std::string lastNonce, std::string& buf);
+        static std::string packageParticipantCredentials(void* data);
 
         static v8::Local<v8::Value> wrapBuf(const char *c, size_t len);
 

@@ -9,6 +9,7 @@
 
 #include "group.h"
 #include "member.h"
+#include "user.h"
 
 namespace xblab {
 
@@ -34,9 +35,10 @@ class Db {
         ~Db();
         static Group getGroup(std::string url);
         static std::map<int, Member> getMembers(int group_id);
-        static std::string connectionString();        
+        static std::string connectionString();
 
-        //static int authenticate_member(std::string, std::string, int);
+        // TODO getUser(std::string&, std::string&)       
+
 
     private:
 };

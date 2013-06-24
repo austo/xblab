@@ -27,7 +27,7 @@ string Crypto::publicKeyFile(){
     return retval;
 }
 
-#ifndef XBLAB_CLIENT // Client doesn't need private keys stored on filesystem
+#ifndef XBLAB_CLIENT // These methods assume a private key
 
 extern v8::Persistent<v8::String> priv_key_filename;
 extern v8::Persistent<v8::String> key_passphrase;
@@ -57,6 +57,29 @@ string Crypto::sign(string message){
 
     return sign(rng, rsakey, message);    
 }
+
+
+string Crypto::hybridDecrypt(string& ciphertext){
+    AutoSeeded_RNG rng;
+    string pr = privateKeyFile();
+    string pw = keyPassPhrase();
+    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(pr, rng, pw));
+    RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
+
+    if(!rsakey){
+        cout << "BAD KEY!!" << endl;
+        throw crypto_exception("Invalid key");
+    }
+
+    // cout << "after got key\n";
+    stringstream ctstream(ciphertext);
+    stringstream ptstream;
+    hybridDecrypt(rng, rsakey, ctstream, ptstream);
+
+    return ptstream.str();
+}
+
+
 
 
 #endif
@@ -230,26 +253,6 @@ void Crypto::hybridEncrypt(RSA_PublicKey* rsakey, stringstream& in, stringstream
     }
 }
 
-
-string Crypto::hybridDecrypt(string& ciphertext){
-    AutoSeeded_RNG rng;
-    string pr = privateKeyFile();
-    string pw = keyPassPhrase();
-    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(pr, rng, pw));
-    RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
-
-    if(!rsakey){
-        cout << "BAD KEY!!" << endl;
-        throw crypto_exception("Invalid key");
-    }
-
-    // cout << "after got key\n";
-    stringstream ctstream(ciphertext);
-    stringstream ptstream;
-    hybridDecrypt(rng, rsakey, ctstream, ptstream);
-
-    return ptstream.str();
-}
 
 
 string Crypto::hybridDecrypt(string& privateKey, string& ciphertext){

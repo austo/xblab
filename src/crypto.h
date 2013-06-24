@@ -46,7 +46,6 @@ public:
     static std::string hybridEncrypt(std::string& publicKey, std::string& plaintext);
 
     static std::string hybridDecrypt(std::string& privateKey, std::string& ciphertext);
-    static std::string hybridDecrypt(std::string& ciphertext);
 
     
     static std::string sign(std::string& privateKey, std::string& message);
@@ -60,6 +59,7 @@ public:
     static std::string keyPassPhrase();
     static std::string privateKeyFile();
     static std::string sign(std::string message);
+    static std::string hybridDecrypt(std::string& ciphertext);
 
     #endif
 

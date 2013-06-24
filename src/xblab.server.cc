@@ -28,6 +28,8 @@ v8::Persistent<v8::Function> nodeBufCtor;
 
 
 // V8 entry point
+// Repeat declaration of static member(s) to make visible to extern C
+std::map<int, User>* Xblab::CurrentUsers;
 void Xblab::InitAll(Handle<Object> module) {
     try {
         // Start crypto on module load
@@ -38,6 +40,8 @@ void Xblab::InitAll(Handle<Object> module) {
     }
 
     nodeBufCtor = JS_NODE_BUF_CTOR;
+
+    CurrentUsers = new map<int, User>();
 
     Manager::Init(module);
     module->Set(String::NewSymbol("createManager"),
@@ -157,7 +161,9 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
         // No, that should be done in JS, leaving us free to assume this is a pre-chat event
         // Types of events: get rooms, join chat
 
-        Util::parseTransmission(Util::v8ToString(lastNonce), buf);
+
+        // TODO: pass users
+        Util::parseTransmission(Util::v8ToString(lastNonce), buf, CurrentUsers);
     }
     catch (util_exception& e){
         
@@ -176,13 +182,12 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
   Use extern C here to initalize module handle.
   Static class members are especially problematic, look for a workaround
 */
-
-} //namespace xblab
-
-
 extern "C" {
   static void init(v8::Handle<v8::Object> module) {    
     xblab::Xblab::InitAll(module);
   }  
   NODE_MODULE(xblab, init);
 }
+
+} //namespace xblab
+
