@@ -1,12 +1,12 @@
 var net = require('net'),
     util = require('util'),
     fs = require('fs'),
-    xbcfg = require('./xblab.config'),
-    xblab = require('./build/Debug/xblab'),
+    cfg = require('./xblab.config'),
+    xblab = require('./lib/xblab.wrapper'),
     path = require('path'),
     port = 8888;    
 
-    xblab.config(xbcfg); //should be async
+    xblab.config(cfg); //should be async
 
 
 net.createServer(function (socket) { 

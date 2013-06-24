@@ -1,21 +1,23 @@
 // Adapted from code written by Ben Noordhuis <info@bnoordhuis.nl>
 
 // JS shim that lets our object inherit from node.EventEmitter
-var util = require('util'),
-    xblab = require('../build/Debug/xblab'),
-    path = require('path'),
+var xblab = require('../build/Debug/xblab'),
+    // assert = require('assert'),
+    // util = require('util').
     events = require('events');   
 
-console.log(util.inspect(xblab, { colors: true, depth: null }));
 
 var p = xblab.Participant;
-
 inherits(p, events.EventEmitter);
 
-console.log(util.inspect(p.prototype, { colors: true, depth: null }));
-
-exports.Participant = p;
-// exports.config = xblab.config;
+for (var f in xblab){
+    if (f === 'Participant'){
+        exports[f] = p;        
+    }
+    else {
+        exports[f] = xblab[f];
+    }
+}
 
 // extend prototype
 function inherits(target, source) {

@@ -37,18 +37,27 @@ Manager::Manager(string url) {
 }
 
 Persistent<Function> Manager::constructor;
-void Manager::Init() {
+Persistent<FunctionTemplate> Manager::ctor_template;
+
+void Manager::Init(Handle<Object> module) {
 	// Constructor function template
+
 	Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-	tpl->SetClassName(String::NewSymbol("Manager"));
-	tpl->InstanceTemplate()->SetInternalFieldCount(1);    
-	tpl->InstanceTemplate()->SetAccessor(String::New("groupName"), GetGroupName, SetGroupName);
+    ctor_template = Persistent<FunctionTemplate>::New(tpl);
+    ctor_template->InstanceTemplate()->SetInternalFieldCount(1);
+	ctor_template->SetClassName(String::NewSymbol("Manager"));
+	//tpl->InstanceTemplate()->SetInternalFieldCount(1);    
+	ctor_template->InstanceTemplate()->SetAccessor(String::New("groupName"),
+        GetGroupName, SetGroupName);
 
 	// Methods
-	NODE_SET_PROTOTYPE_METHOD(tpl, "sayHello", SayHello);
+	NODE_SET_PROTOTYPE_METHOD(ctor_template, "sayHello", SayHello);
 
 	// Prototype    
-	constructor = Persistent<Function>::New(tpl->GetFunction());
+	constructor = Persistent<Function>::New(ctor_template->GetFunction());
+
+    module->Set(String::NewSymbol("Manager"), ctor_template->GetFunction());        
+
 }
 
 // args -> group url
@@ -96,21 +105,25 @@ Handle<Value> Manager::SayHello(const Arguments& args) {
        << " at " << instance->group_.url << endl << "members:";
     map<int, Member>::const_iterator mitr = instance->members_.begin();
     for (; mitr != instance->members_.end(); ++mitr){
-        ss<< endl << mitr->second.handle;
+        ss << endl << mitr->second.handle;
     }
-    instance->Encrypt("super-sexxxy");
-	string greeting = ss.str();
-	return scope.Close(String::New(greeting.c_str()));
+
+    string ct = instance->encrypt("super-sexxxy");
+
+    Handle<Value> argv[2] = {
+        String::New("decrypted"),
+        String::New(ct.c_str())
+    };
+
+    node::MakeCallback(args.This(), "emit", 2, argv);
+
+	return scope.Close(Undefined()); //String::New(ss.str().c_str()));
 } 
 
 
 // TODO: Encrypt should take member token, then encrypt with member public key
-void Manager::Encrypt(string in){
+string Manager::encrypt(string in){
     string ciphertext = Crypto::hybridEncrypt(this->pub_key_, in);
-    // cout << "ciphertext: " << ciphertext << endl;
-
-    string plaintext = Crypto::hybridDecrypt(this->priv_key_, ciphertext);
-
-    cout << "resulting plaintext: " << plaintext << endl;
+    return Crypto::hybridDecrypt(this->priv_key_, ciphertext);
 }
 } // namespace xblab

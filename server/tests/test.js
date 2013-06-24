@@ -1,19 +1,22 @@
 var xbcfg = require('../xblab.config'),
-    xblab = require('../build/Debug/xblab'),
+    xblab = require('../lib/xblab.wrapper'),
     util = require('util'),
-    path = require('path');
+    assert = require('assert');
 
-//TODO: better way to get applicion root
-// console.log(process.cwd());
-// xbcfg.pubKeyFile = path.join(process.cwd(), xbcfg.pubKeyFile);
-// xbcfg.privKeyFile = path.join(process.cwd(), xbcfg.privKeyFile);
 
 xblab.config(xbcfg);
 
-var mgr = xblab.createManager('xchat');
-//mgr.blah = 42;
-console.log(util.inspect(mgr, {colors: true}));
-console.log(mgr.sayHello());
+// xblab.CreateManager() is a stand in for new Manager()
+var mgr = new xblab.Manager('xchat');
+
+assert.equal(typeof mgr.on, 'function',
+    'xblab.Manager not inheriting from EventEmitter');
+
+mgr.on('decrypted', function(str){
+    console.log('Emitted: %s', str);
+});
+
+mgr.sayHello();
 
 xblab.getConnectionBuffer(function(err, buf){
     if (err){

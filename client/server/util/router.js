@@ -1,5 +1,5 @@
 var constants = require('../../public/js/constants'),
-    xblab = require('../../tests/xblab.client'),
+    xblab = require('../../lib/xblab.client'),
     cfg = require('../../xblab.config');
 
 

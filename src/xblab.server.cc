@@ -30,7 +30,7 @@ v8::Persistent<v8::Function> nodeBufCtor;
 // V8 entry point
 void Xblab::InitAll(Handle<Object> module) {
     try {
-        // Start up crypto - happens only once per addon load
+        // Start crypto on module load
         Botan::LibraryInitializer init("thread_safe=true");
     }
     catch(std::exception& e) {
@@ -39,20 +39,20 @@ void Xblab::InitAll(Handle<Object> module) {
 
     nodeBufCtor = JS_NODE_BUF_CTOR;
 
-    Manager::Init();
+    Manager::Init(module);
     module->Set(String::NewSymbol("createManager"),
         FunctionTemplate::New(CreateManager)->GetFunction());
 
     module->Set(String::NewSymbol("config"),
         FunctionTemplate::New(SetConfig)->GetFunction());
 
-    module->Set(String::NewSymbol("getConnectionBuffer"), // we should use Node EventEmitter here
-        FunctionTemplate::New(OnConnection)->GetFunction());  
+    module->Set(String::NewSymbol("getConnectionBuffer"),
+        FunctionTemplate::New(OnConnection)->GetFunction());    
 }
 
 Handle<Value> Xblab::CreateManager(const Arguments& args) {
     HandleScope scope;
-    String::Utf8Value s(connstring->ToString());
+    // String::Utf8Value s(connstring->ToString());
     return scope.Close(Manager::NewInstance(args));
 }
 
@@ -112,6 +112,42 @@ Handle<Value> Xblab::OnConnection(const Arguments& args) {
     cb->Call(Context::GetCurrent()->Global(), argc, argv);
     return scope.Close(Undefined());
 }
+
+
+// Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
+//     HandleScope scope;
+
+//     // Parse binary data from node::Buffer
+//     char* bufData = Buffer::Data(args[0]->ToObject());
+//     int bufLen = Buffer::Length(args[0]->ToObject());
+
+//     if (!args[1]->IsFunction()){
+//         THROW("xblab: digestBuffer() requires callback argument");
+//     }
+
+//     string buf(bufData, bufData + bufLen); // copy node::Buffer contents into string
+    
+//     try {
+
+//         // TODO: parseBuf needs to return a way for us to decide what
+//         // event to emit, and optionally some data for us to broadcast
+        
+//         // Util is responsible for deciding when to create manager?
+//         // No, that should be done in JS, leaving us free to assume this is a pre-chat event
+//         // Types of events: get rooms, join chat
+//         Util::parseTransmission(buf);
+//     }
+//     catch (util_exception& e){
+        
+//         // TODO: should errors always be handled in user-supplied callback?
+//         Local<Function> cb = Local<Function>::Cast(args[1]);
+//         Local<Value> argv[1] = { String::New(e.what()) };
+//         cb->Call(Context::GetCurrent()->Global(), 1, argv);
+//     }
+
+//     return scope.Close(Undefined());
+// }
+
 
 /*
   Intenal class access from JS is difficult due to name mangling in C++

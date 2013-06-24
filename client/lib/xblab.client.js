@@ -22,18 +22,24 @@ function xblabClient (cfg, ws){
             console.log('xblab relay client connected');
         });
 
-    self.participant.on('cred', function(buf){
+    self.participant.on('needCred', function(buf){
         console.log(buf);
 
         // TODO: get credentials from the user
         self.wsClient.send(JSON.stringify({status: 'connected', state: 'NEEDCRED'}));
     });
 
+    self.participant.on('haveCred', function(buf){
+        console.log(buf);
+        self.socket.write(buf);
+        // TODO: get credentials from the user
+        // self.wsClient.send(JSON.stringify({status: 'connected', state: 'NEEDCRED'}));
+    });
+
     self.socket.on('data', function(data) {
         self.participant.digestBuffer(data, function(err){
             console.log(err);
-        });
-        
+        });        
     });
 
     self.wsClient.on('message', function (message) {

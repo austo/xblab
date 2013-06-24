@@ -65,8 +65,8 @@ Participant::SetHandle(Local<String> property, Local<Value> value, const Accesso
 Handle<Value> Participant::SendCred(const Arguments& args) {
     HandleScope scope;
 
-    if (!args[0]->IsObject()) {
-        THROW("xblab: sendCred() requires object argument");
+    if (!args[0]->IsObject() || !args[1]->IsFunction()) {
+        THROW("xblab: sendCred() requires object and callback arguments");
     }
 
     Local<Object> credentials = Local<Object>::Cast(args[0]);
@@ -79,7 +79,17 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
 
     string buf = Util::packageParticipantCredentials(instance);
     cout << "packageParticipantCredentials result:\n" << buf << endl;
-    
+
+    const char *c = &buf[0];
+    size_t len = buf.size();
+
+    Handle<Value> argv[2] = {
+        String::New("haveCred"),
+        Util::wrapBuf(c, len)
+    };
+
+    node::MakeCallback(args.This(), "emit", 2, argv);
+
     return scope.Close(Undefined());
 }
 
@@ -106,10 +116,9 @@ Handle<Value> Participant::DigestBuffer(const Arguments& args) {
         MessageType messagetype = Util::parseBroadcast(buf, instance);
         if (messagetype == NEEDCRED){
 
-
             Handle<Value> argv[2] = {
-                String::New("cred"),                        // node::EventEmitter event name
-                String::New("Need credentials, buster!")    // node::EventEmitter argument(s)
+                String::New("needCred"),
+                String::New("Need credentials, buster!")
             };
 
             node::MakeCallback(args.This(), "emit", 2, argv);
@@ -142,14 +151,14 @@ Participant::Participant() {
 extern "C" {
 
     // TODO: move majority of this code to Participant::Init()
-    void init(Handle<Object> target) {
+    void init(Handle<Object> module) {
         HandleScope scope;
 
         nodeBufCtor = JS_NODE_BUF_CTOR;
 
 
         try {
-            // Start up crypto on module load
+            // Start crypto on module load
             Botan::LibraryInitializer init("thread_safe=true");
         }
         catch(std::exception& e) {
@@ -164,10 +173,9 @@ extern "C" {
 
         // Only methods exposed to JS should go here, emitted events are "private"
         NODE_SET_PROTOTYPE_METHOD(t, "digestBuffer", Participant::DigestBuffer);
-        NODE_SET_PROTOTYPE_METHOD(t, "sendCred", Participant::SendCred);    
+        NODE_SET_PROTOTYPE_METHOD(t, "sendCred", Participant::SendCred);
 
-
-        target->Set(String::NewSymbol("Participant"), t->GetFunction());        
+        module->Set(String::NewSymbol("Participant"), t->GetFunction());        
     }   
     NODE_MODULE(xblab, init);
 }
