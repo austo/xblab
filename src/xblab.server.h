@@ -23,9 +23,10 @@ public:
 
 
 private:
-  Xblab(){};
+  Xblab();
   ~Xblab(){};
   void proveExistence();
+  std::map<int, User> currentUsers_;
 };
 } 
 #endif

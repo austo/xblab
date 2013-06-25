@@ -16,6 +16,7 @@
 #include "crypto.h"
 #include "participant.h"
 #include "user.h"
+#include "db.h"
 
 
 using namespace std;
@@ -87,10 +88,6 @@ void Util::parseTransmission(string lastNonce, string& ciphertext){
     cout << "incoming return nonce: " << retNonce << endl;
     cout << "saved return nonce: " << lastNonce << endl;
 
-    // if (!users == NULL){
-    //     cout << "users is null.\n";
-    // }
-
     if (lastNonce == retNonce){
 
         // TODO: switch
@@ -101,6 +98,7 @@ void Util::parseTransmission(string lastNonce, string& ciphertext){
             if (Crypto::verify(pubkey, datastr, trans.signature())){
                 cout << "Hooray!\n";
                 
+
                 // Build user?
                 // Get credential info
             }

@@ -3,6 +3,10 @@
 
 #include "util.h"
 
+// #define NDEBUG
+
+#include <assert.h>
+
 #define BITSIZE 2048
 #define NONCE_SIZE 8
 #define SIG_BUF_SIZE 4096

@@ -63,13 +63,17 @@ void Xblab::InitAll(Handle<Object> module) {
         FunctionTemplate::New(DigestBuffer)->GetFunction());   
 }
 
+Xblab::Xblab(){
+    currentUsers_ = map<int, User>();
+}
+
 
 // Stand-in for Manager::New
 Handle<Value> Xblab::CreateManager(const Arguments& args) {
     HandleScope scope;
-    
-    Xblab* instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
-    instance->proveExistence();
+
+    // Xblab* instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
+    // instance->proveExistence();
     // String::Utf8Value s(connstring->ToString());
     return scope.Close(Manager::NewInstance(args));
 }
@@ -106,6 +110,12 @@ Handle<Value> Xblab::OnConnection(const Arguments& args) {
     if (!args[0]->IsFunction()){
         THROW("xblab.getConnectionBuffer requires callback argument");
     }
+
+    // Xblab* instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
+    // map<int, User>::const_iterator itr = instance->currentUsers_.begin();
+    // for(; itr != instance->currentUsers_.end(); ++itr){
+    //     cout << "user " << itr->first << ": " << itr->second.username << endl;
+    // }
 
     Local<Function> cb = Local<Function>::Cast(args[0]);
     const unsigned argc = 2;
@@ -187,6 +197,8 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
 
 void Xblab::proveExistence(){
     cout << "I\'ve been unwrapped!\n";
+    User u = User("austin", "nitsua");
+    this->currentUsers_.insert(pair<int, User>(1, u));
 }
 
 

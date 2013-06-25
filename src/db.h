@@ -36,6 +36,7 @@ class Db {
         static Group getGroup(std::string url);
         static std::map<int, Member> getMembers(int group_id);
         static std::string connectionString();
+        static User getUnattachedUser(std::string& username, std::string& password);
 
         // TODO getUser(std::string&, std::string&)       
 
