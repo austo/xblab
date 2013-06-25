@@ -98,35 +98,30 @@ void Util::parseTransmission(string lastNonce,
             const Transmission::Credential& cred = data.credential();
             string pubkey(cred.pub_key());
 
-            if (Crypto::verify(pubkey, datastr, trans.signature())){
-                cout << "Parse transmission: user signature verified.\n";
-                string un(cred.username());
-                string pw(cred.password());
-                string gp(cred.group());
-
-                if (managers.find(gp) == managers.end()){
-                    
-                    // Build manager
-                    HandleScope scope;
-
-                    Manager* instance = new Manager(gp);
-                    Local<ObjectTemplate> t = ObjectTemplate::New();
-                    t->SetInternalFieldCount(1);   
-                    Local<Object> holder = t->NewInstance();    
-                    instance->Wrap(holder);
-                    managers.insert(pair<string, Handle<Value> >(gp, holder));
-
-                    scope.Close(Undefined());
-                }
-
-                // try {
-                //     user = Db::getUnattachedUser(un, pw);                    
-                // }
-                // catch(db_exception& e){
-                //     cout << "Failed to get user with username: " << un
-                //         << endl << "Exception: " << e.what();
-                // }              
+            if (!Crypto::verify(pubkey, datastr, trans.signature())) { 
+                return;
             }
+
+            cout << "Parse transmission: user signature verified.\n";
+            string un(cred.username());
+            string pw(cred.password());
+            string gp(cred.group());
+
+            // Create manager and add to xblab->Managers collection
+            if (managers.find(gp) == managers.end()){
+                
+                HandleScope scope;
+
+                Manager* instance = new Manager(gp);
+                Local<ObjectTemplate> t = ObjectTemplate::New();
+                t->SetInternalFieldCount(1);   
+                Local<Object> holder = t->NewInstance();    
+                instance->Wrap(holder);
+                managers.insert(pair<string, Handle<Value> >(gp, holder));
+
+                scope.Close(Undefined());
+            }
+            // Now check if the user is verified        
         }
     }
 }
