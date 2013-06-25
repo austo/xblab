@@ -16,6 +16,7 @@
 #define SHA256 "EME1(SHA-256)"
 #define EMESHA1 "EME1(SHA-1)"
 #define HMACSHA1 "HMAC(SHA-1)"
+#define KDF2SHA1 "KDF2(SHA-1)"
 #define CAST128 "CAST-128/CBC/PKCS7"
 #define CAST "CAST"
 #define MAC "MAC"

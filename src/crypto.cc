@@ -71,7 +71,6 @@ string Crypto::hybridDecrypt(string& ciphertext){
         throw crypto_exception("Invalid key");
     }
 
-    // cout << "after got key\n";
     stringstream ctstream(ciphertext);
     stringstream ptstream;
     hybridDecrypt(rng, rsakey, ctstream, ptstream);
@@ -155,13 +154,7 @@ bool Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
     }
 
     const bool ok = ver.check_signature(sig);
-
-    if(ok){
-        cout << "Signature verified\n";
-    }
-    else{         
-        cout << "Signature did NOT verify\n";
-    }
+    
     return ok;
 }
 
@@ -369,10 +362,8 @@ Botan::SymmetricKey
 Crypto::deriveSymmetricKey(const std::string& param,
     const SymmetricKey& masterkey, u32bit outputlength) {
 
-    std::auto_ptr<KDF> kdf(get_kdf("KDF2(SHA-1)"));
+    std::auto_ptr<KDF> kdf(get_kdf(KDF2SHA1));
     return kdf->derive_key(outputlength, masterkey.bits_of(), param);
 }
-
-//TODO: encrypt/decrypt 
 
 } //namespace xblab

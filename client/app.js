@@ -29,7 +29,7 @@ app.configure('development', function(){
     app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
+app.get('/:group', routes.index);
 
 var server = http.createServer(app);
 

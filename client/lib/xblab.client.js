@@ -15,29 +15,34 @@ function xblabClient (cfg, ws){
     var self = this;
     self.wsClient = ws;
 
+    cfg.group = ws.group;
+
     self.participant = new xblab.Participant(cfg);
+
+    // referenced object don't pollute! 
+    delete cfg.group;
 
     self.socket = net.connect({port: cfg.remotePort},
         function() {
             console.log('xblab relay client connected');
         });
 
-    self.participant.on('needCred', function(buf){
+    self.participant.on('needCred', function (buf){
         console.log(buf);
 
         // TODO: get credentials from the user
         self.wsClient.send(JSON.stringify({status: 'connected', state: 'NEEDCRED'}));
     });
 
-    self.participant.on('haveCred', function(buf){
+    self.participant.on('haveCred', function (buf){
         console.log(buf);
         self.socket.write(buf);
         // TODO: get credentials from the user
         // self.wsClient.send(JSON.stringify({status: 'connected', state: 'NEEDCRED'}));
     });
 
-    self.socket.on('data', function(data) {
-        self.participant.digestBuffer(data, function(err){
+    self.socket.on('data', function (data) {
+        self.participant.digestBuffer(data, function (err){
             console.log(err);
         });        
     });
@@ -52,7 +57,7 @@ function xblabClient (cfg, ws){
             if (userMessage && userMessage.type){
                 switch(userMessage.type){
                     case 'CRED':
-                        self.participant.sendCred(userMessage, function(err){
+                        self.participant.sendCred(userMessage, function (err){
                             console.log(err);
                         });
                         break;      
@@ -68,19 +73,19 @@ function xblabClient (cfg, ws){
         }
     });
 
-    self.wsClient.on('close', function(reasonCode, description) {
+    self.wsClient.on('close', function (reasonCode, description) {
         if (cfg.debug){
             console.log('%s xblab presentation client at\n%s disconnected...\n\
                 Why am I still running?', new Date(), self.wsClient.remoteAddress);
         }
     });    
     
-    self.wsClient.on('error', function(error) {
+    self.wsClient.on('error', function (error) {
         console.log('Connection error for xblab presentation client at %s.\n Details: %s',
         self.wsClient.remoteAddress, error);
     });
 
-    self.socket.on('end', function() {
+    self.socket.on('end', function () {
         console.log('xblab relay client disconnected');
     });
 };

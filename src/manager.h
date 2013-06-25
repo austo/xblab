@@ -23,7 +23,7 @@ class Manager : public node::ObjectWrap {
         static void SetGroupName(v8::Local<v8::String>, v8::Local<v8::Value>, const v8::AccessorInfo&);
         static v8::Handle<v8::Value> SayHello(const v8::Arguments&);
 
-        //TODO: CheckMember (should be handled by general utility, which then assigns member to manager)
+        friend class Util;     
 
     private:
         static v8::Persistent<v8::Function> constructor;

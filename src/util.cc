@@ -15,12 +15,14 @@
 #include "util.h"
 #include "crypto.h"
 #include "participant.h"
+#include "manager.h"
 #include "user.h"
 #include "db.h"
 
 
 using namespace std;
 using namespace Botan;
+using namespace v8;
 
 
 #define DL_EX_PREFIX "Util: "
@@ -67,7 +69,8 @@ string Util::needCredBuf(string& nonce){
 
 // TODO: error handling
 // Mainly for server use
-void Util::parseTransmission(string lastNonce, string& ciphertext){
+void Util::parseTransmission(string lastNonce,
+    string& ciphertext, map<string, Handle<v8::Value> >& managers){
 
     string buf = Crypto::hybridDecrypt(ciphertext);
 
@@ -85,8 +88,8 @@ void Util::parseTransmission(string lastNonce, string& ciphertext){
     const Transmission::Data& data = trans.data();
 
     string retNonce(data.return_nonce());
-    cout << "incoming return nonce: " << retNonce << endl;
-    cout << "saved return nonce: " << lastNonce << endl;
+    // cout << "incoming return nonce: " << retNonce << endl;
+    // cout << "saved return nonce: " << lastNonce << endl;
 
     if (lastNonce == retNonce){
 
@@ -96,11 +99,33 @@ void Util::parseTransmission(string lastNonce, string& ciphertext){
             string pubkey(cred.pub_key());
 
             if (Crypto::verify(pubkey, datastr, trans.signature())){
-                cout << "Hooray!\n";
-                
+                cout << "Parse transmission: user signature verified.\n";
+                string un(cred.username());
+                string pw(cred.password());
+                string gp(cred.group());
 
-                // Build user?
-                // Get credential info
+                if (managers.find(gp) == managers.end()){
+                    
+                    // Build manager
+                    HandleScope scope;
+
+                    Manager* instance = new Manager(gp);
+                    Local<ObjectTemplate> t = ObjectTemplate::New();
+                    t->SetInternalFieldCount(1);   
+                    Local<Object> holder = t->NewInstance();    
+                    instance->Wrap(holder);
+                    managers.insert(pair<string, Handle<Value> >(gp, holder));
+
+                    scope.Close(Undefined());
+                }
+
+                // try {
+                //     user = Db::getUnattachedUser(un, pw);                    
+                // }
+                // catch(db_exception& e){
+                //     cout << "Failed to get user with username: " << un
+                //         << endl << "Exception: " << e.what();
+                // }              
             }
         }
     }
@@ -123,9 +148,11 @@ string Util::packageParticipantCredentials(void* auxData){
     data->set_return_nonce(participant->return_nonce_);
 
     string passhash = Crypto::hashPassword(participant->password_);
+    cout << "passhash: " << passhash << endl;
 
     cred->set_username(participant->username_);
     cred->set_password(passhash);
+    cred->set_group(participant->group_);
     cred->set_pub_key(participant->pub_key_);
 
     data->set_allocated_credential(cred);

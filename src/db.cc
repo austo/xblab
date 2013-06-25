@@ -29,10 +29,10 @@ Group Db::getGroup(string url){ //Calling code responsible for string trimming
     result groups = txn.exec(ss.str());
 
     if (groups.size() > 1){
-        throw db_exception("Multiple users found.");
+        throw db_exception("Multiple groups found.");
     }
     else if (groups.size() == 0){
-        throw db_exception("User not found.");
+        throw db_exception("Group not found.");
     }
     else{
         group.id = groups[0][0].as<int>();
@@ -42,6 +42,7 @@ Group Db::getGroup(string url){ //Calling code responsible for string trimming
     return group;
 }
 
+// TODO: this strategy is problematic
 User Db::getUnattachedUser(std::string& username, std::string& password){
     connection c(connectionString());
     User user;
@@ -56,10 +57,11 @@ User Db::getUnattachedUser(std::string& username, std::string& password){
         throw db_exception("User not found.");
     }
     else{
-        user.id = flat_user[0][0].as<int>();
-        user.username = string(username);
-        user.password = string(password);
-        user.groups = map<int, Group>();
+        user = User(
+            flat_user[0][0].as<int>(),
+            username,
+            password
+        );        
 
         result::const_iterator row = flat_user.begin();
         for (; row != flat_user.end(); ++row){

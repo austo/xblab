@@ -21,7 +21,7 @@ class Participant : public node::ObjectWrap {
 
 
     private:
-        Participant();
+        Participant(std::string group = "none");
         ~Participant(){};        
 
         std::string username_;

@@ -13,8 +13,15 @@ namespace xblab {
 
 struct User {
     User(){};
-    User(std::string username, std::string password) : 
-        username(username), password(password) { }
+    // User(int _id, std::string _username, std::string _password) : 
+    //     id(_id), username(_username), password(_password) { }
+
+    User(int _id, std::string _username, std::string _password){
+        id = _id;
+        username = std::string(_username);
+        password = std::string(_password);
+        groups = std::map<int, Group>();
+    }
     int id;
     std::string username;
     std::string password;

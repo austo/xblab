@@ -17,7 +17,7 @@ mgr.on('decrypted', function(str){
     console.log('Emitted: %s', str);
 });
 
-console.log(mgr.sayHello());
+console.log(mgr.sayHello(mgr3));
 
 xblab.getConnectionBuffer(function(err, buf){
     if (err){

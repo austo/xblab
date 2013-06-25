@@ -36,11 +36,12 @@ Handle<Value> Participant::New(const Arguments& args){
 
     Handle<Object> cfg = Handle<Object>::Cast(args[0]);
     Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
+    Local<Value> group = cfg->Get(String::New("group"));
 
     pub_key_filename = NODE_PSYMBOL(*(String::Utf8Value(pubkfile)));
     cout << *(String::Utf8Value(pub_key_filename)) << endl;
 
-    instance = new Participant();   
+    instance = new Participant(Util::v8ToString(group));   
 
     instance->Wrap(args.This());
     return scope.Close(args.This());
@@ -109,6 +110,7 @@ Handle<Value> Participant::DigestBuffer(const Arguments& args) {
     try {
 
         Participant* instance = ObjectWrap::Unwrap<Participant>(args.This());
+        cout << "group: " << instance->group_ << endl;
 
         // TODO: parseBuf needs to return a way for us to decide what
         // event to emit, and optionally some data for us to broadcast
@@ -137,7 +139,8 @@ Handle<Value> Participant::DigestBuffer(const Arguments& args) {
 }
 
 
-Participant::Participant() {
+Participant::Participant(string group) {
+    this->group_ = group;
     try{
         Crypto::generateKey(this->priv_key_, this->pub_key_);      
     }

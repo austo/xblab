@@ -8,6 +8,7 @@ var net = require('net'),
 
     xblab.config(cfg); //should be async
 
+var mgrs = [];
 
 net.createServer(function (socket) { 
     /*
@@ -16,22 +17,18 @@ net.createServer(function (socket) {
         so send it down to C++ land
     */
 
-    xblab.getConnectionBuffer(function(err, buf){
+    xblab.getConnectionBuffer(function (err, buf){
         if (err){
             console.log(err);        
         }
-        else{
-            if (buf){
-                // console.log(buf);
-                if (buf.nonce && buf.buffer){
-                    socket.lastNonce = buf.nonce;
-                    console.log('%s - sending NEEDCRED buffer to %s',
-                        new Date(), socket.remoteAddress);
-                    socket.write(buf.buffer);
-                }
-                
-                // console.log(socket);
-            }
+        else {
+            if (buf && buf.nonce && buf.buffer){
+                socket.lastNonce = buf.nonce;
+                console.log('%s - sending NEEDCRED buffer to %s',
+                    new Date(), socket.remoteAddress);
+                socket.write(buf.buffer);
+            }               
+                // console.log(socket);           
         }
     });
 
@@ -42,9 +39,19 @@ net.createServer(function (socket) {
             nonce: socket.lastNonce,
             buffer: data
         },
-        function (err){
-            console.log(err);
+        function (err, buf){
+            if (err){
+                console.log(err);
+            }
+            else {
+                if (buf && buf.nonce && buf.mgr){
+                    socket.lastNonce = buf.nonce;                   
+
+                }
+            }
         });
+        console.log(xblab);
+
     });
  
     socket.on('end', function () {
