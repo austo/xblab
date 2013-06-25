@@ -343,6 +343,10 @@ string Crypto::hashPassword(string& pw){
     return generate_bcrypt(pw, rng, BCRYPT_WORK_FACTOR);
 }
 
+bool Crypto::checkPasshash(string pw, string ph){
+    return (pw.size() == BCRYPT_PH_SIZE && check_bcrypt(pw, ph));
+}
+
 
 string Crypto::b64Encode(const SecureVector<byte>& in) {
     Pipe pipe(new Base64_Encoder);

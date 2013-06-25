@@ -31,6 +31,9 @@ class Manager : public node::ObjectWrap {
         static v8::Handle<v8::Value> New(const v8::Arguments& args);
 
         std::string encrypt(std::string);
+        
+
+        
         Group group_;
         std::map<int, Member> members_;
         std::string pub_key_;

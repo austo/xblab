@@ -64,7 +64,6 @@ void Xblab::InitAll(Handle<Object> module) {
 }
 
 Xblab::Xblab(){
-    CurrentUsers = map<int, User>();
     Managers = map<string, Handle<Value> >();
 }
 

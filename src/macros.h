@@ -11,6 +11,7 @@
 #define NONCE_SIZE 8
 #define SIG_BUF_SIZE 4096
 #define BCRYPT_WORK_FACTOR 12
+#define BCRYPT_PH_SIZE 60
 
 #define SHA1 "EMSA1(SHA-1)"
 #define SHA256 "EME1(SHA-256)"

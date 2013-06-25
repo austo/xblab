@@ -50,6 +50,8 @@ public:
     
     static std::string sign(std::string& privateKey, std::string& message);
     static std::string hashPassword(std::string& pw);
+    static bool checkPasshash(std::string pw, std::string ph);
+
 
 
 

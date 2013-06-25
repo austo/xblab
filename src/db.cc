@@ -42,39 +42,6 @@ Group Db::getGroup(string url){ //Calling code responsible for string trimming
     return group;
 }
 
-// TODO: this strategy is problematic
-User Db::getUnattachedUser(std::string& username, std::string& password){
-    connection c(connectionString());
-    User user;
-    work txn(c);
-
-    stringstream qss;
-    qss << "select * from get_user_groups(" << txn.quote(username)
-        << "," << txn.quote(password) << " );";
-    result flat_user = txn.exec(qss.str());
-
-    if (flat_user.size() == 0){
-        throw db_exception("User not found.");
-    }
-    else{
-        user = User(
-            flat_user[0][0].as<int>(),
-            username,
-            password
-        );        
-
-        result::const_iterator row = flat_user.begin();
-        for (; row != flat_user.end(); ++row){
-            user.groups.insert(pair<int, Group>(
-                row["id"].as<int>(),
-                Group(row["id"].as<int>(),
-                    row["name"].as<string>(),
-                    row["url"].as<string>())));            
-        }
-    }
-    return user;
-}
-
 
 map<int, Member> Db::getMembers(int group_id){
     connection c(connectionString());

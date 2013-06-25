@@ -16,7 +16,7 @@
 #include "crypto.h"
 #include "participant.h"
 #include "manager.h"
-#include "user.h"
+#include "member.h"
 #include "db.h"
 
 
@@ -105,23 +105,58 @@ void Util::parseTransmission(string lastNonce,
             cout << "Parse transmission: user signature verified.\n";
             string un(cred.username());
             string pw(cred.password());
-            string gp(cred.group());
+            string url(cred.group());
+
+            cout << "url is: " << url << endl;
+
+            Member testMember = Member(un, pw, pubkey, true);
+
+            
+
+            HandleScope scope;
+
+            Local<ObjectTemplate> t = ObjectTemplate::New();
+            t->SetInternalFieldCount(1);
+            Local<Object> holder = t->NewInstance();    
 
             // Create manager and add to xblab->Managers collection
-            if (managers.find(gp) == managers.end()){
-                
-                HandleScope scope;
+            if (managers.find(url) == managers.end()){       
 
-                Manager* instance = new Manager(gp);
-                Local<ObjectTemplate> t = ObjectTemplate::New();
-                t->SetInternalFieldCount(1);   
-                Local<Object> holder = t->NewInstance();    
-                instance->Wrap(holder);
-                managers.insert(pair<string, Handle<Value> >(gp, holder));
+                Manager* mgrInstance = new Manager(url);
 
-                scope.Close(Undefined());
+                map<int, Member>::iterator mit = mgrInstance->members_.begin();
+                for (; mit != mgrInstance->members_.end(); ++mit){
+                    cout << "Member: " << mit->second.username << endl;
+                    if (testMember == mit->second){
+                        mit->second.assume(testMember);
+                        cout << "member " << mit->second.username << " assumed with pub_key:\n"
+                             << mit->second.public_key << endl;
+                    }
+                }
+
+                mgrInstance->Wrap(holder);
+                managers.insert(pair<string, Handle<Value> >(url, holder));                
             }
-            // Now check if the user is verified        
+            
+            // Handle<Value> mgr = managers[url];
+            // Handle<Object> omgr = Handle<Object>::Cast(mgr);
+
+            // Manager* nextmgr = node::ObjectWrap::Unwrap<Manager>(omgr);
+
+            // map<int, Member>::iterator it = nextmgr->members_.begin();
+            // for (; it != nextmgr->members_.end(); ++it){
+            //     cout << "Member: " << it->second.username << endl;
+            //     if (testMember == it->second){
+            //         it->second.assume(testMember);
+            //         cout << "member " << it->second.username << " assumed with pub_key:\n"
+            //              << it->second.public_key << endl;
+            //     }
+            // }
+
+            // mgrInstance->Wrap(managers.at(url));            
+
+            scope.Close(Undefined());
+      
         }
     }
 }
