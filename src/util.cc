@@ -93,7 +93,7 @@ void Util::parseTransmission(string lastNonce,
 
     if (lastNonce == retNonce){
 
-        // TODO: switch
+        // TODO: refactor, change to switch
         if (data.type() == Transmission::CRED){
             const Transmission::Credential& cred = data.credential();
             string pubkey(cred.pub_key());
@@ -109,9 +109,10 @@ void Util::parseTransmission(string lastNonce,
 
             Member testMember = Member(un, pw, pubkey, true);
 
-            cout << "testMember created for " << un << endl;
+            Manager* mgr;
 
             // Create manager and add to xblab->Managers collection
+            // TODO: refactor into method, maybe template
             if (managers.find(url) == managers.end()){
 
                 HandleScope scope;
@@ -120,34 +121,32 @@ void Util::parseTransmission(string lastNonce,
                 t->SetInternalFieldCount(1);
                 Local<Object> holder = t->NewInstance();
 
-                Manager* mgrInstance = new Manager(url);
+                mgr = new Manager(url);                
 
-                map<int, Member>::iterator mitr = mgrInstance->members_.begin();
-                for (; mitr != mgrInstance->members_.end(); ++mitr){
-                    cout << "Member: " << mitr->second.username << endl;
+                mgr->Wrap(holder);
+                managers.insert(pair<string, Handle<Object> >(url, mgr->handle_));
+                scope.Close(Undefined());           
+            }
+            else{
+                cout << "Unwrapping manager...\n";
+                mgr = node::ObjectWrap::Unwrap<Manager>(managers.at(url));
+            }
 
-                    try {
+            map<int, Member>::iterator mitr = mgr->members_.begin();
+            for (; mitr != mgr->members_.end(); ++mitr){
 
-                        if (testMember == mitr->second){
-                            mitr->second.assume(testMember);
-                            cout << "member " << mitr->second.username << " assumed with pub_key:\n"
-                                 << mitr->second.public_key << endl;
-                        }
-                    }
-                    catch (exception& e){
-                        cout << e.what();
+                try {
+
+                    if (testMember == mitr->second){
+                        mitr->second.assume(testMember);
+                        cout << "member " << mitr->second.username << " assumed with pub_key:\n"
+                             << mitr->second.public_key << endl;
                     }
                 }
-
-                mgrInstance->Wrap(holder);
-                managers.insert(pair<string, Handle<Object> >(url, mgrInstance->handle_));
-                scope.Close(Undefined());
-           
-            }
-            else {
-                cout << "manager already created." << endl;
-
-            }
+                catch (exception& e){
+                    cout << e.what();
+                }
+            }            
         }
     }
 }
@@ -168,10 +167,9 @@ string Util::packageParticipantCredentials(void* auxData){
     data->set_nonce(nonce);
     data->set_return_nonce(participant->return_nonce_);
 
-    // string passhash = Crypto::hashPassword(participant->password_);
-    // cout << "passhash: " << passhash << endl;
-
     cred->set_username(participant->username_);
+
+    // Plaintext password will be compared with stored passhash on the server
     cred->set_password(participant->password_);
     cred->set_group(participant->group_);
     cred->set_pub_key(participant->pub_key_);
@@ -197,15 +195,12 @@ string Util::packageParticipantCredentials(void* auxData){
         throw util_exception("Failed to serialize broadcast.");
     }
 
-    // cout << "\ntrans - DebugString:\n" << trans.DebugString() << endl;
-    // cout << "\nplaintext str():\n" << plaintext.str() << endl;
-
     Crypto::hybridEncrypt(plaintext, ciphertext);
 
     return ciphertext.str();
 }
 
-// This is mainly for consumption by the client, so return Broadcast::Type
+// Mainly for consumption by the client, return Broadcast::Type
 MessageType Util::parseBroadcast(string& in, void* auxData){
 
     MessageType retval = INVALID;
@@ -242,9 +237,9 @@ v8::Local<v8::Value> Util::wrapBuf(const char *c, size_t len){
     memcpy(node::Buffer::Data(slowBuffer), c, len); // Buffer::Data = (void *)    
    
     v8::Handle<v8::Value> bufArgv[bufArgc] = { 
-        slowBuffer->handle_, // JS SlowBuffer handle
-        v8::Integer::New(len), // SlowBuffer length
-        v8::Integer::New(0) // Offset where "FastBuffer" should start
+        slowBuffer->handle_,    // JS SlowBuffer handle
+        v8::Integer::New(len),  // SlowBuffer length
+        v8::Integer::New(0)     // Offset where "FastBuffer" should start
     };
 
     return scope.Close(nodeBufCtor->NewInstance(bufArgc, bufArgv));

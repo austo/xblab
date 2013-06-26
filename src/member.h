@@ -20,7 +20,7 @@ struct Member {
         username(username), password(password), public_key(pubkey), present(present) { }
 
     void assume(const Member& other){
-        std::cout << "assume: " << other.public_key;
+        // std::cout << "assume: " << other.public_key;
         public_key = other.public_key;
         // round_nonce = other.round_nonce;
         present = other.present;
