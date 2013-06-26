@@ -21,7 +21,7 @@ public:
 
   
   // TODO: change to pointers
-  std::map<std::string, v8::Handle<v8::Value> > Managers;
+  std::map<std::string, v8::Handle<v8::Object> > Managers;
 
 
 

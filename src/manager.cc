@@ -22,7 +22,8 @@ namespace xblab {
 
 Manager::Manager(string url) {
     try{
-
+        // TODO: debug - make better or remove
+        std::cout << "Manager ctor -> group url is " << url << endl;
         // TODO: clean up calling convention
         Crypto::generateKey(this->priv_key_, this->pub_key_);
         group_ = Db::getGroup(url);

@@ -63,9 +63,7 @@ void Xblab::InitAll(Handle<Object> module) {
         FunctionTemplate::New(DigestBuffer)->GetFunction());   
 }
 
-Xblab::Xblab(){
-    Managers = map<string, Handle<Value> >();
-}
+Xblab::Xblab(){ }
 
 
 // Stand-in for Manager::New

@@ -70,7 +70,7 @@ string Util::needCredBuf(string& nonce){
 // TODO: error handling
 // Mainly for server use
 void Util::parseTransmission(string lastNonce,
-    string& ciphertext, map<string, Handle<v8::Value> >& managers){
+    string& ciphertext, map<string, Handle<Object> >& managers){
 
     string buf = Crypto::hybridDecrypt(ciphertext);
 
@@ -107,56 +107,47 @@ void Util::parseTransmission(string lastNonce,
             string pw(cred.password());
             string url(cred.group());
 
-            cout << "url is: " << url << endl;
-
             Member testMember = Member(un, pw, pubkey, true);
 
-            
-
-            HandleScope scope;
-
-            Local<ObjectTemplate> t = ObjectTemplate::New();
-            t->SetInternalFieldCount(1);
-            Local<Object> holder = t->NewInstance();    
+            cout << "testMember created for " << un << endl;
 
             // Create manager and add to xblab->Managers collection
-            if (managers.find(url) == managers.end()){       
+            if (managers.find(url) == managers.end()){
+
+                HandleScope scope;
+
+                Local<ObjectTemplate> t = ObjectTemplate::New();
+                t->SetInternalFieldCount(1);
+                Local<Object> holder = t->NewInstance();
 
                 Manager* mgrInstance = new Manager(url);
 
-                map<int, Member>::iterator mit = mgrInstance->members_.begin();
-                for (; mit != mgrInstance->members_.end(); ++mit){
-                    cout << "Member: " << mit->second.username << endl;
-                    if (testMember == mit->second){
-                        mit->second.assume(testMember);
-                        cout << "member " << mit->second.username << " assumed with pub_key:\n"
-                             << mit->second.public_key << endl;
+                map<int, Member>::iterator mitr = mgrInstance->members_.begin();
+                for (; mitr != mgrInstance->members_.end(); ++mitr){
+                    cout << "Member: " << mitr->second.username << endl;
+
+                    try {
+
+                        if (testMember == mitr->second){
+                            mitr->second.assume(testMember);
+                            cout << "member " << mitr->second.username << " assumed with pub_key:\n"
+                                 << mitr->second.public_key << endl;
+                        }
+                    }
+                    catch (exception& e){
+                        cout << e.what();
                     }
                 }
 
                 mgrInstance->Wrap(holder);
-                managers.insert(pair<string, Handle<Value> >(url, holder));                
+                managers.insert(pair<string, Handle<Object> >(url, mgrInstance->handle_));
+                scope.Close(Undefined());
+           
             }
-            
-            // Handle<Value> mgr = managers[url];
-            // Handle<Object> omgr = Handle<Object>::Cast(mgr);
+            else {
+                cout << "manager already created." << endl;
 
-            // Manager* nextmgr = node::ObjectWrap::Unwrap<Manager>(omgr);
-
-            // map<int, Member>::iterator it = nextmgr->members_.begin();
-            // for (; it != nextmgr->members_.end(); ++it){
-            //     cout << "Member: " << it->second.username << endl;
-            //     if (testMember == it->second){
-            //         it->second.assume(testMember);
-            //         cout << "member " << it->second.username << " assumed with pub_key:\n"
-            //              << it->second.public_key << endl;
-            //     }
-            // }
-
-            // mgrInstance->Wrap(managers.at(url));            
-
-            scope.Close(Undefined());
-      
+            }
         }
     }
 }
@@ -177,11 +168,11 @@ string Util::packageParticipantCredentials(void* auxData){
     data->set_nonce(nonce);
     data->set_return_nonce(participant->return_nonce_);
 
-    string passhash = Crypto::hashPassword(participant->password_);
-    cout << "passhash: " << passhash << endl;
+    // string passhash = Crypto::hashPassword(participant->password_);
+    // cout << "passhash: " << passhash << endl;
 
     cred->set_username(participant->username_);
-    cred->set_password(passhash);
+    cred->set_password(participant->password_);
     cred->set_group(participant->group_);
     cred->set_pub_key(participant->pub_key_);
 

@@ -51,7 +51,7 @@ class Util {
  
         static std::string needCredBuf(std::string& nonce);
         static void parseTransmission(std::string lastNonce,
-            std::string& buf, std::map<std::string, v8::Handle<v8::Value> >& managers);
+            std::string& buf, std::map<std::string, v8::Handle<v8::Object> >& managers);
 
         #endif
         

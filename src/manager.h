@@ -32,8 +32,6 @@ class Manager : public node::ObjectWrap {
 
         std::string encrypt(std::string);
         
-
-        
         Group group_;
         std::map<int, Member> members_;
         std::string pub_key_;

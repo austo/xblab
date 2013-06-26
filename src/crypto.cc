@@ -344,7 +344,10 @@ string Crypto::hashPassword(string& pw){
 }
 
 bool Crypto::checkPasshash(string pw, string ph){
-    return (pw.size() == BCRYPT_PH_SIZE && check_bcrypt(pw, ph));
+    cout << "password: " << pw << endl << "passhash: " << ph << endl;
+    cout << "passhash length: " << ph.size() << endl;
+
+    return ph.size() == BCRYPT_PH_SIZE && check_bcrypt(pw, ph);
 }
 
 

@@ -1,3 +1,5 @@
+var port = process.argv[2]
+
 var ws = require('websocket'),
     fs = require('fs'),
     debug = require('debug')('express'),
@@ -11,7 +13,7 @@ var ws = require('websocket'),
 
 
 app.configure(function(){
-    app.set('port', process.env.XBLAB_PORT || 7777);
+    app.set('port', port); //process.env.XBLAB_PORT || 7777
     app.set('views', __dirname + '/server/views');
     app.set('view engine', 'jade');
     app.use(express.favicon('./public/img/skull-crossbones.ico'));

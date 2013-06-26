@@ -19,7 +19,7 @@
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
             'GCC_ENABLE_CPP_RTTI': 'YES'
           },
-          'ldflags': [ '-L/Applications/Postgres.app/Contents/MacOS/lib'],
+          'ldflags': [ '-Wl', '-no_implicit_dylibs', '-L/Applications/Postgres.app/Contents/MacOS/lib'],
         }]        
       ]
     }

@@ -26,6 +26,7 @@ Group Db::getGroup(string url){ //Calling code responsible for string trimming
     work txn(c);
     stringstream ss;
     ss << "select id, name from groups where url = " << txn.quote(url) << ";";
+
     result groups = txn.exec(ss.str());
 
     if (groups.size() > 1){
@@ -44,11 +45,16 @@ Group Db::getGroup(string url){ //Calling code responsible for string trimming
 
 
 map<int, Member> Db::getMembers(int group_id){
+
+    assert(group_id > 0);
+
     connection c(connectionString());
     map<int, Member> retval = map<int, Member>();
     work txn(c);
     stringstream ss;
-    ss << "select  * from get_group_users(" << txn.quote(group_id) << ");";
+    // No need to quote the string here as it's coming from previous call;
+    ss << "select * from get_group_users(" << group_id << ");";
+    cout << ss.str() << endl;
     result members = txn.exec(ss.str());
 
     result::const_iterator row = members.begin();
