@@ -142,7 +142,6 @@ void Xblab::AfterOnConnect (uv_work_t *r) {
 }
 
 
-
 Handle<Value> Xblab::SetConfig(const Arguments& args) {
 
     HandleScope scope;
@@ -189,11 +188,16 @@ Handle<Value> Xblab::DigestBuf(const Arguments& args) {
 
         Local<Function> cb = Local<Function>::Cast(args[0]);
 
+        Xblab *instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
+
         DataBaton *baton = new DataBaton(cb);
         baton->nonce = Util::v8ToString(lastNonce);
         baton->buf = buf;
         baton->privateKeyFile = string(*(v8::String::Utf8Value(priv_key_filename)));
         baton->password = string(*(v8::String::Utf8Value(key_passphrase)));
+        baton->connstring = string(*(v8::String::Utf8Value(connstring)));
+        baton->auxData = &instance->mptrs;
+
 
         uv_queue_work(uv_default_loop(), &baton->request,
         DigestBufWork, (uv_after_work_cb)AfterDigestBuf);
@@ -210,11 +214,12 @@ Handle<Value> Xblab::DigestBuf(const Arguments& args) {
     return scope.Close(Undefined());
 }
 
-
+// TODO: quite imcomplete: need a way of determining proper action
+// or transfering ownership to Manager
 void Xblab::DigestBufWork(uv_work_t *r){
     try{
         DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
-        // TODO: need a way of determining proper action
+        baton->err = "";
         Util::unpackMember(baton);
     }
     catch (util_exception& e){
@@ -222,6 +227,8 @@ void Xblab::DigestBufWork(uv_work_t *r){
     }
 }
 
+
+// TODO: callback!
 void Xblab::AfterDigestBuf (uv_work_t *r) {
     HandleScope scope;
     DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
@@ -231,10 +238,21 @@ void Xblab::AfterDigestBuf (uv_work_t *r) {
     // const unsigned argc = 2;
     // Local<Value> argv[argc];
 
-    Xblab* instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
+    if (baton->err == ""){
+        Xblab* instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
+        if (instance->Managers.find(baton->url) == instance->Managers.end()){
+            // add new manager from mptrs
+            Local<ObjectTemplate> t = ObjectTemplate::New();
+            t->SetInternalFieldCount(1);
+            Local<Object> holder = t->NewInstance();
 
-    // TODO: We are potentially creating a manager here - should be done in thread
-    Util::addMember(baton, instance->Managers);
+            Manager *mgr = reinterpret_cast<Manager*>(instance->mptrs.at(baton->url));
+
+            mgr->Wrap(holder);
+            instance->Managers.insert(
+                pair<string, Handle<Object> >(baton->url, mgr->handle_));
+        }
+    }
 
     // TODO: return welcome buffer
     delete baton;
@@ -245,12 +263,6 @@ void Xblab::AfterDigestBuf (uv_work_t *r) {
 }
 
 
-
-/*
-  Intenal class access from JS is difficult due to name mangling in C++
-  Use extern C here to initalize module handle.
-  Static class members are especially problematic, look for a workaround
-*/
 extern "C" {
   static void init(v8::Handle<v8::Object> module) {    
     xblab::Xblab::InitAll(module);

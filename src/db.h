@@ -34,11 +34,11 @@ class Db {
         Db();
         ~Db();
         static Group getGroup(std::string url);
+        static Group getGroup(std::string conn, std::string url);
+
         static std::map<int, Member> getMembers(int group_id);
+        static std::map<int, Member> getMembers(std::string conn, int group_id);
         static std::string connectionString();
-
-        // TODO getUser(std::string&, std::string&)       
-
 
     private:
 };

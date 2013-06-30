@@ -15,6 +15,7 @@ namespace xblab {
 class Manager : public node::ObjectWrap {
     public:
         Manager(std::string);
+        Manager(std::string, std::string);
         ~Manager(){};
 
         static void Init(v8::Handle<v8::Object> module);
@@ -23,7 +24,8 @@ class Manager : public node::ObjectWrap {
         static void SetGroupName(v8::Local<v8::String>, v8::Local<v8::Value>, const v8::AccessorInfo&);
         static v8::Handle<v8::Value> SayHello(const v8::Arguments&);
 
-        friend class Util;     
+        friend class Util;
+        friend class Xblab;    
 
     private:
         static v8::Persistent<v8::Function> constructor;

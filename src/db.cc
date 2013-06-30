@@ -21,7 +21,11 @@ string Db::connectionString(){
 }
 
 Group Db::getGroup(string url){ //Calling code responsible for string trimming 
-    connection c(connectionString());
+    return getGroup(connectionString(), url);
+}
+
+Group Db::getGroup(string conn, string url){
+    connection c(conn);
     Group group;
     work txn(c);
     stringstream ss;
@@ -45,10 +49,14 @@ Group Db::getGroup(string url){ //Calling code responsible for string trimming
 
 
 map<int, Member> Db::getMembers(int group_id){
+    return getMembers(connectionString(), group_id);
+}
+
+map<int, Member> Db::getMembers(string conn, int group_id){
 
     assert(group_id > 0);
 
-    connection c(connectionString());
+    connection c(conn);
     map<int, Member> retval = map<int, Member>();
     work txn(c);
     stringstream ss;

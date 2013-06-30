@@ -37,9 +37,11 @@ struct DataBaton {
     uv_work_t request;
     std::string privateKeyFile;
     std::string password;
+    std::string connstring;
     std::string buf;
     std::string nonce;
     std::string url;
+    std::string err;
     void *auxData;
     v8::Persistent<v8::Function> callback;
 };
@@ -68,13 +70,9 @@ class Util {
         
         #ifndef XBLAB_CLIENT
  
-        static std::string needCredBuf(std::string& privKeyFile, std::string& password, std::string& nonce);
-        static void parseTransmission(std::string lastNonce,
-            std::string& buf, std::map<std::string, v8::Handle<v8::Object> >& managers);
+        static std::string
+        needCredBuf(std::string& privKeyFile, std::string& password, std::string& nonce);
         static void unpackMember(DataBaton* baton);
-        static void addMember(DataBaton* baton, std::map<std::string, v8::Handle<v8::Object> >& managers);
-
-
 
         #endif
         

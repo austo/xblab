@@ -75,93 +75,10 @@ string Util::needCredBuf(string& privKeyFile, string& password, string& nonce){
 }
 
 
-// TODO: error handling
-// Mainly for server use
-void Util::parseTransmission(string lastNonce,
-    string& ciphertext, map<string, Handle<Object> >& managers){
-
-    string buf = Crypto::hybridDecrypt(ciphertext);
-
-    //TODO: switch on transmission type
-    Transmission trans;
-    if (!trans.ParseFromString(buf)){
-        throw util_exception("Failed to deserialize transmission.");
-    }    
-
-    string datastr;
-    if (!trans.data().SerializeToString(&datastr)){
-        throw util_exception("Failed to reserialize transmission data.");
-    }
-
-    const Transmission::Data& data = trans.data();
-
-    string retNonce(data.return_nonce());
-    // cout << "incoming return nonce: " << retNonce << endl;
-    // cout << "saved return nonce: " << lastNonce << endl;
-
-    if (lastNonce == retNonce){
-
-        // TODO: refactor, change to switch
-        if (data.type() == Transmission::CRED){
-            const Transmission::Credential& cred = data.credential();
-            string pubkey(cred.pub_key());
-
-            if (!Crypto::verify(pubkey, datastr, trans.signature())) { 
-                return;
-            }
-
-            cout << "Parse transmission: user signature verified.\n";
-            string un(cred.username());
-            string pw(cred.password());
-            string url(cred.group());
-
-            Member testMember = Member(un, pw, pubkey, true);
-
-            Manager* mgr;
-
-            // Create manager and add to xblab->Managers collection
-            // TODO: refactor into method, maybe template
-            if (managers.find(url) == managers.end()){
-
-                HandleScope scope;
-
-                Local<ObjectTemplate> t = ObjectTemplate::New();
-                t->SetInternalFieldCount(1);
-                Local<Object> holder = t->NewInstance();
-
-                mgr = new Manager(url);                
-
-                mgr->Wrap(holder);
-                managers.insert(pair<string, Handle<Object> >(url, mgr->handle_));
-                scope.Close(Undefined());           
-            }
-            else{
-                cout << "Unwrapping manager...\n";
-                mgr = node::ObjectWrap::Unwrap<Manager>(managers.at(url));
-            }
-
-            map<int, Member>::iterator mitr = mgr->members_.begin();
-            for (; mitr != mgr->members_.end(); ++mitr){
-
-                try {
-
-                    if (testMember == mitr->second){
-                        mitr->second.assume(testMember);
-                        cout << "member " << mitr->second.username << " assumed with pub_key:\n"
-                             << mitr->second.public_key << endl;
-                    }
-                }
-                catch (exception& e){
-                    cout << e.what();
-                }
-            }            
-        }
-    }
-}
-
-
+// Validates new member and initializes Manager for requested group if need be
 void Util::unpackMember(DataBaton* baton){
-    string buf = Crypto::hybridDecrypt(baton->privateKeyFile, baton->password, baton->buf);
+    string buf =
+        Crypto::hybridDecrypt(baton->privateKeyFile, baton->password, baton->buf);
 
     //TODO: switch on transmission type
     Transmission trans;
@@ -192,57 +109,47 @@ void Util::unpackMember(DataBaton* baton){
             cout << "Parse transmission: user signature verified.\n";
             string un(cred.username());
             string pw(cred.password());
-            baton->url = cred.group();
+            baton->url = string(cred.group());
 
-            baton->auxData = new Member(un, pw, pubkey, true);
+            map<string, void*> *mptrs =
+                reinterpret_cast<map<string, void*> *>(baton->auxData);
+            Manager *mgr;
+
+            if (mptrs->find(baton->url) == mptrs->end()){
+                // add new manager (to be wrapped later)
+                mgr = new Manager(baton->connstring, baton->url);
+                mptrs->insert(pair<string, void* >(baton->url, mgr));
+            }
+            else {
+                mgr = reinterpret_cast<Manager*>(mptrs->at(baton->url));
+            }
+
+            Member *m = new Member(un, pw, pubkey, true);
+
+            map<int, Member>::iterator mitr = mgr->members_.begin();
+            for (; mitr != mgr->members_.end(); ++mitr){
+
+                try {
+
+                    if (*m == mitr->second){
+                        mitr->second.assume(m);
+                        cout << "member " << mitr->second.username
+                             << " assumed with pub_key:\n" 
+                             << mitr->second.public_key << endl;
+                        return; 
+                    }
+                }
+                catch (exception& e){
+                    cout << e.what();
+                    baton->err = e.what();
+                }
+            }
+            baton->err = "Unable to find member";
         }
-    }
+    }    
     else{
         throw util_exception("Last nonce does not match transmission nonce.");
     }
-}
-
-
-void Util::addMember(DataBaton* baton, map<string, Handle<Object> >& managers){
-    Member *member = reinterpret_cast<Member*>(baton->auxData);
-    // Create manager and add to xblab->Managers collection
-    // TODO: refactor into method, maybe template
-    Manager *mgr;
-
-    if (managers.find(baton->url) == managers.end()){
-
-        HandleScope scope;
-
-        Local<ObjectTemplate> t = ObjectTemplate::New();
-        t->SetInternalFieldCount(1);
-        Local<Object> holder = t->NewInstance();
-
-        mgr = new Manager(baton->url);                
-
-        mgr->Wrap(holder);
-        managers.insert(pair<string, Handle<Object> >(baton->url, mgr->handle_));
-        scope.Close(Undefined());           
-    }
-    else{
-        cout << "Unwrapping manager...\n";
-        mgr = node::ObjectWrap::Unwrap<Manager>(managers.at(baton->url));
-    }
-
-    map<int, Member>::iterator mitr = mgr->members_.begin();
-    for (; mitr != mgr->members_.end(); ++mitr){
-
-        try {
-
-            if (*member == mitr->second){
-                mitr->second.assume(member);
-                cout << "member " << mitr->second.username << " assumed with pub_key:\n"
-                     << mitr->second.public_key << endl;
-            }
-        }
-        catch (exception& e){
-            cout << e.what();
-        }
-    }            
 }
 
 
