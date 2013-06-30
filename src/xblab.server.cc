@@ -20,21 +20,6 @@ using namespace std;
 
 namespace xblab {
 
-struct DataBaton {
-    DataBaton(Local<Function> cb){
-        request.data = this;
-        callback = Persistent<Function>::New(cb);
-    }
-    uv_work_t request;
-    string privateKeyFile;
-    string password;
-    string buf;
-    string nonce;
-    void *auxData;
-    Persistent<Function> callback;
-};
-
-
 /*
     C-style global configuration items
     May be used from other classes but need to be defined extern
@@ -77,10 +62,10 @@ void Xblab::InitAll(Handle<Object> module) {
         FunctionTemplate::New(SetConfig)->GetFunction());
 
     module->Set(String::NewSymbol("getConnectionBuffer"),
-        FunctionTemplate::New(OnConnection)->GetFunction());
+        FunctionTemplate::New(OnConnect)->GetFunction());
 
     module->Set(String::NewSymbol("digestBuffer"),
-        FunctionTemplate::New(DigestBuffer)->GetFunction());    
+        FunctionTemplate::New(DigestBuf)->GetFunction());    
 }
 
 Xblab::Xblab(){ }
@@ -93,7 +78,7 @@ Handle<Value> Xblab::CreateManager(const Arguments& args) {
 }
 
 
-Handle<Value> Xblab::OnConnection(const Arguments& args) {
+Handle<Value> Xblab::OnConnect(const Arguments& args) {
 
     HandleScope scope;
     if (!args[0]->IsFunction()){
@@ -102,22 +87,20 @@ Handle<Value> Xblab::OnConnection(const Arguments& args) {
 
     Local<Function> cb = Local<Function>::Cast(args[0]);
     
-/*  Populate baton struct to pass to uv_queue_work:
-    Private key and password unpacked here to avoid memory conflicts with v8 heap.
-*/
+    // Populate baton struct to pass to uv_queue_work:
+    // Private key and password unpacked here to avoid memory conflicts with v8 heap.
     DataBaton *baton = new DataBaton(cb);
     baton->privateKeyFile = string(*(v8::String::Utf8Value(priv_key_filename)));
     baton->password = string(*(v8::String::Utf8Value(key_passphrase)));
-    // baton->callback = Persistent<Function>::New(cb);
 
     uv_queue_work(uv_default_loop(), &baton->request,
-        Xblab::OnConnectionWorker, (uv_after_work_cb)Xblab::OnConnectionDone);
+        OnConnectWork, (uv_after_work_cb)AfterOnConnect);
     
     return scope.Close(Undefined());
 }
 
 
-void Xblab::OnConnectionWorker(uv_work_t *r){
+void Xblab::OnConnectWork(uv_work_t *r){
     DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
 
     string nonce;
@@ -129,7 +112,7 @@ void Xblab::OnConnectionWorker(uv_work_t *r){
 }
 
 
-void Xblab::OnConnectionDone (uv_work_t *r) {
+void Xblab::AfterOnConnect (uv_work_t *r) {
     HandleScope scope;
     DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
 
@@ -151,8 +134,6 @@ void Xblab::OnConnectionDone (uv_work_t *r) {
 
     baton->callback->Call(Context::GetCurrent()->Global(), argc, argv);
 
-    // cleanup
-    baton->callback.Dispose();
     delete baton;
 
     if (try_catch.HasCaught()) {
@@ -187,7 +168,7 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
 }
 
 
-Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
+Handle<Value> Xblab::DigestBuf(const Arguments& args) {
     HandleScope scope;
 
     if (!args[0]->IsObject() || !args[1]->IsFunction()){
@@ -197,8 +178,6 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
     Local<Object> packet = args[0]->ToObject();
     Local<Value> lastNonce = packet->Get(String::New("nonce"));
     Local<Value> buffer = packet->Get(String::New("buffer"));
-
-
 
     // Parse binary data from node::Buffer
     char* bufData = Buffer::Data(buffer->ToObject());
@@ -210,21 +189,15 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
 
         Local<Function> cb = Local<Function>::Cast(args[0]);
 
-        Xblab* instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
-
-        // TODO: uv_queue_work
         DataBaton *baton = new DataBaton(cb);
         baton->nonce = Util::v8ToString(lastNonce);
         baton->buf = buf;
         baton->privateKeyFile = string(*(v8::String::Utf8Value(priv_key_filename)));
         baton->password = string(*(v8::String::Utf8Value(key_passphrase)));
-        // baton->auxData = &instance->Managers;
 
-        // uv_queue_work(uv_default_loop(), &baton->request,
-        // Xblab::DigestBufferWorker, (uv_after_work_cb)Xblab::DigestBufferDone);
-
-        Util::parseTransmission(Util::v8ToString(lastNonce), buf, instance->Managers);
-        cout << instance->Managers.begin()->first << endl;        
+        uv_queue_work(uv_default_loop(), &baton->request,
+        DigestBufWork, (uv_after_work_cb)AfterDigestBuf);
+        
     }
     catch (util_exception& e){
         
@@ -237,11 +210,40 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
     return scope.Close(Undefined());
 }
 
-void Xblab::DigestBufferWorker(uv_work_t *r){
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
-    baton->auxData = Util::unpackMember(
-        baton->privateKeyFile, baton->password, baton->nonce, baton->buf);
+
+void Xblab::DigestBufWork(uv_work_t *r){
+    try{
+        DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+        // TODO: need a way of determining proper action
+        Util::unpackMember(baton);
+    }
+    catch (util_exception& e){
+        cout << e.what();
+    }
 }
+
+void Xblab::AfterDigestBuf (uv_work_t *r) {
+    HandleScope scope;
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+
+    TryCatch try_catch;
+
+    // const unsigned argc = 2;
+    // Local<Value> argv[argc];
+
+    Xblab* instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
+
+    // TODO: We are potentially creating a manager here - should be done in thread
+    Util::addMember(baton, instance->Managers);
+
+    // TODO: return welcome buffer
+    delete baton;
+
+    if (try_catch.HasCaught()) {
+        FatalException(try_catch);
+    }
+}
+
 
 
 /*

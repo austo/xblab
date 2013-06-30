@@ -26,8 +26,13 @@ struct Member {
         public_key = other.public_key;
         // round_nonce = other.round_nonce;
         present = other.present;
-        // delete other
     }
+
+    void assume(Member* other){
+        public_key = other->public_key;
+        present = other->present;
+        delete other;
+    } 
 
     bool operator== (const Member& other) const {
         std::cout << "this->username: " << username << "\nother.username: " << other.username << std::endl;

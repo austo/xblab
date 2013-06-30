@@ -25,6 +25,25 @@ enum MessageType {
     INVALID
 };
 
+// TODO: move to separate file
+struct DataBaton {
+    DataBaton(v8::Local<v8::Function> cb){
+        request.data = this;
+        callback = v8::Persistent<v8::Function>::New(cb);
+    }
+    ~DataBaton(){
+        callback.Dispose();
+    }
+    uv_work_t request;
+    std::string privateKeyFile;
+    std::string password;
+    std::string buf;
+    std::string nonce;
+    std::string url;
+    void *auxData;
+    v8::Persistent<v8::Function> callback;
+};
+
 class util_exception : public std::exception {
 public:
     util_exception(){
@@ -52,8 +71,9 @@ class Util {
         static std::string needCredBuf(std::string& privKeyFile, std::string& password, std::string& nonce);
         static void parseTransmission(std::string lastNonce,
             std::string& buf, std::map<std::string, v8::Handle<v8::Object> >& managers);
-        static Member* unpackMember(std::string& privateKey,
-            std::string& password, std::string& lastNonce, std::string& ciphertext);
+        static void unpackMember(DataBaton* baton);
+        static void addMember(DataBaton* baton, std::map<std::string, v8::Handle<v8::Object> >& managers);
+
 
 
         #endif
