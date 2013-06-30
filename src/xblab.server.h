@@ -2,6 +2,7 @@
 #define XBLAB_H
 
 #include <map>
+#include <uv.h>
 #include <node.h>
 
 
@@ -18,6 +19,15 @@ public:
   static v8::Handle<v8::Value> CreateManager(const v8::Arguments& args);
   static v8::Handle<v8::Value> OnConnection(const v8::Arguments& args);
   static v8::Handle<v8::Value> DigestBuffer(const v8::Arguments& args);
+
+  // static v8::Handle<v8::Value> Method(const v8::Arguments& args);
+  static void OnConnectionWorker (uv_work_t *r);
+  static void OnConnectionDone (uv_work_t *r);
+
+  static void DigestBufferWorker(uv_work_t *r);
+
+
+
 
   
   // TODO: change to pointers

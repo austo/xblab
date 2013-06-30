@@ -47,6 +47,7 @@ string Crypto::sign(string message){
     AutoSeeded_RNG rng;
     string pr = privateKeyFile();
     string pw = keyPassPhrase();
+    cout << pr << pw << endl;
     auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(pr, rng, pw));
     RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
 
@@ -78,6 +79,39 @@ string Crypto::hybridDecrypt(string& ciphertext){
     return ptstream.str();
 }
 
+string Crypto::hybridDecrypt(string& privateKey, string& password, string& ciphertext){
+    AutoSeeded_RNG rng;
+    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(privateKey, rng, password));
+    RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
+
+    if(!rsakey){
+        cout << "BAD KEY!!" << endl;
+        throw crypto_exception("Invalid key");
+    }
+
+    stringstream ctstream(ciphertext);
+    stringstream ptstream;
+    hybridDecrypt(rng, rsakey, ctstream, ptstream);
+
+    return ptstream.str();
+}
+
+string Crypto::sign(string& privateKey, string& password, string& message){
+    AutoSeeded_RNG rng;
+    // DataSource_Memory ds(privateKey);
+    // cout << "got DataSource_Memory\n";
+    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(privateKey, rng, password));
+    // cout << "loaded key\n";
+    RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
+    // cout << "got key\n";
+
+    if(!rsakey){
+        cout << "BAD KEY!!" << endl;
+        throw crypto_exception("Invalid key");
+    }
+
+    return sign(rng, rsakey, message);
+}
 
 
 
@@ -87,8 +121,11 @@ string Crypto::hybridDecrypt(string& ciphertext){
 string Crypto::sign(string& privateKey, string& message){
     AutoSeeded_RNG rng;
     DataSource_Memory ds(privateKey);
+    // cout << "got DataSource_Memory\n";
     auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(ds, rng));
+    // cout << "loaded key\n";
     RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
+    // cout << "got key\n";
 
     if(!rsakey){
         cout << "BAD KEY!!" << endl;

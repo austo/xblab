@@ -37,10 +37,13 @@ Util::~Util(){}
 
 #ifndef XBLAB_CLIENT
 
-string Util::needCredBuf(string& nonce){    
+string Util::needCredBuf(string& privKeyFile, string& password, string& nonce){ 
+    // cout << "generating nonce\n";   
     nonce = Crypto::generateNonce();
+    // cout << "have nonce\n";
     Broadcast bc;
     Broadcast::Data *data = new Broadcast::Data();
+    // cout << "have data\n";
 
     data->set_type(Broadcast::NEEDCRED);
     data->set_nonce(nonce);
@@ -50,9 +53,14 @@ string Util::needCredBuf(string& nonce){
         throw util_exception("Failed to serialize broadcast data.");
     }
     try{
-        sig = Crypto::sign(datastr);
+        // cout << "signing message\n";
+        // cout << privKeyFile << endl << password << endl;
+        sig = Crypto::sign(privKeyFile, password, datastr);
+        // cout << "message signed\n";
         bc.set_signature(sig);
+        // cout << "signature set\n";
         bc.set_allocated_data(data); //bc now owns data - no need to free
+        // cout << "data allocated\n";
     }
     catch(crypto_exception& e){
         cout << "crypto exception: " << e.what() << endl;
@@ -149,6 +157,48 @@ void Util::parseTransmission(string lastNonce,
             }            
         }
     }
+}
+
+
+Member* Util::unpackMember(string& privateKey, string& password, string& lastNonce, string& ciphertext){
+    string buf = Crypto::hybridDecrypt(privateKey, password, ciphertext);
+
+    //TODO: switch on transmission type
+    Transmission trans;
+    if (!trans.ParseFromString(buf)){
+        throw util_exception("Failed to deserialize transmission.");
+    }    
+
+    string datastr;
+    if (!trans.data().SerializeToString(&datastr)){
+        throw util_exception("Failed to reserialize transmission data.");
+    }
+
+    const Transmission::Data& data = trans.data();
+
+    string retNonce(data.return_nonce());    
+
+    if (lastNonce == retNonce){
+
+        // TODO: refactor, change to switch
+        if (data.type() == Transmission::CRED){
+            const Transmission::Credential& cred = data.credential();
+            string pubkey(cred.pub_key());
+
+            if (!Crypto::verify(pubkey, datastr, trans.signature())) { 
+                return NULL;
+            }
+
+            cout << "Parse transmission: user signature verified.\n";
+            string un(cred.username());
+            string pw(cred.password());
+            string url(cred.group());
+
+            return new Member(un, pw, pubkey, true);
+        }
+        return NULL;
+    }
+    throw util_exception("Last nonce does not match transmission nonce.");
 }
 
 

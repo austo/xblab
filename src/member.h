@@ -11,7 +11,9 @@ namespace xblab {
 // Used by Manager for tracking users once they have joined a chat
 
 struct Member {
-    Member(){};
+    Member(){
+        username = "invalid";
+    };
 
     Member(std::string username, std::string password, std::string handle) : 
         username(username), password(password), handle(handle) { }

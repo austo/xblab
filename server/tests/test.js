@@ -6,18 +6,22 @@ var xbcfg = require('../xblab.config'),
 
 xblab.config(xbcfg);
 
+// xblab.async(5, function (err, num){
+//     console.log('result is %d.', num);
+// });
+
 // xblab.createManager() is a stand in for new Manager()
-var mgr = xblab.createManager('xchat');
+// var mgr = xblab.createManager('xchat');
 //var mgr = new xblab.Manager('xchat');
 
-assert.equal(typeof mgr.on, 'function',
-    'xblab.Manager not inheriting from EventEmitter');
+// assert.equal(typeof mgr.on, 'function',
+//     'xblab.Manager not inheriting from EventEmitter');
 
-mgr.on('decrypted', function(str){
-    console.log('Emitted: %s', str);
-});
+// mgr.on('decrypted', function(str){
+//     console.log('Emitted: %s', str);
+// });
 
-console.log(mgr.sayHello(mgr3));
+//console.log(mgr.sayHello(mgr3));
 
 xblab.getConnectionBuffer(function(err, buf){
     if (err){

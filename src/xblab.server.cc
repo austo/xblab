@@ -1,11 +1,16 @@
-#include <node_buffer.h>
+#include <unistd.h>
+
 #include <iostream>
 #include <vector>
 #include <botan/botan.h>
+
+#include <node_buffer.h>
+
 #include "macros.h"
 #include "xblab.server.h"
 #include "manager.h"
 #include "util.h"
+
 
 
 using namespace v8;
@@ -14,6 +19,21 @@ using namespace std;
 
 
 namespace xblab {
+
+struct DataBaton {
+    DataBaton(Local<Function> cb){
+        request.data = this;
+        callback = Persistent<Function>::New(cb);
+    }
+    uv_work_t request;
+    string privateKeyFile;
+    string password;
+    string buf;
+    string nonce;
+    void *auxData;
+    Persistent<Function> callback;
+};
+
 
 /*
     C-style global configuration items
@@ -60,7 +80,7 @@ void Xblab::InitAll(Handle<Object> module) {
         FunctionTemplate::New(OnConnection)->GetFunction());
 
     module->Set(String::NewSymbol("digestBuffer"),
-        FunctionTemplate::New(DigestBuffer)->GetFunction());   
+        FunctionTemplate::New(DigestBuffer)->GetFunction());    
 }
 
 Xblab::Xblab(){ }
@@ -71,6 +91,75 @@ Handle<Value> Xblab::CreateManager(const Arguments& args) {
     HandleScope scope;   
     return scope.Close(Manager::NewInstance(args));
 }
+
+
+Handle<Value> Xblab::OnConnection(const Arguments& args) {
+
+    HandleScope scope;
+    if (!args[0]->IsFunction()){
+        THROW("xblab.getConnectionBuffer requires callback argument");
+    }
+
+    Local<Function> cb = Local<Function>::Cast(args[0]);
+    
+/*  Populate baton struct to pass to uv_queue_work:
+    Private key and password unpacked here to avoid memory conflicts with v8 heap.
+*/
+    DataBaton *baton = new DataBaton(cb);
+    baton->privateKeyFile = string(*(v8::String::Utf8Value(priv_key_filename)));
+    baton->password = string(*(v8::String::Utf8Value(key_passphrase)));
+    // baton->callback = Persistent<Function>::New(cb);
+
+    uv_queue_work(uv_default_loop(), &baton->request,
+        Xblab::OnConnectionWorker, (uv_after_work_cb)Xblab::OnConnectionDone);
+    
+    return scope.Close(Undefined());
+}
+
+
+void Xblab::OnConnectionWorker(uv_work_t *r){
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+
+    string nonce;
+    // get serialized "NEEDCRED buffer
+    string buf =
+        Util::needCredBuf(baton->privateKeyFile, baton->password, nonce);
+    baton->nonce = nonce;
+    baton->buf = buf;
+}
+
+
+void Xblab::OnConnectionDone (uv_work_t *r) {
+    HandleScope scope;
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+
+    TryCatch try_catch;
+
+    const unsigned argc = 2;
+    Local<Value> argv[argc];
+
+
+    const char *c = &(baton->buf[0]); 
+    size_t len = baton->buf.size();
+
+    Local<Object> packet = Object::New();    
+    packet->Set(String::NewSymbol("nonce"), String::New(baton->nonce.c_str()));
+    packet->Set(String::NewSymbol("buffer"), Util::wrapBuf(c, len));
+
+    argv[0] = Local<Value>::New(Undefined());
+    argv[1] = packet;
+
+    baton->callback->Call(Context::GetCurrent()->Global(), argc, argv);
+
+    // cleanup
+    baton->callback.Dispose();
+    delete baton;
+
+    if (try_catch.HasCaught()) {
+        FatalException(try_catch);
+    }
+}
+
 
 
 Handle<Value> Xblab::SetConfig(const Arguments& args) {
@@ -98,48 +187,6 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
 }
 
 
-Handle<Value> Xblab::OnConnection(const Arguments& args) {
-
-    HandleScope scope;
-    if (!args[0]->IsFunction()){
-        THROW("xblab.getConnectionBuffer requires callback argument");
-    }
-
-    Local<Function> cb = Local<Function>::Cast(args[0]);
-    const unsigned argc = 2;
-    Local<Value> argv[argc];
-
-    try{
-        string nonce;
-        string buf = Util::needCredBuf(nonce); // serialized "NEEDCRED buffer     
-        /*
-            You could also use buf.data() for this next line,
-            but C++11 strings are guaranteed to be
-            allocated contiguously.
-        */
-        const char *c = &buf[0]; 
-        size_t len = buf.size();
-
-        // Send packet with transmission nonce and binary protocol buffer
-        // Currently, responsibility for keeping track of unattached users lies with JS
-        Local<Object> packet = Object::New();
-        packet->Set(String::NewSymbol("nonce"), String::New(nonce.c_str()));
-        packet->Set(String::NewSymbol("buffer"), Util::wrapBuf(c, len));
-
-        argv[0] = Local<Value>::New(Undefined());
-        argv[1] = packet;
-        
-    }
-    catch (util_exception& e){
-        argv[0] = Local<Value>::New(String::New(e.what()));
-        argv[1] = Local<Value>::New(Undefined());
-    }
-    cb->Call(Context::GetCurrent()->Global(), argc, argv);
-    return scope.Close(Undefined());
-}
-
-
-
 Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
     HandleScope scope;
 
@@ -151,6 +198,8 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
     Local<Value> lastNonce = packet->Get(String::New("nonce"));
     Local<Value> buffer = packet->Get(String::New("buffer"));
 
+
+
     // Parse binary data from node::Buffer
     char* bufData = Buffer::Data(buffer->ToObject());
     int bufLen = Buffer::Length(buffer->ToObject());     
@@ -159,23 +208,23 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
     
     try {
 
-        // TODO: how to compare nonces when user has not yet entered a group?
-
-        // TODO: parseBuf needs to return a way for us to decide what
-        // event to emit, and optionally some data for us to broadcast
-        
-        // Util is responsible for deciding when to create manager?
-        // No, that should be done in JS, leaving us free to assume this is a pre-chat event
-        // Types of events: get rooms, join chat
-
+        Local<Function> cb = Local<Function>::Cast(args[0]);
 
         Xblab* instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
+
+        // TODO: uv_queue_work
+        DataBaton *baton = new DataBaton(cb);
+        baton->nonce = Util::v8ToString(lastNonce);
+        baton->buf = buf;
+        baton->privateKeyFile = string(*(v8::String::Utf8Value(priv_key_filename)));
+        baton->password = string(*(v8::String::Utf8Value(key_passphrase)));
+        // baton->auxData = &instance->Managers;
+
+        // uv_queue_work(uv_default_loop(), &baton->request,
+        // Xblab::DigestBufferWorker, (uv_after_work_cb)Xblab::DigestBufferDone);
+
         Util::parseTransmission(Util::v8ToString(lastNonce), buf, instance->Managers);
-
-        cout << instance->Managers.begin()->first << endl;
-
-        // instance->CurrentUsers.insert(pair<int, User>(user.id, user));
-        // cout << "User " << user.username << " added to object cache.";
+        cout << instance->Managers.begin()->first << endl;        
     }
     catch (util_exception& e){
         
@@ -186,6 +235,12 @@ Handle<Value> Xblab::DigestBuffer(const Arguments& args) {
     }
 
     return scope.Close(Undefined());
+}
+
+void Xblab::DigestBufferWorker(uv_work_t *r){
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    baton->auxData = Util::unpackMember(
+        baton->privateKeyFile, baton->password, baton->nonce, baton->buf);
 }
 
 

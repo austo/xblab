@@ -49,9 +49,12 @@ class Util {
         
         #ifndef XBLAB_CLIENT
  
-        static std::string needCredBuf(std::string& nonce);
+        static std::string needCredBuf(std::string& privKeyFile, std::string& password, std::string& nonce);
         static void parseTransmission(std::string lastNonce,
             std::string& buf, std::map<std::string, v8::Handle<v8::Object> >& managers);
+        static Member* unpackMember(std::string& privateKey,
+            std::string& password, std::string& lastNonce, std::string& ciphertext);
+
 
         #endif
         
