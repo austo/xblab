@@ -35,9 +35,6 @@ struct DataBaton {
         callback.Dispose();
     }
     uv_work_t request;
-    std::string privateKeyFile;
-    std::string password;
-    std::string connstring;
     std::string buf;
     std::string nonce;
     std::string url;
@@ -68,10 +65,9 @@ class Util {
         Util();
         ~Util();
         
-        #ifndef XBLAB_CLIENT
- 
-        static std::string
-        needCredBuf(std::string& privKeyFile, std::string& password, std::string& nonce);
+        #ifndef XBLAB_CLIENT 
+        
+        static std::string needCredBuf(std::string& nonce);
         static void unpackMember(DataBaton* baton);
 
         #endif
@@ -84,7 +80,7 @@ class Util {
         static std::string v8ToString(v8::Local<v8::Value> value) {
             v8::String::Utf8Value utf8Value(value);
             return std::string(*utf8Value);
-        }
+        }        
 
     private:
         

@@ -38,7 +38,6 @@ class Db {
 
         static std::map<int, Member> getMembers(int group_id);
         static std::map<int, Member> getMembers(std::string conn, int group_id);
-        static std::string connectionString();
 
     private:
 };

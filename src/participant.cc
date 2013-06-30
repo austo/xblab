@@ -21,9 +21,8 @@ using namespace std;
 using namespace v8;
 using namespace node;
 
-v8::Persistent<v8::String> pub_key_filename;
+string publicKeyFile;
 v8::Persistent<v8::Function> nodeBufCtor;
-
 
 // args -> username, password, group TODO: make object/callback
 Handle<Value> Participant::New(const Arguments& args){
@@ -38,8 +37,8 @@ Handle<Value> Participant::New(const Arguments& args){
     Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
     Local<Value> group = cfg->Get(String::New("group"));
 
-    pub_key_filename = NODE_PSYMBOL(*(String::Utf8Value(pubkfile)));
-    cout << *(String::Utf8Value(pub_key_filename)) << endl;
+    publicKeyFile = string(*(String::Utf8Value(pubkfile)));
+    cout << publicKeyFile << endl;
 
     instance = new Participant(Util::v8ToString(group));   
 

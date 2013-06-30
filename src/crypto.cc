@@ -20,35 +20,17 @@ using namespace Botan;
 
 namespace xblab {
 
-extern v8::Persistent<v8::String> pub_key_filename;
-
-string Crypto::publicKeyFile(){
-    static string retval = string(*(v8::String::Utf8Value(pub_key_filename)));
-    return retval;
-}
+extern string publicKeyFile;
 
 #ifndef XBLAB_CLIENT // These methods assume a private key
 
-extern v8::Persistent<v8::String> priv_key_filename;
-extern v8::Persistent<v8::String> key_passphrase;
+extern string privateKeyFile;
+extern string keyPassword;
 
-string Crypto::privateKeyFile(){
-    static string retval = string(*(v8::String::Utf8Value(priv_key_filename)));
-    return retval;
-}
-
-string Crypto::keyPassPhrase(){
-    static string retval = string(*(v8::String::Utf8Value(key_passphrase)));
-    return retval;
-}
-
-
-string Crypto::sign(string message){
+string Crypto::sign(string& message){
     AutoSeeded_RNG rng;
-    string pr = privateKeyFile();
-    string pw = keyPassPhrase();
-    cout << pr << pw << endl;
-    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(pr, rng, pw));
+    // cout << pr << pw << endl;
+    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(privateKeyFile, rng, keyPassword));
     RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
 
     if(!rsakey){
@@ -62,9 +44,7 @@ string Crypto::sign(string message){
 
 string Crypto::hybridDecrypt(string& ciphertext){
     AutoSeeded_RNG rng;
-    string pr = privateKeyFile();
-    string pw = keyPassPhrase();
-    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(pr, rng, pw));
+    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(privateKeyFile, rng, keyPassword));
     RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
 
     if(!rsakey){
@@ -78,42 +58,6 @@ string Crypto::hybridDecrypt(string& ciphertext){
 
     return ptstream.str();
 }
-
-string Crypto::hybridDecrypt(string& privateKey, string& password, string& ciphertext){
-    AutoSeeded_RNG rng;
-    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(privateKey, rng, password));
-    RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
-
-    if(!rsakey){
-        cout << "BAD KEY!!" << endl;
-        throw crypto_exception("Invalid key");
-    }
-
-    stringstream ctstream(ciphertext);
-    stringstream ptstream;
-    hybridDecrypt(rng, rsakey, ctstream, ptstream);
-
-    return ptstream.str();
-}
-
-string Crypto::sign(string& privateKey, string& password, string& message){
-    AutoSeeded_RNG rng;
-    // DataSource_Memory ds(privateKey);
-    // cout << "got DataSource_Memory\n";
-    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(privateKey, rng, password));
-    // cout << "loaded key\n";
-    RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
-    // cout << "got key\n";
-
-    if(!rsakey){
-        cout << "BAD KEY!!" << endl;
-        throw crypto_exception("Invalid key");
-    }
-
-    return sign(rng, rsakey, message);
-}
-
-
 
 #endif
 
@@ -165,7 +109,7 @@ bool Crypto::verify(string publicKey, string message, string signature){
 
 
 bool Crypto::verify(string message, string signature){
-    std::auto_ptr<X509_PublicKey> key(X509::load_key(publicKeyFile()));
+    std::auto_ptr<X509_PublicKey> key(X509::load_key(publicKeyFile));
     RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
 
     if(!rsakey) {
@@ -217,7 +161,7 @@ string Crypto::hybridEncrypt(string& publicKey, string& plaintext){
 
 void Crypto::hybridEncrypt(stringstream& in, stringstream& out){        
 
-    std::auto_ptr<X509_PublicKey> key(X509::load_key(publicKeyFile()));
+    std::auto_ptr<X509_PublicKey> key(X509::load_key(publicKeyFile));
     RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
 
     if(!rsakey) {

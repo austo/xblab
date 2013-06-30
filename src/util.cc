@@ -32,12 +32,19 @@ namespace xblab {
 
 extern v8::Persistent<v8::Function> nodeBufCtor;
 
+extern string connectionString;
+extern string privateKeyFile;
+extern string publicKeyFile;
+extern string keyPassword;
+
 Util::Util(){ /* The goal is to keep this a "static" class */ }
 Util::~Util(){}
 
 #ifndef XBLAB_CLIENT
 
-string Util::needCredBuf(string& privKeyFile, string& password, string& nonce){ 
+
+// TODO: take DataBaton
+string Util::needCredBuf(string& nonce){ 
     // cout << "generating nonce\n";   
     nonce = Crypto::generateNonce();
     // cout << "have nonce\n";
@@ -55,7 +62,7 @@ string Util::needCredBuf(string& privKeyFile, string& password, string& nonce){
     try{
         // cout << "signing message\n";
         // cout << privKeyFile << endl << password << endl;
-        sig = Crypto::sign(privKeyFile, password, datastr);
+        sig = Crypto::sign(datastr);
         // cout << "message signed\n";
         bc.set_signature(sig);
         // cout << "signature set\n";
@@ -78,7 +85,7 @@ string Util::needCredBuf(string& privKeyFile, string& password, string& nonce){
 // Validates new member and initializes Manager for requested group if need be
 void Util::unpackMember(DataBaton* baton){
     string buf =
-        Crypto::hybridDecrypt(baton->privateKeyFile, baton->password, baton->buf);
+        Crypto::hybridDecrypt(baton->buf);
 
     //TODO: switch on transmission type
     Transmission trans;
@@ -117,7 +124,7 @@ void Util::unpackMember(DataBaton* baton){
 
             if (mptrs->find(baton->url) == mptrs->end()){
                 // add new manager (to be wrapped later)
-                mgr = new Manager(baton->connstring, baton->url);
+                mgr = new Manager(baton->url);
                 mptrs->insert(pair<string, void* >(baton->url, mgr));
             }
             else {

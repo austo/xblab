@@ -32,7 +32,6 @@ class Crypto {
 
 public:
     
-    static std::string publicKeyFile();
     static void generateKey(std::string& pr, std::string& pu);
     static std::string generateNonce();    
 
@@ -47,7 +46,6 @@ public:
 
     static std::string hybridDecrypt(std::string& privateKey, std::string& ciphertext);
 
-    
     static std::string sign(std::string& privateKey, std::string& message);
     static std::string hashPassword(std::string& pw);
     static bool checkPasshash(std::string pw, std::string ph);
@@ -58,16 +56,9 @@ public:
 
     #ifndef XBLAB_CLIENT
 
-    static std::string keyPassPhrase();
-    static std::string privateKeyFile();
-    static std::string sign(std::string message);
-    static std::string sign(std::string& privateKey, std::string& password, std::string& message);
-
-
+    // TODO: remove unnecessary overloads
+    static std::string sign(std::string& message);
     static std::string hybridDecrypt(std::string& ciphertext);
-    static std::string
-    hybridDecrypt(std::string& privateKey, std::string& password, std::string& ciphertext);
-
 
     #endif
 

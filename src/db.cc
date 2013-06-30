@@ -10,18 +10,14 @@ using namespace pqxx;
 
 namespace xblab {
 
-extern v8::Persistent<v8::String> connstring;
+extern string connectionString; // access from uv_work_t
+
 
 Db::Db(){ /* The goal is to keep this a "static" class */ }
 Db::~Db(){}
 
-string Db::connectionString(){
-    static string retval = string(*(v8::String::Utf8Value(connstring)));
-    return retval;
-}
-
 Group Db::getGroup(string url){ //Calling code responsible for string trimming 
-    return getGroup(connectionString(), url);
+    return getGroup(connectionString, url);
 }
 
 Group Db::getGroup(string conn, string url){
@@ -49,7 +45,7 @@ Group Db::getGroup(string conn, string url){
 
 
 map<int, Member> Db::getMembers(int group_id){
-    return getMembers(connectionString(), group_id);
+    return getMembers(connectionString, group_id);
 }
 
 map<int, Member> Db::getMembers(string conn, int group_id){

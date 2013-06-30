@@ -25,12 +25,12 @@ namespace xblab {
     May be used from other classes but need to be defined extern
     TODO: use object template?
 */
-v8::Persistent<v8::String> connstring;
-v8::Persistent<v8::String> pub_key_filename;
-v8::Persistent<v8::String> priv_key_filename;
-v8::Persistent<v8::String> key_passphrase;
 v8::Persistent<v8::Function> nodeBufCtor;
 
+string connectionString;
+string privateKeyFile;
+string publicKeyFile;
+string keyPassword;
 
 // V8 entry point
 // Repeat declaration of static member(s) to make visible to extern C
@@ -88,11 +88,7 @@ Handle<Value> Xblab::OnConnect(const Arguments& args) {
     Local<Function> cb = Local<Function>::Cast(args[0]);
     
     // Populate baton struct to pass to uv_queue_work:
-    // Private key and password unpacked here to avoid memory conflicts with v8 heap.
-    DataBaton *baton = new DataBaton(cb);
-    baton->privateKeyFile = string(*(v8::String::Utf8Value(priv_key_filename)));
-    baton->password = string(*(v8::String::Utf8Value(key_passphrase)));
-
+    DataBaton *baton = new DataBaton(cb);    
     uv_queue_work(uv_default_loop(), &baton->request,
         OnConnectWork, (uv_after_work_cb)AfterOnConnect);
     
@@ -105,8 +101,7 @@ void Xblab::OnConnectWork(uv_work_t *r){
 
     string nonce;
     // get serialized "NEEDCRED buffer
-    string buf =
-        Util::needCredBuf(baton->privateKeyFile, baton->password, nonce);
+    string buf = Util::needCredBuf(nonce);
     baton->nonce = nonce;
     baton->buf = buf;
 }
@@ -156,12 +151,11 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
     Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
     Handle<Value> privkfile = cfg->Get(String::New("privKeyFile"));
     Handle<Value> keypw = cfg->Get(String::New("keyPassphrase"));
-
-
-    connstring = NODE_PSYMBOL(*(String::Utf8Value(constr)));
-    pub_key_filename = NODE_PSYMBOL(*(String::Utf8Value(pubkfile)));
-    priv_key_filename = NODE_PSYMBOL(*(String::Utf8Value(privkfile)));
-    key_passphrase = NODE_PSYMBOL(*(String::Utf8Value(keypw)));
+    
+    connectionString = string(*(String::Utf8Value(constr)));
+    privateKeyFile = string(*(String::Utf8Value(privkfile)));
+    publicKeyFile = string(*(String::Utf8Value(pubkfile)));
+    keyPassword = string(*(String::Utf8Value(keypw)));
 
     return scope.Close(Undefined());
 }
@@ -192,10 +186,7 @@ Handle<Value> Xblab::DigestBuf(const Arguments& args) {
 
         DataBaton *baton = new DataBaton(cb);
         baton->nonce = Util::v8ToString(lastNonce);
-        baton->buf = buf;
-        baton->privateKeyFile = string(*(v8::String::Utf8Value(priv_key_filename)));
-        baton->password = string(*(v8::String::Utf8Value(key_passphrase)));
-        baton->connstring = string(*(v8::String::Utf8Value(connstring)));
+        baton->buf = buf;        
         baton->auxData = &instance->mptrs;
 
 
