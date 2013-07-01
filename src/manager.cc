@@ -76,9 +76,11 @@ void Manager::Init(Handle<Object> module) {
 }
 
 // args -> group url
-// TODO: change to JS object ctor
 Handle<Value> Manager::New(const Arguments& args) {
-    HandleScope scope; 
+    HandleScope scope;
+    if (!args.IsConstructCall()){
+        THROW("Use new to create Manager objects.");
+    }
     string url;
     if (!args[0]->IsUndefined()){
         String::Utf8Value temp_url(args[0]->ToString());
