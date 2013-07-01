@@ -16,7 +16,6 @@ net.createServer(function (socket) {
         We don't know how to parse it at this level,
         so send it down to C++ land
     */
-
     xblab.getConnectionBuffer(function (err, buf){
         if (err){
             console.log(err);        
@@ -28,12 +27,11 @@ net.createServer(function (socket) {
                     new Date(), socket.remoteAddress);
                 socket.write(buf.buffer);
             }               
-                // console.log(socket);           
         }
     });
 
     socket.on('data', function (data) {
-        console.log(data);     
+        console.log(data);
 
         xblab.digestBuffer({
             nonce: socket.lastNonce,
@@ -42,17 +40,19 @@ net.createServer(function (socket) {
         function (err, buf){
             if (err){
                 console.log(err);
+                socket.end()
             }
             else {
                 if (buf && buf.nonce && buf.mgr){
-                    socket.lastNonce = buf.nonce;                   
-
+                    socket.lastNonce = buf.nonce;
                 }
             }
         });
-        console.log(xblab);
-
     });
+
+    socket.on('error', function(err){
+        console.log(err);
+    })
  
     socket.on('end', function () {
 

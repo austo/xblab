@@ -20,20 +20,18 @@ using namespace std;
 
 namespace xblab {
 
-/*
-    C-style global configuration items
-    May be used from other classes but need to be defined extern
-    TODO: use object template?
-*/
+
+// We use node::Buffer enough to keep its constructor handy
 v8::Persistent<v8::Function> nodeBufCtor;
 
+/* Global configuration items */
 string connectionString;
 string privateKeyFile;
 string publicKeyFile;
 string keyPassword;
 
 // V8 entry point
-// Repeat declaration of static member(s) to make visible to extern C
+// Repeat declaration of static member(s) to make visible to node dlopen
 v8::Persistent<v8::Object> Xblab::pHandle_;
 void Xblab::InitAll(Handle<Object> module) {
     try {
@@ -111,7 +109,7 @@ void Xblab::AfterOnConnect (uv_work_t *r) {
     HandleScope scope;
     DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
 
-    TryCatch try_catch;
+    TryCatch tc;
 
     const unsigned argc = 2;
     Local<Value> argv[argc];
@@ -131,8 +129,8 @@ void Xblab::AfterOnConnect (uv_work_t *r) {
 
     delete baton;
 
-    if (try_catch.HasCaught()) {
-        FatalException(try_catch);
+    if (tc.HasCaught()) {
+        FatalException(tc);
     }
 }
 
@@ -146,6 +144,8 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
         THROW("xblab.config requires object argument");
     }
 
+    TryCatch tc;
+
     Handle<Object> cfg = Handle<Object>::Cast(args[0]);
     Handle<Value> constr = cfg->Get(String::New("connstring"));
     Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
@@ -157,20 +157,37 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
     publicKeyFile = string(*(String::Utf8Value(pubkfile)));
     keyPassword = string(*(String::Utf8Value(keypw)));
 
+    if (tc.HasCaught()) {
+        FatalException(tc);
+    }
+
     return scope.Close(Undefined());
 }
 
 
 Handle<Value> Xblab::DigestBuf(const Arguments& args) {
     HandleScope scope;
+    const unsigned argc = 2;
 
     if (!args[0]->IsObject() || !args[1]->IsFunction()){
         THROW("xblab: digestBuffer() requires buffer and callback argument");
     }
 
+
     Local<Object> packet = args[0]->ToObject();
     Local<Value> lastNonce = packet->Get(String::New("nonce"));
     Local<Value> buffer = packet->Get(String::New("buffer"));
+
+    Local<Function> cb = Local<Function>::Cast(args[1]);
+
+    if (lastNonce->IsUndefined() || buffer->IsUndefined()){
+        Handle<Value> argv[argc] = {
+            String::New("Invalid arguments"),
+            Null()
+        };
+        cb->Call(Context::GetCurrent()->Global(), argc, argv);
+        return scope.Close(Undefined());
+    }    
 
     // Parse binary data from node::Buffer
     char* bufData = Buffer::Data(buffer->ToObject());
@@ -180,15 +197,12 @@ Handle<Value> Xblab::DigestBuf(const Arguments& args) {
     
     try {
 
-        Local<Function> cb = Local<Function>::Cast(args[0]);
-
         Xblab *instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
 
         DataBaton *baton = new DataBaton(cb);
         baton->nonce = Util::v8ToString(lastNonce);
         baton->buf = buf;        
         baton->auxData = &instance->mptrs;
-
 
         uv_queue_work(uv_default_loop(), &baton->request,
         DigestBufWork, (uv_after_work_cb)AfterDigestBuf);
@@ -197,7 +211,6 @@ Handle<Value> Xblab::DigestBuf(const Arguments& args) {
     catch (util_exception& e){
         
         // TODO: should errors always be handled in user-supplied callback?
-        Local<Function> cb = Local<Function>::Cast(args[1]);
         Local<Value> argv[1] = { String::New(e.what()) };
         cb->Call(Context::GetCurrent()->Global(), 1, argv);
     }
@@ -220,11 +233,11 @@ void Xblab::DigestBufWork(uv_work_t *r){
 
 
 // TODO: callback!
-void Xblab::AfterDigestBuf (uv_work_t *r) {
+void Xblab::AfterDigestBuf(uv_work_t *r) {
     HandleScope scope;
     DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
 
-    TryCatch try_catch;
+    TryCatch tc;
 
     // const unsigned argc = 2;
     // Local<Value> argv[argc];
@@ -248,8 +261,8 @@ void Xblab::AfterDigestBuf (uv_work_t *r) {
     // TODO: return welcome buffer
     delete baton;
 
-    if (try_catch.HasCaught()) {
-        FatalException(try_catch);
+    if (tc.HasCaught()) {
+        FatalException(tc);
     }
 }
 
