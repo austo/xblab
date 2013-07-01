@@ -12,7 +12,6 @@
 #include "util.h"
 
 
-
 using namespace v8;
 using namespace node;
 using namespace std;
@@ -140,27 +139,33 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
     HandleScope scope;
 
     // TODO: error callback
-    if (!args[0]->IsObject()) {
-        THROW("xblab.config requires object argument");
+    if (args.Length() != 2 ||
+        !args[0]->IsObject() || !args[1]->IsFunction()) {
+        THROW("xblab.config requires object and callback arguments");
     }
 
-    TryCatch tc;
-
     Handle<Object> cfg = Handle<Object>::Cast(args[0]);
+    Local<Function> cb = Local<Function>::Cast(args[1]);
+
     Handle<Value> constr = cfg->Get(String::New("connstring"));
     Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
     Handle<Value> privkfile = cfg->Get(String::New("privKeyFile"));
     Handle<Value> keypw = cfg->Get(String::New("keyPassphrase"));
+
+    if (constr->IsUndefined() || pubkfile->IsUndefined() ||
+        privkfile->IsUndefined() || keypw->IsUndefined()){
+        Handle<Value> argv[1] = { 
+            String::New("xblab.config: one or more properties is undefined.")
+        };
+        cb->Call(Context::GetCurrent()->Global(), 1, argv);
+        return scope.Close(Undefined());
+    }
     
     connectionString = string(*(String::Utf8Value(constr)));
     privateKeyFile = string(*(String::Utf8Value(privkfile)));
     publicKeyFile = string(*(String::Utf8Value(pubkfile)));
     keyPassword = string(*(String::Utf8Value(keypw)));
-
-    if (tc.HasCaught()) {
-        FatalException(tc);
-    }
-
+    
     return scope.Close(Undefined());
 }
 

@@ -6,7 +6,12 @@ var net = require('net'),
     path = require('path'),
     port = 8888;    
 
-    xblab.config(cfg); //should be async
+xblab.config(cfg, function(err){
+    if (err){
+        console.log(err);
+        process.exit(1);
+    }
+});
 
 var mgrs = [];
 

@@ -4,7 +4,12 @@ var xbcfg = require('../xblab.config'),
     assert = require('assert');
 
 
-xblab.config(xbcfg);
+xblab.config(xbcfg, function(err){
+    if (err){
+        console.log(err);
+        process.exit(1);
+    }
+});
 
 // xblab.createManager() is a stand in for new Manager()
 var mgr = xblab.createManager('xchat');
