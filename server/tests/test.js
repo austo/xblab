@@ -1,10 +1,10 @@
-var xbcfg = require('../xblab.config'),
+var cfg = require('../xblab.config'),
     xblab = require('../lib/xblab.wrapper'),
     util = require('util'),
     assert = require('assert');
 
 
-xblab.config(xbcfg, function(err){
+xblab.config(cfg, function(err){
     if (err){
         console.log(err);
         process.exit(1);

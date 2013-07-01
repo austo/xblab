@@ -4,9 +4,9 @@ var net = require('net'),
     cfg = require('./xblab.config'),
     xblab = require('./lib/xblab.wrapper'),
     path = require('path'),
-    port = 8888;    
+    port = cfg.serverPort || 8888;    
 
-xblab.config(cfg, function(err){
+xblab.config(cfg, function (err){
     if (err){
         console.log(err);
         process.exit(1);
@@ -17,9 +17,8 @@ var mgrs = [];
 
 net.createServer(function (socket) { 
     /*
-        This should be a 100% binary message.
-        We don't know how to parse it at this level,
-        so send it down to C++ land
+        Binary message - we don't know how
+        to parse it here, send to C++.
     */
     xblab.getConnectionBuffer(function (err, buf){
         if (err){
@@ -35,6 +34,13 @@ net.createServer(function (socket) {
         }
     });
 
+    /*
+        TODO:
+        Need some way to either give socket to correct
+        manager or move the whole thing to C++.
+        Otherwise we have to determine correct group
+        for each 'on data' event.
+    */
     socket.on('data', function (data) {
         console.log(data);
 
