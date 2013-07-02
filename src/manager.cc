@@ -104,13 +104,16 @@ Handle<Value> Manager::NewInstance(const Arguments& args) {
     return scope.Close(instance);
 }
 
-Handle<Value> Manager::GetGroupName(Local<String> property, const AccessorInfo& info) {
+Handle<Value>
+Manager::GetGroupName(Local<String> property, const AccessorInfo& info) {
     // Extract C++ request object from JS wrapper
     Manager* instance = ObjectWrap::Unwrap<Manager>(info.Holder());
     return String::New(instance->group_.url.c_str());
 }
 
-void Manager::SetGroupName(Local<String> property, Local<Value> value, const AccessorInfo& info) {    
+void
+Manager::SetGroupName(Local<String> property,
+    Local<Value> value, const AccessorInfo& info) {    
     THROW_FIELD_EX(property); //readonly
 }
 
@@ -118,14 +121,15 @@ Handle<Value> Manager::SayHello(const Arguments& args) {
     HandleScope scope;
     Manager* instance = ObjectWrap::Unwrap<Manager>(args.This());   
     stringstream ss;
-    ss << "Greetings from your manager and welcome to group " << instance->group_.name 
-       << " at " << instance->group_.url << endl << "members:";
+    ss << "Greetings from your manager and welcome to group "
+       << instance->group_.name << " at " << instance->group_.url 
+       << endl << "members:";
     map<int, Member>::const_iterator mitr = instance->members_.begin();
     for (; mitr != instance->members_.end(); ++mitr){
         ss << endl << mitr->second.handle;
     }
 
-    string ct = instance->encrypt("super-sexxxy");
+    string ct = instance->encrypt("super-sexxxy"); // ha!
 
     Handle<Value> argv[2] = {
         String::New("decrypted"),
@@ -133,12 +137,12 @@ Handle<Value> Manager::SayHello(const Arguments& args) {
     };
 
     node::MakeCallback(args.This(), "emit", 2, argv);
-
-    return scope.Close(String::New(ss.str().c_str())); //String::New(ss.str().c_str()));
+    return scope.Close(String::New(ss.str().c_str()));
 } 
 
 
-// TODO: Encrypt should take member token, then encrypt with member public key
+// TODO: Encrypt should take member token,
+// then encrypt with member public key
 string Manager::encrypt(string in){
     string ciphertext = Crypto::hybridEncrypt(this->pub_key_, in);
     return Crypto::hybridDecrypt(this->priv_key_, ciphertext);

@@ -32,7 +32,6 @@ public:
   std::map<std::string, v8::Handle<v8::Object> > Managers;
   std::map<std::string, void*> mptrs;
 
-
 private:
   Xblab();
   ~Xblab(){};

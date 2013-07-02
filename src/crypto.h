@@ -51,9 +51,6 @@ public:
     static bool checkPasshash(std::string pw, std::string ph);
 
 
-
-
-
     #ifndef XBLAB_CLIENT
 
     // TODO: remove unnecessary overloads
@@ -63,6 +60,8 @@ public:
     #endif
 
 private:
+    Crypto(){};
+    ~Crypto(){};
 
     // Convenience wrappers for Botan Pipe functions
     static std::string b64Encode(const Botan::SecureVector<unsigned char>&);

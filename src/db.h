@@ -30,9 +30,7 @@ private:
 };
 
 class Db {
-    public:
-        Db();
-        ~Db();
+    public:       
         static Group getGroup(std::string url);
         static Group getGroup(std::string conn, std::string url);
 
@@ -40,6 +38,8 @@ class Db {
         static std::map<int, Member> getMembers(std::string conn, int group_id);
 
     private:
+        Db(){};
+        ~Db(){};
 };
 }//namespace xblab
 

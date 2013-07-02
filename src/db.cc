@@ -12,10 +12,6 @@ namespace xblab {
 
 extern string connectionString; // access from uv_work_t
 
-
-Db::Db(){ /* The goal is to keep this a "static" class */ }
-Db::~Db(){}
-
 Group Db::getGroup(string url){ //Calling code responsible for string trimming 
     return getGroup(connectionString, url);
 }

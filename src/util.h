@@ -61,9 +61,7 @@ private:
 
 class Util {
 
-    public:
-        Util();
-        ~Util();
+    public:     
         
         #ifndef XBLAB_CLIENT 
         
@@ -83,7 +81,8 @@ class Util {
         }        
 
     private:
-        
+        Util(){ /* keep as "static" class */ };
+        ~Util(){};  
 };
 
 } //namespace xblab

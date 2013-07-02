@@ -37,9 +37,6 @@ extern string privateKeyFile;
 extern string publicKeyFile;
 extern string keyPassword;
 
-Util::Util(){ /* The goal is to keep this a "static" class */ }
-Util::~Util(){}
-
 #ifndef XBLAB_CLIENT
 
 
