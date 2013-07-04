@@ -2,8 +2,9 @@
     "targets": [
     {
       "target_name": "xblab",
-      "sources": [  "../src/xblab.server.cc", "../src/util.cc", "../src/db.cc", 
-      "../src/crypto.cc", "../src/manager.cc", "../src/protobuf/xblab.pb.cc" ],
+      "sources": [  "../src/xblab.server.cc", "../src/util.cc",
+      "../src/db.cc", "../src/nodeUtil.cc", "../src/crypto.cc", 
+      "../src/manager.cc", "../src/protobuf/xblab.pb.cc" ],
       'conditions': [
           ['OS!="win"', {
             'cflags': [ '-Wall', '-fexceptions', '-g' ],

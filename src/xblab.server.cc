@@ -10,6 +10,8 @@
 #include "xblab.server.h"
 #include "manager.h"
 #include "util.h"
+#include "nodeUtil.h"
+#include "baton.h"
 
 
 using namespace v8;
@@ -119,7 +121,7 @@ void Xblab::AfterOnConnect (uv_work_t *r) {
 
     Local<Object> packet = Object::New();    
     packet->Set(String::NewSymbol("nonce"), String::New(baton->nonce.c_str()));
-    packet->Set(String::NewSymbol("buffer"), Util::wrapBuf(c, len));
+    packet->Set(String::NewSymbol("buffer"), NodeUtil::wrapBuf(c, len));
 
     argv[0] = Local<Value>::New(Undefined());
     argv[1] = packet;
@@ -205,7 +207,7 @@ Handle<Value> Xblab::DigestBuf(const Arguments& args) {
         Xblab *instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
 
         DataBaton *baton = new DataBaton(cb);
-        baton->nonce = Util::v8ToString(lastNonce);
+        baton->nonce = NodeUtil::v8ToString(lastNonce);
         baton->buf = buf;        
         baton->auxData = &instance->mptrs;
 

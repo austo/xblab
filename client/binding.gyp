@@ -2,7 +2,7 @@
     "targets": [
     {
       "target_name": "xblab",
-      "sources": [  "../src/util.cc",
+      "sources": [  "../src/util.cc", "../src/nodeUtil.cc",
       "../src/protobuf/xblab.pb.cc", "../src/crypto.cc",
       "../src/participant.cc" ],
       'defines': [ 'XBLAB_CLIENT' ],

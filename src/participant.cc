@@ -11,6 +11,7 @@
 
 #include "participant.h"
 #include "util.h"
+#include "nodeUtil.h"
 #include "crypto.h"
 #include "macros.h"
 
@@ -40,7 +41,7 @@ Handle<Value> Participant::New(const Arguments& args){
     publicKeyFile = string(*(String::Utf8Value(pubkfile)));
     cout << publicKeyFile << endl;
 
-    instance = new Participant(Util::v8ToString(group));   
+    instance = new Participant(NodeUtil::v8ToString(group));   
 
     instance->Wrap(args.This());
     return scope.Close(args.This());
@@ -58,7 +59,7 @@ Participant::GetHandle(Local<String> property, const AccessorInfo& info){
 void
 Participant::SetHandle(Local<String> property, Local<Value> value, const AccessorInfo& info){
     Participant* instance = ObjectWrap::Unwrap<Participant>(info.Holder());
-    instance->handle_ = Util::v8ToString(value);
+    instance->handle_ = NodeUtil::v8ToString(value);
 }
 
 // TODO: error handling!
@@ -74,8 +75,8 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
     Local<Value> password = credentials->Get(String::New("password"));
 
     Participant* instance = ObjectWrap::Unwrap<Participant>(args.This());
-    instance->username_ = Util::v8ToString(username);
-    instance->password_ = Util::v8ToString(password);
+    instance->username_ = NodeUtil::v8ToString(username);
+    instance->password_ = NodeUtil::v8ToString(password);
 
     string buf = Util::packageParticipantCredentials(instance);
     // cout << "packageParticipantCredentials result:\n" << buf << endl;
@@ -85,7 +86,7 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
 
     Handle<Value> argv[2] = {
         String::New("haveCred"),
-        Util::wrapBuf(c, len)
+        NodeUtil::wrapBuf(c, len)
     };
 
     node::MakeCallback(args.This(), "emit", 2, argv);

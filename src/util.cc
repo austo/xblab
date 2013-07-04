@@ -3,13 +3,11 @@
 #include <vector>
 #include <map>
 
-#include <node_buffer.h>
-
-#include <botan/botan.h>
-#include <botan/bcrypt.h>
-#include <botan/rsa.h>
-#include <botan/pubkey.h>
-#include <botan/look_pk.h>
+// #include <botan/botan.h>
+// #include <botan/bcrypt.h>
+// #include <botan/rsa.h>
+// #include <botan/pubkey.h>
+// #include <botan/look_pk.h>
 
 #include "macros.h"
 #include "util.h"
@@ -21,8 +19,7 @@
 
 
 using namespace std;
-using namespace Botan;
-using namespace v8;
+// using namespace Botan;
 
 
 #define DL_EX_PREFIX "Util: "
@@ -30,7 +27,6 @@ using namespace v8;
 
 namespace xblab {
 
-extern v8::Persistent<v8::Function> nodeBufCtor;
 
 extern string connectionString;
 extern string privateKeyFile;
@@ -230,23 +226,6 @@ MessageType Util::parseBroadcast(string& in, void* auxData){
     }       
 
     return retval;
-}
-
-
-v8::Local<v8::Value> Util::wrapBuf(const char *c, size_t len){
-    v8::HandleScope scope;
-    static const unsigned bufArgc = 3;
-
-    node::Buffer *slowBuffer = node::Buffer::New(len);        
-    memcpy(node::Buffer::Data(slowBuffer), c, len); // Buffer::Data = (void *)    
-   
-    v8::Handle<v8::Value> bufArgv[bufArgc] = { 
-        slowBuffer->handle_,    // JS SlowBuffer handle
-        v8::Integer::New(len),  // SlowBuffer length
-        v8::Integer::New(0)     // Offset where "FastBuffer" should start
-    };
-
-    return scope.Close(nodeBufCtor->NewInstance(bufArgc, bufArgv));
 }
 
 } //namespace xblab

@@ -1,9 +1,7 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-#ifndef XBLAB_NATIVE
-#include "util.h"
-#endif
+// nodeUtil.h included ifndef XBLAB_NATIVE
 
 // #define NDEBUG
 
@@ -30,12 +28,15 @@
 #define MACOUTLEN 12
 
 
+
 #ifndef XBLAB_NATIVE
+
+#include "nodeUtil.h"
 
 // HACK - there may be a much nicer way to do this
 #define THROW_FIELD_EX(prop) { stringstream ss;                 \
             ss << "Unable to set value of readonly field \'"    \
-            << Util::v8ToString(prop) << "\'";                  \
+            << NodeUtil::v8ToString(prop) << "\'";                  \
             ThrowException(String::New(ss.str().c_str())); }
 
 // Get node::Buffer constructor from JS land

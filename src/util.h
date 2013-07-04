@@ -3,11 +3,11 @@
 
 #include <string>
 #include <map>
-#include <node.h>
 #include <exception>
 #include "group.h"
 #include "member.h"
 #include "protobuf/xblab.pb.h"
+#include "baton.h"
 
 
 namespace xblab {
@@ -25,23 +25,7 @@ enum MessageType {
     INVALID
 };
 
-// TODO: move to separate file
-struct DataBaton {
-    DataBaton(v8::Local<v8::Function> cb){
-        request.data = this;
-        callback = v8::Persistent<v8::Function>::New(cb);
-    }
-    ~DataBaton(){
-        callback.Dispose();
-    }
-    uv_work_t request;
-    std::string buf;
-    std::string nonce;
-    std::string url;
-    std::string err;
-    void *auxData;
-    v8::Persistent<v8::Function> callback;
-};
+
 
 class util_exception : public std::exception {
 public:
@@ -71,14 +55,7 @@ class Util {
         #endif
         
         static MessageType parseBroadcast(std::string& in, void* out);
-        static std::string packageParticipantCredentials(void* data);
-
-        static v8::Local<v8::Value> wrapBuf(const char *c, size_t len);
-
-        static std::string v8ToString(v8::Local<v8::Value> value) {
-            v8::String::Utf8Value utf8Value(value);
-            return std::string(*utf8Value);
-        }        
+        static std::string packageParticipantCredentials(void* data);   
 
     private:
         Util(){ /* keep as "static" class */ };
