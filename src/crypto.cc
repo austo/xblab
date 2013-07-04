@@ -4,8 +4,6 @@
 #include <vector>
 #include <memory>
 
-#include <node.h>
-
 #include <botan/base64.h>
 #include <botan/hex.h>
 #include <botan/lookup.h>

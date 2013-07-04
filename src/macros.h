@@ -1,7 +1,9 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+#ifndef XBLAB_NATIVE
 #include "util.h"
+#endif
 
 // #define NDEBUG
 
@@ -28,6 +30,8 @@
 #define MACOUTLEN 12
 
 
+#ifndef XBLAB_NATIVE
+
 // HACK - there may be a much nicer way to do this
 #define THROW_FIELD_EX(prop) { stringstream ss;                 \
             ss << "Unable to set value of readonly field \'"    \
@@ -39,6 +43,8 @@
             Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));     
 
 #define THROW(prop) ThrowException(String::New(prop));
+
+#endif
 
 
 #endif

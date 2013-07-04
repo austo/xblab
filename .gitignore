@@ -10,3 +10,6 @@ core
 *.pem
 xblab.config.json
 scraps.cc
+*.o
+native.server
+_gitignore
