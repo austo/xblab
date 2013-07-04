@@ -8,25 +8,9 @@
 #include <uv.h>
 
 #include "crypto.h"
+#include "baton.h"
 
 namespace xblab {
-
-
-// TODO: this is crap
-struct DataBaton {
-    DataBaton(){
-        request.data = this;
-        client.data = this;
-    }
-    ~DataBaton(){}
-    uv_tcp_t client;
-    uv_work_t request;
-    std::string buf;
-    int buflen;
-    std::string nonce;
-    std::string err;
-    void *auxData;
-};
 
 
 uv_loop_t *loop;

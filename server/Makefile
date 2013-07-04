@@ -14,7 +14,7 @@ clean:
 native.server:     crypto.o native.server.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
-native.server.o:	$(XB_SRC)/native.server.cc $(XB_SRC)/crypto.h
+native.server.o:	$(XB_SRC)/native.server.cc $(XB_SRC)/crypto.h $(XB_SRC)/baton.h
 	$(CC) -c -g $(CFLAGS) -D XBLAB_NATIVE=1 $(XB_SRC)/native.server.cc
 
 crypto.o:		$(XB_SRC)/crypto.cc $(XB_SRC)/crypto.h $(XB_SRC)/macros.h
