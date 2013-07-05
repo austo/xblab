@@ -149,10 +149,15 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
     Handle<Object> cfg = Handle<Object>::Cast(args[0]);
     Local<Function> cb = Local<Function>::Cast(args[1]);
 
-    Handle<Value> constr = cfg->Get(String::New("connstring"));
-    Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
-    Handle<Value> privkfile = cfg->Get(String::New("privKeyFile"));
-    Handle<Value> keypw = cfg->Get(String::New("keyPassphrase"));
+    // Handle<Value> constr = cfg->Get(String::New("connstring"));
+    // Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
+    // Handle<Value> privkfile = cfg->Get(String::New("privKeyFile"));
+    // Handle<Value> keypw = cfg->Get(String::New("keyPassphrase"));
+
+    Handle<Value> constr = GET_PROP(cfg, xbConnectionString);
+    Handle<Value> pubkfile = GET_PROP(cfg, xbPublicKeyFile);
+    Handle<Value> privkfile = GET_PROP(cfg, xbPrivateKeyFile);
+    Handle<Value> keypw = GET_PROP(cfg, xbKeyPassword);
 
     if (constr->IsUndefined() || pubkfile->IsUndefined() ||
         privkfile->IsUndefined() || keypw->IsUndefined()){

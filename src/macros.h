@@ -33,14 +33,20 @@
 
 #include "nodeUtil.h"
 
+#define XBGROUP "group"
+#define XBUSERNAME "username"
+#define XBPASSWORD "password"
+
+#define GET_PROP(obj, setting) obj->Get(String::New(#setting)) 
+
 // HACK - there may be a much nicer way to do this
 #define THROW_FIELD_EX(prop) { stringstream ss;                 \
             ss << "Unable to set value of readonly field \'"    \
-            << NodeUtil::v8ToString(prop) << "\'";                  \
+            << NodeUtil::v8ToString(prop) << "\'";              \
             ThrowException(String::New(ss.str().c_str())); }
 
 // Get node::Buffer constructor from JS land
-#define JS_NODE_BUF_CTOR Persistent<Function>::New(Local<Function>::                \
+#define JS_NODE_BUF_CTOR Persistent<Function>::New(Local<Function>:: \
             Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));     
 
 #define THROW(prop) ThrowException(String::New(prop));

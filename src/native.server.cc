@@ -13,13 +13,21 @@
 namespace xblab {
 
 
+#define N_CFGSETTINGS 4;
+
+
+
+cfg_t *cfg_settings;
+
+
 uv_loop_t *loop;
 
 
 // Defined extern in crypto.cc
-std::string publicKeyFile = "rsapub.pem";
-std::string privateKeyFile = "rsapriv.pem";
-std::string keyPassword; // args
+std::string xbConnstring;
+std::string xbPublicKeyFile;
+std::string xbPrivateKeyFile;
+std::string xbKeyPassword;
 
 
 // TODO: integrate into DataBaton
@@ -89,11 +97,15 @@ on_new_connection(uv_stream_t *server, int status) {
 int
 main(int argc, char** argv) {
     if (argc != 3){
-        fprintf(stderr, "usage: %s port, passphrase\n", argv[0]);
+        fprintf(stderr, "usage: %s <port>, <config filename>\n", argv[0]);
         return 1;
     }
+
+
+
+
     int port = atoi(argv[1]);
-    xblab::keyPassword = std::string(argv[2]);
+    xblab::xbKeyPassword = std::string(argv[2]);
 
     xblab::loop = uv_default_loop();
     uv_tcp_t server;

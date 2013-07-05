@@ -26,7 +26,8 @@ string xbPublicKeyFile;
 v8::Persistent<v8::Function> xbNodeBufCtor;
 
 // args -> username, password, group TODO: make object/callback
-Handle<Value> Participant::New(const Arguments& args){
+Handle<Value>
+Participant::New(const Arguments& args){
     HandleScope scope; 
 
     Participant* instance;
@@ -35,11 +36,10 @@ Handle<Value> Participant::New(const Arguments& args){
     }
 
     Handle<Object> cfg = Handle<Object>::Cast(args[0]);
-    Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
-    Local<Value> group = cfg->Get(String::New("group"));
+    Handle<Value> pubkfile = GET_PROP(cfg, xbPublicKeyFile);
+    Local<Value> group = cfg->Get(String::New(XBGROUP));
 
     xbPublicKeyFile = string(*(String::Utf8Value(pubkfile)));
-    // cout << xbPublicKeyFile << endl;
 
     instance = new Participant(NodeUtil::v8ToString(group));   
 
@@ -57,8 +57,10 @@ Participant::GetHandle(Local<String> property, const AccessorInfo& info){
 
 
 void
-Participant::SetHandle(Local<String> property, Local<Value> value, const AccessorInfo& info){
-    Participant* instance = ObjectWrap::Unwrap<Participant>(info.Holder());
+Participant::SetHandle(Local<String> property,
+    Local<Value> value, const AccessorInfo& info){
+    Participant* instance =
+        ObjectWrap::Unwrap<Participant>(info.Holder());
     instance->handle_ = NodeUtil::v8ToString(value);
 }
 
@@ -71,8 +73,8 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
     }
 
     Local<Object> credentials = Local<Object>::Cast(args[0]);
-    Local<Value> username = credentials->Get(String::New("username"));
-    Local<Value> password = credentials->Get(String::New("password"));
+    Local<Value> username = credentials->Get(String::New(XBUSERNAME));
+    Local<Value> password = credentials->Get(String::New(XBPASSWORD));
 
     Participant* instance = ObjectWrap::Unwrap<Participant>(args.This());
     instance->username_ = NodeUtil::v8ToString(username);
