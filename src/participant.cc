@@ -22,8 +22,8 @@ using namespace std;
 using namespace v8;
 using namespace node;
 
-string publicKeyFile;
-v8::Persistent<v8::Function> nodeBufCtor;
+string xbPublicKeyFile;
+v8::Persistent<v8::Function> xbNodeBufCtor;
 
 // args -> username, password, group TODO: make object/callback
 Handle<Value> Participant::New(const Arguments& args){
@@ -38,8 +38,8 @@ Handle<Value> Participant::New(const Arguments& args){
     Handle<Value> pubkfile = cfg->Get(String::New("pubKeyFile"));
     Local<Value> group = cfg->Get(String::New("group"));
 
-    publicKeyFile = string(*(String::Utf8Value(pubkfile)));
-    cout << publicKeyFile << endl;
+    xbPublicKeyFile = string(*(String::Utf8Value(pubkfile)));
+    // cout << xbPublicKeyFile << endl;
 
     instance = new Participant(NodeUtil::v8ToString(group));   
 
@@ -79,7 +79,6 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
     instance->password_ = NodeUtil::v8ToString(password);
 
     string buf = Util::packageParticipantCredentials(instance);
-    // cout << "packageParticipantCredentials result:\n" << buf << endl;
 
     const char *c = &buf[0];
     size_t len = buf.size();
@@ -157,7 +156,7 @@ extern "C" {
     void init(Handle<Object> module) {
         HandleScope scope;
 
-        nodeBufCtor = JS_NODE_BUF_CTOR;
+        xbNodeBufCtor = JS_NODE_BUF_CTOR;
 
 
         try {

@@ -28,10 +28,11 @@ using namespace std;
 namespace xblab {
 
 
-extern string connectionString;
-extern string privateKeyFile;
-extern string publicKeyFile;
-extern string keyPassword;
+extern string xbConnectionString;
+extern string xbPrivateKeyFile;
+extern string xbPublicKeyFile;
+extern string xbKeyPassword;
+
 
 #ifndef XBLAB_CLIENT
 

@@ -10,10 +10,10 @@ using namespace pqxx;
 
 namespace xblab {
 
-extern string connectionString; // access from uv_work_t
+extern string xbConnectionString; // access from uv_work_t
 
 Group Db::getGroup(string url){ //Calling code responsible for string trimming 
-    return getGroup(connectionString, url);
+    return getGroup(xbConnectionString, url);
 }
 
 Group Db::getGroup(string conn, string url){
@@ -41,7 +41,7 @@ Group Db::getGroup(string conn, string url){
 
 
 map<int, Member> Db::getMembers(int group_id){
-    return getMembers(connectionString, group_id);
+    return getMembers(xbConnectionString, group_id);
 }
 
 map<int, Member> Db::getMembers(string conn, int group_id){

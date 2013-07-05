@@ -23,13 +23,13 @@ namespace xblab {
 
 
 // We use node::Buffer enough to keep its constructor handy
-v8::Persistent<v8::Function> nodeBufCtor;
+v8::Persistent<v8::Function> xbNodeBufCtor;
 
 /* Global configuration items */
-string connectionString;
-string privateKeyFile;
-string publicKeyFile;
-string keyPassword;
+string xbConnectionString;
+string xbPrivateKeyFile;
+string xbPublicKeyFile;
+string xbKeyPassword;
 
 // V8 entry point
 // Repeat declaration of static member(s) to make visible to node dlopen
@@ -43,7 +43,7 @@ void Xblab::InitAll(Handle<Object> module) {
         std::cerr << e.what() << "\n";
     }
 
-    nodeBufCtor = JS_NODE_BUF_CTOR;
+    xbNodeBufCtor = JS_NODE_BUF_CTOR;
 
     // Create state-holding instance
     Xblab* instance = new Xblab();
@@ -163,10 +163,10 @@ Handle<Value> Xblab::SetConfig(const Arguments& args) {
         return scope.Close(Undefined());
     }
     
-    connectionString = string(*(String::Utf8Value(constr)));
-    privateKeyFile = string(*(String::Utf8Value(privkfile)));
-    publicKeyFile = string(*(String::Utf8Value(pubkfile)));
-    keyPassword = string(*(String::Utf8Value(keypw)));
+    xbConnectionString = string(*(String::Utf8Value(constr)));
+    xbPrivateKeyFile = string(*(String::Utf8Value(privkfile)));
+    xbPublicKeyFile = string(*(String::Utf8Value(pubkfile)));
+    xbKeyPassword = string(*(String::Utf8Value(keypw)));
     
     return scope.Close(Undefined());
 }

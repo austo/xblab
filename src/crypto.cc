@@ -18,17 +18,17 @@ using namespace Botan;
 
 namespace xblab {
 
-extern string publicKeyFile;
+extern string xbPublicKeyFile;
 
 #ifndef XBLAB_CLIENT // These methods assume a private key
 
-extern string privateKeyFile;
-extern string keyPassword;
+extern string xbPrivateKeyFile;
+extern string xbKeyPassword;
 
 string Crypto::sign(string& message){
     AutoSeeded_RNG rng;
     // cout << pr << pw << endl;
-    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(privateKeyFile, rng, keyPassword));
+    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(xbPrivateKeyFile, rng, xbKeyPassword));
     RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
 
     if(!rsakey){
@@ -42,7 +42,7 @@ string Crypto::sign(string& message){
 
 string Crypto::hybridDecrypt(string& ciphertext){
     AutoSeeded_RNG rng;
-    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(privateKeyFile, rng, keyPassword));
+    auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(xbPrivateKeyFile, rng, xbKeyPassword));
     RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
 
     if(!rsakey){
@@ -107,7 +107,7 @@ bool Crypto::verify(string publicKey, string message, string signature){
 
 
 bool Crypto::verify(string message, string signature){
-    std::auto_ptr<X509_PublicKey> key(X509::load_key(publicKeyFile));
+    std::auto_ptr<X509_PublicKey> key(X509::load_key(xbPublicKeyFile));
     RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
 
     if(!rsakey) {
@@ -159,7 +159,7 @@ string Crypto::hybridEncrypt(string& publicKey, string& plaintext){
 
 void Crypto::hybridEncrypt(stringstream& in, stringstream& out){        
 
-    std::auto_ptr<X509_PublicKey> key(X509::load_key(publicKeyFile));
+    std::auto_ptr<X509_PublicKey> key(X509::load_key(xbPublicKeyFile));
     RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
 
     if(!rsakey) {

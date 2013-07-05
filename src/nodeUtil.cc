@@ -11,7 +11,7 @@ using namespace std;
 namespace xblab {
 
 
-extern Persistent<Function> nodeBufCtor;
+extern Persistent<Function> xbNodeBufCtor;
 
 
 Local<Value> NodeUtil::wrapBuf(const char *c, size_t len){
@@ -27,7 +27,7 @@ Local<Value> NodeUtil::wrapBuf(const char *c, size_t len){
         Integer::New(0)         // Offset where "FastBuffer" should start
     };
 
-    return scope.Close(nodeBufCtor->NewInstance(bufArgc, bufArgv));
+    return scope.Close(xbNodeBufCtor->NewInstance(bufArgc, bufArgv));
 }
 
 } // namespace xblab
