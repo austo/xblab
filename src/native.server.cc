@@ -21,12 +21,9 @@ std::string xbConnectionString;
 std::string xbPublicKeyFile;
 std::string xbPrivateKeyFile;
 std::string xbKeyPassword;
-char *xbPort;
+std::string xbPort;
 
 uv_loop_t *loop;
-
-// TODO: make configurable
-static unsigned char cfgData[8192];
 
 
 // TODO: integrate into DataBaton
@@ -96,41 +93,41 @@ on_new_connection(uv_stream_t *server, int status) {
 int
 get_config_data(char* filename) {
 
-    // Let's do some JSON parsing...
-    FILE *fd;
-    fd = fopen (filename, "r");
+    FILE *fd = fopen (filename, "r");
     if (fd == NULL) {
         fprintf(stderr, "invalid input: %s\n", filename);
         return 1;
     }
 
-    size_t rd;
-    yajl_val node;
-    char errbuf[1024];
+    fseek(fd, 0, SEEK_END);
+    long fsize = ftell(fd);
+    rewind(fd);
 
-    // NULL plug buffers
-    cfgData[0] = errbuf[0] = 0;
+    char *cfgbuf = (char *)malloc(fsize + 1);
+    if (cfgbuf == NULL) {
+        fprintf(stderr, "memory error\n");
+        return 1;
+    }
+
+    // NULL plug err and cfg buffers
+    char errbuf[YAJL_ERR_BUF_SZ];
+    cfgbuf[0] = errbuf[0] = 0;
 
     // Read whole config file
-    rd = fread((void *) cfgData, 1, sizeof(cfgData) - 1, fd);
+    size_t rd = fread((void *)cfgbuf, 1, fsize, fd);
 
-    if (rd == 0 && !feof(stdin)) {
+    if (rd == 0 && !feof(fd)) {
         fprintf(stderr, "error reading config file\n");
         return 1;
-    }
-    else if (rd >= sizeof(cfgData) - 1) {
-        fprintf(stderr, "config file too big\n");
-        return 1;
-    }
+    }    
 
-    // Might as well parse it...
-    node = yajl_tree_parse((const char *)cfgData,
-        errbuf, sizeof(errbuf));
+    // Let's do some JSON parsing...
+    yajl_val node = yajl_tree_parse(cfgbuf, errbuf, YAJL_ERR_BUF_SZ);
 
     if (node == NULL) {
         PRINT_YAJL_ERRBUF(errbuf);
         return 1;
-    }    
+    }
 
     // These need to be named exactly like their JSON counterparts
     GET_PROP(xbConnectionString)
@@ -138,6 +135,10 @@ get_config_data(char* filename) {
     GET_PROP(xbPrivateKeyFile)
     GET_PROP(xbKeyPassword)
     GET_PROP(xbPort);
+
+    fclose(fd);
+    free(cfgbuf);
+    yajl_tree_free(node);
 
     return 0;
 }
@@ -156,7 +157,7 @@ main(int argc, char** argv) {
         return 1;
     }
 
-    int port = atoi(xblab::xbPort);
+    int port = atoi(xblab::xbPort.c_str());
 
     xblab::loop = uv_default_loop();
     uv_tcp_t server;
@@ -170,5 +171,7 @@ main(int argc, char** argv) {
             uv_err_name(uv_last_error(xblab::loop)));
         return 1;
     }
+    char *procname = (strncmp(argv[0], "./", 2)) ? argv[0] : argv[0] + 2;
+    printf("%s listening on port %d\n", procname, port);
     return uv_run(xblab::loop, UV_RUN_DEFAULT);
 }

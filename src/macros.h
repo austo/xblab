@@ -54,6 +54,8 @@
 
 #else
 
+#define YAJL_ERR_BUF_SZ 1024
+
 /* property names must be identical to variable names */
 #define GET_PROP(name) {                                        \
     const char * path[] = { #name, (const char *) 0 };          \
