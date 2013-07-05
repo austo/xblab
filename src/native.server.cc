@@ -25,13 +25,14 @@ char *xbPort;
 
 uv_loop_t *loop;
 
+// TODO: make configurable
 static unsigned char cfgData[8192];
 
 
 // TODO: integrate into DataBaton
 uv_buf_t
 alloc_buffer(uv_handle_t *handle, size_t suggested_size) {
-    return uv_buf_init((char *) malloc(suggested_size), suggested_size);
+    return uv_buf_init((char *)malloc(suggested_size), suggested_size);
 }
 
 
@@ -39,7 +40,8 @@ alloc_buffer(uv_handle_t *handle, size_t suggested_size) {
 void
 echo_write(uv_write_t *req, int status) {
     if (status == -1) {
-        fprintf(stderr, "Write error %s\n", uv_err_name(uv_last_error(loop)));
+        fprintf(stderr, "Write error %s\n",
+            uv_err_name(uv_last_error(loop)));
     }
 
     // req is temporary for each write request
@@ -51,7 +53,8 @@ void
 echo_read(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
     if (nread == -1) {
         if (uv_last_error(loop).code != UV_EOF){
-            fprintf(stderr, "Read error %s\n", uv_err_name(uv_last_error(loop)));
+            fprintf(stderr, "Read error %s\n", 
+                uv_err_name(uv_last_error(loop)));
         }
         uv_close((uv_handle_t*) client, NULL);
         return;
@@ -91,9 +94,10 @@ on_new_connection(uv_stream_t *server, int status) {
 
 
 int
-get_config_data(char* filename){
-    // do some yajl parsing...
-    FILE * fd;
+get_config_data(char* filename) {
+
+    // Let's do some JSON parsing...
+    FILE *fd;
     fd = fopen (filename, "r");
     if (fd == NULL) {
         fprintf(stderr, "invalid input: %s\n", filename);
@@ -104,15 +108,14 @@ get_config_data(char* filename){
     yajl_val node;
     char errbuf[1024];
 
-    /* null plug buffers */
+    // NULL plug buffers
     cfgData[0] = errbuf[0] = 0;
 
-    /* read the entire config file */
+    // Read whole config file
     rd = fread((void *) cfgData, 1, sizeof(cfgData) - 1, fd);
 
-    /* file read error handling */
     if (rd == 0 && !feof(stdin)) {
-        fprintf(stderr, "error encountered on file read\n");
+        fprintf(stderr, "error reading config file\n");
         return 1;
     }
     else if (rd >= sizeof(cfgData) - 1) {
@@ -120,22 +123,16 @@ get_config_data(char* filename){
         return 1;
     }
 
-    /* we have the whole config file in memory.  let's parse it ... */
-    node = yajl_tree_parse((const char *) cfgData, errbuf, sizeof(errbuf));
+    // Might as well parse it...
+    node = yajl_tree_parse((const char *)cfgData,
+        errbuf, sizeof(errbuf));
 
-    /* parse error handling */
     if (node == NULL) {
-        fprintf(stderr, "parse_error: ");
-        if (strlen(errbuf)) {
-            fprintf(stderr, " %s", errbuf);
-        }
-        else {
-            fprintf(stderr, "unknown error");
-        }
-        fprintf(stderr, "\n");
+        PRINT_YAJL_ERRBUF(errbuf);
         return 1;
     }    
 
+    // These need to be named exactly like their JSON counterparts
     GET_PROP(xbConnectionString)
     GET_PROP(xbPublicKeyFile)
     GET_PROP(xbPrivateKeyFile)
@@ -169,7 +166,8 @@ main(int argc, char** argv) {
     uv_tcp_bind(&server, bind_addr);
     int r = uv_listen((uv_stream_t*) &server, 128, xblab::on_new_connection);
     if (r) {
-        fprintf(stderr, "Listen error %s\n", uv_err_name(uv_last_error(xblab::loop)));
+        fprintf(stderr, "Listen error %s\n",
+            uv_err_name(uv_last_error(xblab::loop)));
         return 1;
     }
     return uv_run(xblab::loop, UV_RUN_DEFAULT);

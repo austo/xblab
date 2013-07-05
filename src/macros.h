@@ -66,6 +66,17 @@
     }                                                           \
 }
 
+#define PRINT_YAJL_ERRBUF(errbuf) {             \
+    fprintf(stderr, "parse_error: ");           \
+    if (strlen(errbuf)) {                       \
+        fprintf(stderr, " %s", errbuf);         \
+    }                                           \
+    else {                                      \
+        fprintf(stderr, "unknown error");       \
+    }                                           \
+    fprintf(stderr, "\n");                      \
+}
+
 #endif
 
 
