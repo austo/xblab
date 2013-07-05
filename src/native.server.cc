@@ -7,27 +7,25 @@
 
 #include <uv.h>
 
+#include <yajl/yajl_tree.h>
+
 #include "crypto.h"
 #include "baton.h"
+#include "macros.h"
 
 namespace xblab {
 
 
-#define N_CFGSETTINGS 4;
-
-
-
-cfg_t *cfg_settings;
-
-
-uv_loop_t *loop;
-
-
 // Defined extern in crypto.cc
-std::string xbConnstring;
+std::string xbConnectionString;
 std::string xbPublicKeyFile;
 std::string xbPrivateKeyFile;
 std::string xbKeyPassword;
+char *xbPort;
+
+uv_loop_t *loop;
+
+static unsigned char cfgData[8192];
 
 
 // TODO: integrate into DataBaton
@@ -91,21 +89,77 @@ on_new_connection(uv_stream_t *server, int status) {
     }
 }
 
+
+int
+get_config_data(char* filename){
+    // do some yajl parsing...
+    FILE * fd;
+    fd = fopen (filename, "r");
+    if (fd == NULL) {
+        fprintf(stderr, "invalid input: %s\n", filename);
+        return 1;
+    }
+
+    size_t rd;
+    yajl_val node;
+    char errbuf[1024];
+
+    /* null plug buffers */
+    cfgData[0] = errbuf[0] = 0;
+
+    /* read the entire config file */
+    rd = fread((void *) cfgData, 1, sizeof(cfgData) - 1, fd);
+
+    /* file read error handling */
+    if (rd == 0 && !feof(stdin)) {
+        fprintf(stderr, "error encountered on file read\n");
+        return 1;
+    }
+    else if (rd >= sizeof(cfgData) - 1) {
+        fprintf(stderr, "config file too big\n");
+        return 1;
+    }
+
+    /* we have the whole config file in memory.  let's parse it ... */
+    node = yajl_tree_parse((const char *) cfgData, errbuf, sizeof(errbuf));
+
+    /* parse error handling */
+    if (node == NULL) {
+        fprintf(stderr, "parse_error: ");
+        if (strlen(errbuf)) {
+            fprintf(stderr, " %s", errbuf);
+        }
+        else {
+            fprintf(stderr, "unknown error");
+        }
+        fprintf(stderr, "\n");
+        return 1;
+    }    
+
+    GET_PROP(xbConnectionString)
+    GET_PROP(xbPublicKeyFile)
+    GET_PROP(xbPrivateKeyFile)
+    GET_PROP(xbKeyPassword)
+    GET_PROP(xbPort);
+
+    return 0;
+}
+
 } // namespace xblab
 
 
 int
 main(int argc, char** argv) {
-    if (argc != 3){
-        fprintf(stderr, "usage: %s <port>, <config filename>\n", argv[0]);
+    if (argc != 2){
+        fprintf(stderr, "usage: %s <config filename>\n", argv[0]);
         return 1;
     }
 
+    if (xblab::get_config_data(argv[1]) != XBGOOD){
+        return 1;
+    }
 
-
-
-    int port = atoi(argv[1]);
-    xblab::xbKeyPassword = std::string(argv[2]);
+    int port = atoi(xblab::xbPort);
 
     xblab::loop = uv_default_loop();
     uv_tcp_t server;
@@ -120,4 +174,3 @@ main(int argc, char** argv) {
     }
     return uv_run(xblab::loop, UV_RUN_DEFAULT);
 }
-

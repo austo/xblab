@@ -27,6 +27,7 @@
 #define IVBYTES 8
 #define MACOUTLEN 12
 
+#define XBGOOD 0
 
 
 #ifndef XBLAB_NATIVE
@@ -50,6 +51,20 @@
             Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));     
 
 #define THROW(prop) ThrowException(String::New(prop));
+
+#else
+
+/* property names must be identical to variable names */
+#define GET_PROP(name) {                                        \
+    const char * path[] = { #name, (const char *) 0 };          \
+    yajl_val v = yajl_tree_get(node, path, yajl_t_string);      \
+    if (v) {                                                    \
+        name = YAJL_GET_STRING(v);                              \
+    }                                                           \
+    else {                                                      \
+        printf("no such node: %s\n", path[0]);                  \
+    }                                                           \
+}
 
 #endif
 

@@ -4,7 +4,7 @@ var net = require('net'),
     cfg = require('./xblab.config'),
     xblab = require('./lib/xblab.wrapper'),
     path = require('path'),
-    port = cfg.serverPort || 8888;    
+    port = cfg.xbPort || 8888;   
 
 xblab.config(cfg, function (err){
     if (err){
@@ -69,6 +69,6 @@ net.createServer(function (socket) {
 
     });   
  
-}).listen(port);
+}).listen(port); // listen() can handle strings
  
 console.log("xblab server running at port %d.\n", port);
