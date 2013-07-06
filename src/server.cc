@@ -5,25 +5,26 @@
 #include <iostream>
 #include <string>
 
-#include <uv.h>
-
 #include <yajl/yajl_tree.h>
 
 #include "crypto.h"
 #include "baton.h"
 #include "macros.h"
+#include "server.h"
+
+using namespace std;
 
 namespace xblab {
 
 
-// Defined extern in crypto.cc
-std::string xbConnectionString;
-std::string xbPublicKeyFile;
-std::string xbPrivateKeyFile;
-std::string xbKeyPassword;
-std::string xbPort;
+// xblab.cc
+extern string xbConnectionString;
+extern string xbPublicKeyFile;
+extern string xbPrivateKeyFile;
+extern string xbKeyPassword;
+extern string xbPort;
 
-uv_loop_t *loop;
+extern uv_loop_t *loop;
 
 
 // TODO: integrate into DataBaton
@@ -70,28 +71,29 @@ echo_read(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
 }
 
 
-void
-on_new_connection(uv_stream_t *server, int status) {
-    if (status == -1) {
-        // error!
-        return;
-    }
+extern "C" {
+    void
+    on_new_connection(uv_stream_t *server, int status) {
+        if (status == -1) {
+            // error!
+            return;
+        }
 
-    DataBaton *baton = new DataBaton();
-    uv_tcp_init(loop, &baton->client);
+        DataBaton *baton = new DataBaton();
+        uv_tcp_init(loop, &baton->client);
 
-    // TODO: where does suggested size come from??
-    if (uv_accept(server, (uv_stream_t*) &baton->client) == 0) {
-        uv_read_start((uv_stream_t*) &baton->client, alloc_buffer, echo_read);
-    }
-    else {
-        uv_close((uv_handle_t*) &baton->client, NULL);
+        // TODO: where does suggested size come from??
+        if (uv_accept(server, (uv_stream_t*) &baton->client) == 0) {
+            uv_read_start((uv_stream_t*) &baton->client, alloc_buffer, echo_read);
+        }
+        else {
+            uv_close((uv_handle_t*) &baton->client, NULL);
+        }
     }
 }
 
-
 int
-get_config_data(char* filename) {
+get_config(char* filename) {
 
     FILE *fd = fopen (filename, "r");
     if (fd == NULL) {
@@ -130,7 +132,7 @@ get_config_data(char* filename) {
     }
 
     // These need to be named exactly like their JSON counterparts
-    GET_PROP(xbConnectionString)
+    GET_PROP(xbConnectionString) /* TODO: get yajl_status */
     GET_PROP(xbPublicKeyFile)
     GET_PROP(xbPrivateKeyFile)
     GET_PROP(xbKeyPassword)
@@ -143,35 +145,11 @@ get_config_data(char* filename) {
     return 0;
 }
 
-} // namespace xblab
-
-
-int
-main(int argc, char** argv) {
-    if (argc != 2){
-        fprintf(stderr, "usage: %s <config filename>\n", argv[0]);
-        return 1;
-    }
-
-    if (xblab::get_config_data(argv[1]) != XBGOOD){
-        return 1;
-    }
-
-    int port = atoi(xblab::xbPort.c_str());
-
-    xblab::loop = uv_default_loop();
-    uv_tcp_t server;
-    uv_tcp_init(xblab::loop, &server);
-
-    struct sockaddr_in bind_addr = uv_ip4_addr("127.0.0.1", port);
-    uv_tcp_bind(&server, bind_addr);
-    int r = uv_listen((uv_stream_t*) &server, 128, xblab::on_new_connection);
-    if (r) {
-        fprintf(stderr, "Listen error %s\n",
-            uv_err_name(uv_last_error(xblab::loop)));
-        return 1;
-    }
-    char *procname = (strncmp(argv[0], "./", 2)) ? argv[0] : argv[0] + 2;
-    printf("%s listening on port %d\n", procname, port);
-    return uv_run(xblab::loop, UV_RUN_DEFAULT);
+void
+fatal(const char *what) {
+    uv_err_t err = uv_last_error(uv_default_loop());
+    fprintf(stderr, "%s: %s\n", what, uv_strerror(err));
+    exit(1);
 }
+
+} // namespace xblab

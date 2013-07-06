@@ -6,16 +6,19 @@ LDFLAGS = -L/usr/local/lib -lm -luv -lbotan-1.10 -lyajl.2
 
 .PHONY: all clean
 
-all:    native.server	
+all:    xblab	
 
 clean:	
-	rm -f native.server *.o
+	rm -f xblab *.o
 
-native.server:     crypto.o native.server.o
+xblab:     crypto.o server.o xblab.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
-native.server.o:	$(XB_SRC)/native.server.cc $(XB_SRC)/crypto.h $(XB_SRC)/baton.h
-	$(CC) -c -g $(CFLAGS) -D XBLAB_NATIVE=1 $(XB_SRC)/native.server.cc
+xblab.o:	$(XB_SRC)/xblab.cc $(XB_SRC)/server.h $(XB_SRC)/macros.h
+	$(CC) -c -g $(CFLAGS) -D XBLAB_NATIVE=1 $(XB_SRC)/xblab.cc
+
+server.o:	$(XB_SRC)/server.cc $(XB_SRC)/server.h $(XB_SRC)/crypto.h $(XB_SRC)/baton.h $(XB_SRC)/macros.h
+	$(CC) -c -g $(CFLAGS) -D XBLAB_NATIVE=1 $(XB_SRC)/server.cc
 
 crypto.o:		$(XB_SRC)/crypto.cc $(XB_SRC)/crypto.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) -D XBLAB_NATIVE=1 $(XB_SRC)/crypto.cc
