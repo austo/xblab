@@ -20,11 +20,9 @@
 #endif
 
 #include <google/protobuf/generated_message_util.h>
-#include <google/protobuf/message.h>
+#include <google/protobuf/message_lite.h>
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/extension_set.h>
-#include <google/protobuf/generated_enum_reflection.h>
-#include <google/protobuf/unknown_field_set.h>
 // @@protoc_insertion_point(includes)
 
 namespace xblab {
@@ -58,16 +56,6 @@ const Broadcast_Type Broadcast_Type_Type_MIN = Broadcast_Type_NEEDCRED;
 const Broadcast_Type Broadcast_Type_Type_MAX = Broadcast_Type_QUIT;
 const int Broadcast_Type_Type_ARRAYSIZE = Broadcast_Type_Type_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* Broadcast_Type_descriptor();
-inline const ::std::string& Broadcast_Type_Name(Broadcast_Type value) {
-  return ::google::protobuf::internal::NameOfEnum(
-    Broadcast_Type_descriptor(), value);
-}
-inline bool Broadcast_Type_Parse(
-    const ::std::string& name, Broadcast_Type* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<Broadcast_Type>(
-    Broadcast_Type_descriptor(), name, value);
-}
 enum Transmission_Type {
   Transmission_Type_CRED = 0,
   Transmission_Type_ENTER = 1,
@@ -80,19 +68,9 @@ const Transmission_Type Transmission_Type_Type_MIN = Transmission_Type_CRED;
 const Transmission_Type Transmission_Type_Type_MAX = Transmission_Type_QUIT;
 const int Transmission_Type_Type_ARRAYSIZE = Transmission_Type_Type_MAX + 1;
 
-const ::google::protobuf::EnumDescriptor* Transmission_Type_descriptor();
-inline const ::std::string& Transmission_Type_Name(Transmission_Type value) {
-  return ::google::protobuf::internal::NameOfEnum(
-    Transmission_Type_descriptor(), value);
-}
-inline bool Transmission_Type_Parse(
-    const ::std::string& name, Transmission_Type* value) {
-  return ::google::protobuf::internal::ParseNamedEnum<Transmission_Type>(
-    Transmission_Type_descriptor(), name, value);
-}
 // ===================================================================
 
-class Broadcast_Session : public ::google::protobuf::Message {
+class Broadcast_Session : public ::google::protobuf::MessageLite {
  public:
   Broadcast_Session();
   virtual ~Broadcast_Session();
@@ -104,24 +82,24 @@ class Broadcast_Session : public ::google::protobuf::Message {
     return *this;
   }
 
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Broadcast_Session& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Broadcast_Session* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
 
   void Swap(Broadcast_Session* other);
 
   // implements Message ----------------------------------------------
 
   Broadcast_Session* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Broadcast_Session& from);
   void MergeFrom(const Broadcast_Session& from);
   void Clear();
@@ -132,7 +110,6 @@ class Broadcast_Session : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -140,7 +117,7 @@ class Broadcast_Session : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
 
   // nested types ----------------------------------------------------
 
@@ -172,15 +149,17 @@ class Broadcast_Session : public ::google::protobuf::Message {
   inline void set_has_seed();
   inline void clear_has_seed();
 
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
   ::std::string* pub_key_;
   ::google::protobuf::uint32 seed_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
 
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
   friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
   friend void protobuf_AssignDesc_xblab_2eproto();
   friend void protobuf_ShutdownFile_xblab_2eproto();
 
@@ -189,7 +168,7 @@ class Broadcast_Session : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Broadcast_Payload : public ::google::protobuf::Message {
+class Broadcast_Payload : public ::google::protobuf::MessageLite {
  public:
   Broadcast_Payload();
   virtual ~Broadcast_Payload();
@@ -201,24 +180,24 @@ class Broadcast_Payload : public ::google::protobuf::Message {
     return *this;
   }
 
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Broadcast_Payload& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Broadcast_Payload* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
 
   void Swap(Broadcast_Payload* other);
 
   // implements Message ----------------------------------------------
 
   Broadcast_Payload* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Broadcast_Payload& from);
   void MergeFrom(const Broadcast_Payload& from);
   void Clear();
@@ -229,7 +208,6 @@ class Broadcast_Payload : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -237,7 +215,7 @@ class Broadcast_Payload : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
 
   // nested types ----------------------------------------------------
 
@@ -269,15 +247,17 @@ class Broadcast_Payload : public ::google::protobuf::Message {
   inline void set_has_modulo();
   inline void clear_has_modulo();
 
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
   ::std::string* content_;
   ::google::protobuf::uint32 modulo_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
 
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
   friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
   friend void protobuf_AssignDesc_xblab_2eproto();
   friend void protobuf_ShutdownFile_xblab_2eproto();
 
@@ -286,7 +266,7 @@ class Broadcast_Payload : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Broadcast_Prologue : public ::google::protobuf::Message {
+class Broadcast_Prologue : public ::google::protobuf::MessageLite {
  public:
   Broadcast_Prologue();
   virtual ~Broadcast_Prologue();
@@ -298,24 +278,24 @@ class Broadcast_Prologue : public ::google::protobuf::Message {
     return *this;
   }
 
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Broadcast_Prologue& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Broadcast_Prologue* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
 
   void Swap(Broadcast_Prologue* other);
 
   // implements Message ----------------------------------------------
 
   Broadcast_Prologue* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Broadcast_Prologue& from);
   void MergeFrom(const Broadcast_Prologue& from);
   void Clear();
@@ -326,7 +306,6 @@ class Broadcast_Prologue : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -334,7 +313,7 @@ class Broadcast_Prologue : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
 
   // nested types ----------------------------------------------------
 
@@ -352,14 +331,16 @@ class Broadcast_Prologue : public ::google::protobuf::Message {
   inline void set_has_modulo();
   inline void clear_has_modulo();
 
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
   ::google::protobuf::uint32 modulo_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
 
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
   friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
   friend void protobuf_AssignDesc_xblab_2eproto();
   friend void protobuf_ShutdownFile_xblab_2eproto();
 
@@ -368,7 +349,7 @@ class Broadcast_Prologue : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Broadcast_Data : public ::google::protobuf::Message {
+class Broadcast_Data : public ::google::protobuf::MessageLite {
  public:
   Broadcast_Data();
   virtual ~Broadcast_Data();
@@ -380,24 +361,24 @@ class Broadcast_Data : public ::google::protobuf::Message {
     return *this;
   }
 
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Broadcast_Data& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Broadcast_Data* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
 
   void Swap(Broadcast_Data* other);
 
   // implements Message ----------------------------------------------
 
   Broadcast_Data* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Broadcast_Data& from);
   void MergeFrom(const Broadcast_Data& from);
   void Clear();
@@ -408,7 +389,6 @@ class Broadcast_Data : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -416,7 +396,7 @@ class Broadcast_Data : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
 
   // nested types ----------------------------------------------------
 
@@ -495,8 +475,6 @@ class Broadcast_Data : public ::google::protobuf::Message {
   inline void set_has_payload();
   inline void clear_has_payload();
 
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
   ::std::string* nonce_;
   ::std::string* return_nonce_;
   ::xblab::Broadcast_Session* session_;
@@ -507,7 +485,11 @@ class Broadcast_Data : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
 
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
   friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
   friend void protobuf_AssignDesc_xblab_2eproto();
   friend void protobuf_ShutdownFile_xblab_2eproto();
 
@@ -516,7 +498,7 @@ class Broadcast_Data : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Broadcast : public ::google::protobuf::Message {
+class Broadcast : public ::google::protobuf::MessageLite {
  public:
   Broadcast();
   virtual ~Broadcast();
@@ -528,24 +510,24 @@ class Broadcast : public ::google::protobuf::Message {
     return *this;
   }
 
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Broadcast& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Broadcast* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
 
   void Swap(Broadcast* other);
 
   // implements Message ----------------------------------------------
 
   Broadcast* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Broadcast& from);
   void MergeFrom(const Broadcast& from);
   void Clear();
@@ -556,7 +538,6 @@ class Broadcast : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -564,7 +545,7 @@ class Broadcast : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
 
   // nested types ----------------------------------------------------
 
@@ -590,17 +571,6 @@ class Broadcast : public ::google::protobuf::Message {
     Broadcast_Type_Type_MAX;
   static const int Type_ARRAYSIZE =
     Broadcast_Type_Type_ARRAYSIZE;
-  static inline const ::google::protobuf::EnumDescriptor*
-  Type_descriptor() {
-    return Broadcast_Type_descriptor();
-  }
-  static inline const ::std::string& Type_Name(Type value) {
-    return Broadcast_Type_Name(value);
-  }
-  static inline bool Type_Parse(const ::std::string& name,
-      Type* value) {
-    return Broadcast_Type_Parse(name, value);
-  }
 
   // accessors -------------------------------------------------------
 
@@ -632,15 +602,17 @@ class Broadcast : public ::google::protobuf::Message {
   inline void set_has_data();
   inline void clear_has_data();
 
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
   ::std::string* signature_;
   ::xblab::Broadcast_Data* data_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
 
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
   friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
   friend void protobuf_AssignDesc_xblab_2eproto();
   friend void protobuf_ShutdownFile_xblab_2eproto();
 
@@ -649,7 +621,7 @@ class Broadcast : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Transmission_Credential : public ::google::protobuf::Message {
+class Transmission_Credential : public ::google::protobuf::MessageLite {
  public:
   Transmission_Credential();
   virtual ~Transmission_Credential();
@@ -661,24 +633,24 @@ class Transmission_Credential : public ::google::protobuf::Message {
     return *this;
   }
 
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Transmission_Credential& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Transmission_Credential* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
 
   void Swap(Transmission_Credential* other);
 
   // implements Message ----------------------------------------------
 
   Transmission_Credential* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Transmission_Credential& from);
   void MergeFrom(const Transmission_Credential& from);
   void Clear();
@@ -689,7 +661,6 @@ class Transmission_Credential : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -697,7 +668,7 @@ class Transmission_Credential : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
 
   // nested types ----------------------------------------------------
 
@@ -762,8 +733,6 @@ class Transmission_Credential : public ::google::protobuf::Message {
   inline void set_has_pub_key();
   inline void clear_has_pub_key();
 
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
   ::std::string* username_;
   ::std::string* password_;
   ::std::string* group_;
@@ -772,7 +741,11 @@ class Transmission_Credential : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
 
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
   friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
   friend void protobuf_AssignDesc_xblab_2eproto();
   friend void protobuf_ShutdownFile_xblab_2eproto();
 
@@ -781,7 +754,7 @@ class Transmission_Credential : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Transmission_Payload : public ::google::protobuf::Message {
+class Transmission_Payload : public ::google::protobuf::MessageLite {
  public:
   Transmission_Payload();
   virtual ~Transmission_Payload();
@@ -793,24 +766,24 @@ class Transmission_Payload : public ::google::protobuf::Message {
     return *this;
   }
 
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Transmission_Payload& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Transmission_Payload* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
 
   void Swap(Transmission_Payload* other);
 
   // implements Message ----------------------------------------------
 
   Transmission_Payload* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Transmission_Payload& from);
   void MergeFrom(const Transmission_Payload& from);
   void Clear();
@@ -821,7 +794,6 @@ class Transmission_Payload : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -829,7 +801,7 @@ class Transmission_Payload : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
 
   // nested types ----------------------------------------------------
 
@@ -861,15 +833,17 @@ class Transmission_Payload : public ::google::protobuf::Message {
   inline void set_has_content();
   inline void clear_has_content();
 
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
   ::std::string* content_;
   bool is_important_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
 
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
   friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
   friend void protobuf_AssignDesc_xblab_2eproto();
   friend void protobuf_ShutdownFile_xblab_2eproto();
 
@@ -878,7 +852,7 @@ class Transmission_Payload : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Transmission_Data : public ::google::protobuf::Message {
+class Transmission_Data : public ::google::protobuf::MessageLite {
  public:
   Transmission_Data();
   virtual ~Transmission_Data();
@@ -890,24 +864,24 @@ class Transmission_Data : public ::google::protobuf::Message {
     return *this;
   }
 
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Transmission_Data& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Transmission_Data* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
 
   void Swap(Transmission_Data* other);
 
   // implements Message ----------------------------------------------
 
   Transmission_Data* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Transmission_Data& from);
   void MergeFrom(const Transmission_Data& from);
   void Clear();
@@ -918,7 +892,6 @@ class Transmission_Data : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -926,7 +899,7 @@ class Transmission_Data : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
 
   // nested types ----------------------------------------------------
 
@@ -994,8 +967,6 @@ class Transmission_Data : public ::google::protobuf::Message {
   inline void set_has_payload();
   inline void clear_has_payload();
 
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
   ::std::string* nonce_;
   ::std::string* return_nonce_;
   ::xblab::Transmission_Credential* credential_;
@@ -1005,7 +976,11 @@ class Transmission_Data : public ::google::protobuf::Message {
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
 
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
   friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
   friend void protobuf_AssignDesc_xblab_2eproto();
   friend void protobuf_ShutdownFile_xblab_2eproto();
 
@@ -1014,7 +989,7 @@ class Transmission_Data : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class Transmission : public ::google::protobuf::Message {
+class Transmission : public ::google::protobuf::MessageLite {
  public:
   Transmission();
   virtual ~Transmission();
@@ -1026,24 +1001,24 @@ class Transmission : public ::google::protobuf::Message {
     return *this;
   }
 
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
   static const Transmission& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Transmission* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
 
   void Swap(Transmission* other);
 
   // implements Message ----------------------------------------------
 
   Transmission* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
   void CopyFrom(const Transmission& from);
   void MergeFrom(const Transmission& from);
   void Clear();
@@ -1054,7 +1029,6 @@ class Transmission : public ::google::protobuf::Message {
       ::google::protobuf::io::CodedInputStream* input);
   void SerializeWithCachedSizes(
       ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
   int GetCachedSize() const { return _cached_size_; }
   private:
   void SharedCtor();
@@ -1062,7 +1036,7 @@ class Transmission : public ::google::protobuf::Message {
   void SetCachedSize(int size) const;
   public:
 
-  ::google::protobuf::Metadata GetMetadata() const;
+  ::std::string GetTypeName() const;
 
   // nested types ----------------------------------------------------
 
@@ -1085,17 +1059,6 @@ class Transmission : public ::google::protobuf::Message {
     Transmission_Type_Type_MAX;
   static const int Type_ARRAYSIZE =
     Transmission_Type_Type_ARRAYSIZE;
-  static inline const ::google::protobuf::EnumDescriptor*
-  Type_descriptor() {
-    return Transmission_Type_descriptor();
-  }
-  static inline const ::std::string& Type_Name(Type value) {
-    return Transmission_Type_Name(value);
-  }
-  static inline bool Type_Parse(const ::std::string& name,
-      Type* value) {
-    return Transmission_Type_Parse(name, value);
-  }
 
   // accessors -------------------------------------------------------
 
@@ -1127,15 +1090,17 @@ class Transmission : public ::google::protobuf::Message {
   inline void set_has_data();
   inline void clear_has_data();
 
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
   ::std::string* signature_;
   ::xblab::Transmission_Data* data_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
 
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
   friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
   friend void protobuf_AssignDesc_xblab_2eproto();
   friend void protobuf_ShutdownFile_xblab_2eproto();
 
@@ -1545,7 +1510,11 @@ inline void Broadcast_Data::clear_session() {
   clear_has_session();
 }
 inline const ::xblab::Broadcast_Session& Broadcast_Data::session() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return session_ != NULL ? *session_ : *default_instance().session_;
+#else
   return session_ != NULL ? *session_ : *default_instance_->session_;
+#endif
 }
 inline ::xblab::Broadcast_Session* Broadcast_Data::mutable_session() {
   set_has_session();
@@ -1583,7 +1552,11 @@ inline void Broadcast_Data::clear_prologue() {
   clear_has_prologue();
 }
 inline const ::xblab::Broadcast_Prologue& Broadcast_Data::prologue() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return prologue_ != NULL ? *prologue_ : *default_instance().prologue_;
+#else
   return prologue_ != NULL ? *prologue_ : *default_instance_->prologue_;
+#endif
 }
 inline ::xblab::Broadcast_Prologue* Broadcast_Data::mutable_prologue() {
   set_has_prologue();
@@ -1621,7 +1594,11 @@ inline void Broadcast_Data::clear_payload() {
   clear_has_payload();
 }
 inline const ::xblab::Broadcast_Payload& Broadcast_Data::payload() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return payload_ != NULL ? *payload_ : *default_instance().payload_;
+#else
   return payload_ != NULL ? *payload_ : *default_instance_->payload_;
+#endif
 }
 inline ::xblab::Broadcast_Payload* Broadcast_Data::mutable_payload() {
   set_has_payload();
@@ -1733,7 +1710,11 @@ inline void Broadcast::clear_data() {
   clear_has_data();
 }
 inline const ::xblab::Broadcast_Data& Broadcast::data() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return data_ != NULL ? *data_ : *default_instance().data_;
+#else
   return data_ != NULL ? *data_ : *default_instance_->data_;
+#endif
 }
 inline ::xblab::Broadcast_Data* Broadcast::mutable_data() {
   set_has_data();
@@ -2318,7 +2299,11 @@ inline void Transmission_Data::clear_credential() {
   clear_has_credential();
 }
 inline const ::xblab::Transmission_Credential& Transmission_Data::credential() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return credential_ != NULL ? *credential_ : *default_instance().credential_;
+#else
   return credential_ != NULL ? *credential_ : *default_instance_->credential_;
+#endif
 }
 inline ::xblab::Transmission_Credential* Transmission_Data::mutable_credential() {
   set_has_credential();
@@ -2356,7 +2341,11 @@ inline void Transmission_Data::clear_payload() {
   clear_has_payload();
 }
 inline const ::xblab::Transmission_Payload& Transmission_Data::payload() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return payload_ != NULL ? *payload_ : *default_instance().payload_;
+#else
   return payload_ != NULL ? *payload_ : *default_instance_->payload_;
+#endif
 }
 inline ::xblab::Transmission_Payload* Transmission_Data::mutable_payload() {
   set_has_payload();
@@ -2468,7 +2457,11 @@ inline void Transmission::clear_data() {
   clear_has_data();
 }
 inline const ::xblab::Transmission_Data& Transmission::data() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return data_ != NULL ? *data_ : *default_instance().data_;
+#else
   return data_ != NULL ? *data_ : *default_instance_->data_;
+#endif
 }
 inline ::xblab::Transmission_Data* Transmission::mutable_data() {
   set_has_data();
@@ -2495,23 +2488,6 @@ inline void Transmission::set_allocated_data(::xblab::Transmission_Data* data) {
 // @@protoc_insertion_point(namespace_scope)
 
 }  // namespace xblab
-
-#ifndef SWIG
-namespace google {
-namespace protobuf {
-
-template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::xblab::Broadcast_Type>() {
-  return ::xblab::Broadcast_Type_descriptor();
-}
-template <>
-inline const EnumDescriptor* GetEnumDescriptor< ::xblab::Transmission_Type>() {
-  return ::xblab::Transmission_Type_descriptor();
-}
-
-}  // namespace google
-}  // namespace protobuf
-#endif  // SWIG
 
 // @@protoc_insertion_point(global_scope)
 

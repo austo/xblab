@@ -37,6 +37,7 @@ struct DataBaton {
     DataBaton(){
         request.data = this;
         client.data = this;
+        writeRequest.data = this;
     }
     ~DataBaton(){}
     uv_work_t request;
@@ -46,6 +47,9 @@ struct DataBaton {
     std::string err;
     void *auxData;
     uv_tcp_t client;
+    uv_stream_t *server;
+    uv_buf_t uvBuf;
+    uv_write_t writeRequest;
 };
 
 

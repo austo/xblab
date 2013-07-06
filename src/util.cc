@@ -3,19 +3,19 @@
 #include <vector>
 #include <map>
 
-// #include <botan/botan.h>
-// #include <botan/bcrypt.h>
-// #include <botan/rsa.h>
-// #include <botan/pubkey.h>
-// #include <botan/look_pk.h>
-
 #include "macros.h"
 #include "util.h"
 #include "crypto.h"
+
+#ifndef XBLAB_NATIVE
+
 #include "participant.h"
 #include "manager.h"
 #include "member.h"
 #include "db.h"
+
+#endif
+
 
 
 using namespace std;
@@ -75,6 +75,8 @@ string Util::needCredBuf(string& nonce){
     return retval;
 }
 
+
+#ifndef XBLAB_NATIVE
 
 // Validates new member and initializes Manager for requested group if need be
 void Util::unpackMember(DataBaton* baton){
@@ -153,8 +155,11 @@ void Util::unpackMember(DataBaton* baton){
     }
 }
 
+#endif
 
 #endif
+
+#ifndef XBLAB_NATIVE
 
 string Util::packageParticipantCredentials(void* auxData){
     Participant* participant = (Participant *) auxData;
@@ -190,11 +195,18 @@ string Util::packageParticipantCredentials(void* auxData){
     catch(crypto_exception& e){
         cout << "crypto exception: " << e.what() << endl;
     }
-
+    // Protobuf-lite doesn't have SerializeToOstream
     stringstream plaintext, ciphertext;
-    if (!trans.SerializeToOstream(&plaintext)){
+    // if (!trans.SerializeToOstream(&plaintext)){
+    //     throw util_exception("Failed to serialize broadcast.");
+    // }
+
+    string pt;
+    if (!trans.SerializeToString(&pt)){
         throw util_exception("Failed to serialize broadcast.");
     }
+
+    plaintext << pt;
 
     Crypto::hybridEncrypt(plaintext, ciphertext);
 
@@ -228,6 +240,8 @@ MessageType Util::parseBroadcast(string& in, void* auxData){
 
     return retval;
 }
+
+#endif
 
 } //namespace xblab
 

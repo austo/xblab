@@ -4,8 +4,12 @@
 #include <string>
 #include <map>
 #include <exception>
+
+#ifndef XBLAB_NATIVE
 #include "group.h"
 #include "member.h"
+#endif
+
 #include "protobuf/xblab.pb.h"
 #include "baton.h"
 
@@ -50,12 +54,17 @@ class Util {
         #ifndef XBLAB_CLIENT 
         
         static std::string needCredBuf(std::string& nonce);
+
+        #ifndef XBLAB_NATIVE
         static void unpackMember(DataBaton* baton);
+        #endif
 
         #endif
         
+        #ifndef XBLAB_NATIVE
         static MessageType parseBroadcast(std::string& in, void* out);
-        static std::string packageParticipantCredentials(void* data);   
+        static std::string packageParticipantCredentials(void* data);
+        #endif 
 
     private:
         Util(){ /* keep as "static" class */ };

@@ -8,19 +8,24 @@ namespace xblab {
 class Server {
 
 private:
-static uv_buf_t alloc_buffer(uv_handle_t *handle, size_t suggested_size);
-static void echo_write(uv_write_t *req, int status);
-static void echo_read(uv_stream_t *client, ssize_t nread, uv_buf_t buf);
+static uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
+static void writeNeedCred(uv_write_t *req, int status);
+static void echoRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf);
+static void echoWrite(uv_write_t *req, int status);
 static void fatal(const char *what);
+static void onConnectWork(uv_work_t *r);
+static void afterOnConnect (uv_work_t *r);
+
+
 
 public:
-    static int get_config(char* filename);
-    static void on_new_connection(uv_stream_t *server, int status);
+    static int getConfig(char* filename);
+    static void onConnect(uv_stream_t *server, int status);
 };
 
 // C linkage for libuv callback
 extern "C" {
-    void on_connection(uv_stream_t *server, int status);
+    void on_connect(uv_stream_t *server, int status);
 }
 
 } // namespace xblab

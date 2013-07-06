@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <assert.h>
 
 #include <iostream>
 #include <string>
@@ -8,6 +9,7 @@
 #include <yajl/yajl_tree.h>
 
 #include "crypto.h"
+#include "util.h"
 #include "baton.h"
 #include "macros.h"
 #include "server.h"
@@ -31,25 +33,50 @@ extern uv_loop_t *loop;
  * (we're kind of stubborn about making things class members)
  */
 extern "C" {
-    void on_connection(uv_stream_t *server, int status){
-        xblab::Server::on_new_connection(server, status);
+    void on_connect(uv_stream_t *server, int status){
+        xblab::Server::onConnect(server, status);
     }
 }
 
 /* public */
 void
-xblab::Server::on_new_connection(uv_stream_t *server, int status) {
+xblab::Server::onConnect(uv_stream_t *server, int status) {
     if (status == -1) {
         // error!
         return;
     }
 
     DataBaton *baton = new DataBaton();
+    baton->server = server;
+    status = uv_queue_work(
+        loop,
+        &baton->request,
+        onConnectWork,
+        (uv_after_work_cb)afterOnConnect);
+    assert(status == XBGOOD);    
+}
+
+void
+Server::onConnectWork(uv_work_t *r){
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+
+    string nonce;
+    // Get "NEEDCRED" buffer
+    string buf = Util::needCredBuf(nonce);
+    baton->nonce = nonce;
+    baton->buf = buf;
+    baton->uvBuf.base = &baton->buf[0];
+    baton->uvBuf.len = baton->buf.size();
+}
+
+void
+Server::afterOnConnect (uv_work_t *r) {
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
     uv_tcp_init(loop, &baton->client);
 
-    // TODO: where does suggested size come from??
-    if (uv_accept(server, (uv_stream_t*) &baton->client) == 0) {
-        uv_read_start((uv_stream_t*) &baton->client, alloc_buffer, echo_read);
+    if (uv_accept(baton->server, (uv_stream_t*) &baton->client) == XBGOOD) {
+        uv_write(&baton->writeRequest,
+            (uv_stream_t*)&baton->client, &baton->uvBuf, 1, writeNeedCred);        
     }
     else {
         uv_close((uv_handle_t*) &baton->client, NULL);
@@ -57,8 +84,12 @@ xblab::Server::on_new_connection(uv_stream_t *server, int status) {
 }
 
 
+/*
+ * NOTE: yajl doesn't seem to play nicely with protobuf,
+ * although protobuf-lite appears to be okay.
+ */
 int
-Server::get_config(char* filename) {
+Server::getConfig(char* filename) {
 
     FILE *fd = fopen (filename, "r");
     if (fd == NULL) {
@@ -112,28 +143,29 @@ Server::get_config(char* filename) {
 
 
 /* private */
-// TODO: integrate into DataBaton
+// allocates unattached uv_buf_t's
 uv_buf_t
-Server::alloc_buffer(uv_handle_t *handle, size_t suggested_size) {
+Server::allocBuf(uv_handle_t *handle, size_t suggested_size) {
     return uv_buf_init((char *)malloc(suggested_size), suggested_size);
 }
 
 
-// TODO: should really be called after_write
 void
-Server::echo_write(uv_write_t *req, int status) {
+Server::writeNeedCred(uv_write_t *req, int status) {
     if (status == -1) {
         fprintf(stderr, "Write error %s\n",
             uv_err_name(uv_last_error(loop)));
     }
+    else {
+        DataBaton *baton = reinterpret_cast<DataBaton *>(req->data);
 
-    // req is temporary for each write request
-    free(req);
+        uv_read_start((uv_stream_t*) &baton->client, allocBuf, echoRead);
+    }    
 }
 
 
 void
-Server::echo_read(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
+Server::echoRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
     if (nread == -1) {
         if (uv_last_error(loop).code != UV_EOF){
             fprintf(stderr, "Read error %s\n", 
@@ -143,16 +175,33 @@ Server::echo_read(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
         return;
     }
 
-    DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
-
-    // test: generate nonce
-    baton->nonce = Crypto::generateNonce();
     uv_write_t *req = (uv_write_t *) malloc(sizeof(uv_write_t));
+    req->data = (void*) buf.base;
+    buf.len = nread;
+    uv_write(req, client, &buf, 1, echoWrite);
 
-    req->data = &baton->nonce[0];
-    buf.base = &baton->nonce[0];
-    buf.len = baton->nonce.size();
-    uv_write(req, client, &buf, 1, echo_write);
+    // TODO: hook up to next step in protocol
+    // DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
+
+    // // test: generate nonce
+    // // baton->nonce = Crypto::generateNonce();
+    // string credbuf = Util::needCredBuf(baton->nonce);
+
+    // uv_write_t *req = (uv_write_t *) malloc(sizeof(uv_write_t));
+
+    // req->data = &credbuf[0]; // &baton->nonce[0];
+    // buf.base =  &credbuf[0]; // &baton->nonce[0];
+    // buf.len = credbuf.size(); // baton->nonce.size();
+    // uv_write(req, client, &buf, 1, echoWrite);
+}
+
+void Server::echoWrite(uv_write_t *req, int status) {
+    if (status == -1) {
+        fprintf(stderr, "Write error %s\n", uv_err_name(uv_last_error(loop)));
+    }
+    char *base = (char*) req->data;
+    free(base);
+    free(req);
 }
 
 
