@@ -17,7 +17,7 @@ std::string xbPrivateKeyFile;
 std::string xbKeyPassword;
 std::string xbPort;
 
-extern "C" {
+extern "C" {    
 
     int
     main(int argc, char** argv) {
@@ -26,7 +26,7 @@ extern "C" {
             return 1;
         }
 
-        if (get_config(argv[1]) != XBGOOD){
+        if (Server::get_config(argv[1]) != XBGOOD){
             return 1;
         }
 
@@ -38,7 +38,7 @@ extern "C" {
 
         struct sockaddr_in bind_addr = uv_ip4_addr("127.0.0.1", port);
         uv_tcp_bind(&server, bind_addr);
-        int r = uv_listen((uv_stream_t*) &server, 128, on_new_connection);
+        int r = uv_listen((uv_stream_t*) &server, 128, on_connection);
         if (r) {
             fprintf(stderr, "Listen error %s\n",
                 uv_err_name(uv_last_error(loop)));

@@ -14,6 +14,7 @@
 
 using namespace std;
 
+
 namespace xblab {
 
 
@@ -26,74 +27,38 @@ extern string xbPort;
 
 extern uv_loop_t *loop;
 
-
-// TODO: integrate into DataBaton
-uv_buf_t
-alloc_buffer(uv_handle_t *handle, size_t suggested_size) {
-    return uv_buf_init((char *)malloc(suggested_size), suggested_size);
-}
-
-
-// TODO: should really be called after_write
-void
-echo_write(uv_write_t *req, int status) {
-    if (status == -1) {
-        fprintf(stderr, "Write error %s\n",
-            uv_err_name(uv_last_error(loop)));
+/* C linkage for libuv
+ * (we're kind of stubborn about making things class members)
+ */
+extern "C" {
+    void on_connection(uv_stream_t *server, int status){
+        xblab::Server::on_new_connection(server, status);
     }
-
-    // req is temporary for each write request
-    free(req);
 }
 
-
+/* public */
 void
-echo_read(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
-    if (nread == -1) {
-        if (uv_last_error(loop).code != UV_EOF){
-            fprintf(stderr, "Read error %s\n", 
-                uv_err_name(uv_last_error(loop)));
-        }
-        uv_close((uv_handle_t*) client, NULL);
+xblab::Server::on_new_connection(uv_stream_t *server, int status) {
+    if (status == -1) {
+        // error!
         return;
     }
 
-    DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
+    DataBaton *baton = new DataBaton();
+    uv_tcp_init(loop, &baton->client);
 
-    // test: generate nonce
-    baton->nonce = Crypto::generateNonce();
-    uv_write_t *req = (uv_write_t *) malloc(sizeof(uv_write_t));
-
-    req->data = &baton->nonce[0];
-    buf.base = &baton->nonce[0];
-    buf.len = baton->nonce.size();
-    uv_write(req, client, &buf, 1, echo_write);
-}
-
-
-extern "C" {
-    void
-    on_new_connection(uv_stream_t *server, int status) {
-        if (status == -1) {
-            // error!
-            return;
-        }
-
-        DataBaton *baton = new DataBaton();
-        uv_tcp_init(loop, &baton->client);
-
-        // TODO: where does suggested size come from??
-        if (uv_accept(server, (uv_stream_t*) &baton->client) == 0) {
-            uv_read_start((uv_stream_t*) &baton->client, alloc_buffer, echo_read);
-        }
-        else {
-            uv_close((uv_handle_t*) &baton->client, NULL);
-        }
+    // TODO: where does suggested size come from??
+    if (uv_accept(server, (uv_stream_t*) &baton->client) == 0) {
+        uv_read_start((uv_stream_t*) &baton->client, alloc_buffer, echo_read);
+    }
+    else {
+        uv_close((uv_handle_t*) &baton->client, NULL);
     }
 }
 
+
 int
-get_config(char* filename) {
+Server::get_config(char* filename) {
 
     FILE *fd = fopen (filename, "r");
     if (fd == NULL) {
@@ -145,8 +110,54 @@ get_config(char* filename) {
     return 0;
 }
 
+
+/* private */
+// TODO: integrate into DataBaton
+uv_buf_t
+Server::alloc_buffer(uv_handle_t *handle, size_t suggested_size) {
+    return uv_buf_init((char *)malloc(suggested_size), suggested_size);
+}
+
+
+// TODO: should really be called after_write
 void
-fatal(const char *what) {
+Server::echo_write(uv_write_t *req, int status) {
+    if (status == -1) {
+        fprintf(stderr, "Write error %s\n",
+            uv_err_name(uv_last_error(loop)));
+    }
+
+    // req is temporary for each write request
+    free(req);
+}
+
+
+void
+Server::echo_read(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
+    if (nread == -1) {
+        if (uv_last_error(loop).code != UV_EOF){
+            fprintf(stderr, "Read error %s\n", 
+                uv_err_name(uv_last_error(loop)));
+        }
+        uv_close((uv_handle_t*) client, NULL);
+        return;
+    }
+
+    DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
+
+    // test: generate nonce
+    baton->nonce = Crypto::generateNonce();
+    uv_write_t *req = (uv_write_t *) malloc(sizeof(uv_write_t));
+
+    req->data = &baton->nonce[0];
+    buf.base = &baton->nonce[0];
+    buf.len = baton->nonce.size();
+    uv_write(req, client, &buf, 1, echo_write);
+}
+
+
+void
+Server::fatal(const char *what) {
     uv_err_t err = uv_last_error(uv_default_loop());
     fprintf(stderr, "%s: %s\n", what, uv_strerror(err));
     exit(1);
