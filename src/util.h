@@ -52,10 +52,8 @@ class Util {
 
         #endif
         
-        #ifndef XBLAB_NATIVE
         static MessageType parseBroadcast(std::string& in, void* out);
         static std::string packageParticipantCredentials(void* data);
-        #endif 
 
     private:
         Util(){ /* keep as "static" class */ };

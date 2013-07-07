@@ -28,6 +28,7 @@ extern string xbPublicKeyFile;
 extern string xbPrivateKeyFile;
 extern string xbKeyPassword;
 extern string xbPort;
+extern string xbNetworkInterface;
 
 extern map<string, Manager*> xbManagers;
 
@@ -105,11 +106,12 @@ Server::getConfig(char* filename) {
     }
 
     // These need to be named exactly like their JSON counterparts
-    GET_PROP(xbConnectionString) /* TODO: get yajl_status */
-    GET_PROP(xbPublicKeyFile)
-    GET_PROP(xbPrivateKeyFile)
-    GET_PROP(xbKeyPassword)
+    GET_PROP(xbConnectionString); /* TODO: get yajl_status */
+    GET_PROP(xbPublicKeyFile);
+    GET_PROP(xbPrivateKeyFile);
+    GET_PROP(xbKeyPassword);
     GET_PROP(xbPort);
+    GET_PROP(xbNetworkInterface);
 
     fclose(fd);
     free(cfgbuf);
@@ -146,7 +148,8 @@ Server::afterOnConnect (uv_work_t *r) {
     DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
     uv_tcp_init(loop, &baton->uvClient);
 
-    if (uv_accept(baton->uvServer, (uv_stream_t*) &baton->uvClient) == XBGOOD) {
+    if (uv_accept(baton->uvServer,
+        (uv_stream_t*) &baton->uvClient) == XBGOOD) {
         uv_write(&baton->uvWrite,
             (uv_stream_t*)&baton->uvClient, &baton->uvBuf, 1, writeNeedCred);        
     }
@@ -181,10 +184,6 @@ Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
 
     DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
 
-    if (baton->uvBuf.base != NULL){
-        free((void *)baton->uvBuf.base);
-    }
-
     baton->uvBuf = buf;
     baton->uvBuf.len = nread;
 
@@ -202,22 +201,15 @@ Server::onReadWork(uv_work_t *r){
     DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
     baton->xBuffer = string(baton->uvBuf.base, baton->uvBuf.len);
     baton->err = "";
-    // Util::unpackMember(baton);    
+    Util::unpackMember(baton);
+    // TODO: add logic to determine what to do next  
 }
 
-// TODO: replace with appropriate code
 void
 Server::afterOnRead (uv_work_t *r) {
     DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
-    uv_tcp_init(loop, &baton->uvClient);
-
-    if (uv_accept(baton->uvServer, (uv_stream_t*) &baton->uvClient) == XBGOOD) {
-        uv_write(&baton->uvWrite,
-            (uv_stream_t*)&baton->uvClient, &baton->uvBuf, 1, writeNeedCred);        
-    }
-    else {
-        uv_close((uv_handle_t*) &baton->uvClient, NULL);
-    }
+    uv_write(&baton->uvWrite,
+            (uv_stream_t*)&baton->uvClient, &baton->uvBuf, 1, writeNeedCred);
 }
 
 

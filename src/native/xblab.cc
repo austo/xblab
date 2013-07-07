@@ -19,6 +19,7 @@ std::string xbPublicKeyFile;
 std::string xbPrivateKeyFile;
 std::string xbKeyPassword;
 std::string xbPort;
+std::string xbNetworkInterface;
 
 std::map<std::string, Manager*> xbManagers;
 
@@ -42,9 +43,11 @@ main(int argc, char** argv) {
     uv_tcp_t server;
     uv_tcp_init(xblab::loop, &server);
 
-    struct sockaddr_in bind_addr = uv_ip4_addr("0.0.0.0", port);
+    struct sockaddr_in bind_addr = uv_ip4_addr(
+        xblab::xbNetworkInterface.c_str(), port);
     uv_tcp_bind(&server, bind_addr);
-    int r = uv_listen((uv_stream_t*) &server, 128, xblab::on_connect);
+    int r = uv_listen(
+        (uv_stream_t*) &server, XBMAXCONCURRENT, xblab::on_connect);
     if (r) {
         fprintf(stderr, "Listen error %s\n",
             uv_err_name(uv_last_error(xblab::loop)));

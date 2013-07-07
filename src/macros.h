@@ -28,6 +28,7 @@
 #define MACOUTLEN 12
 
 #define XBGOOD 0
+#define XBMAXCONCURRENT 128
 
 
 #ifndef XBLAB_NATIVE
