@@ -15,7 +15,8 @@ static void echoWrite(uv_write_t *req, int status);
 static void fatal(const char *what);
 static void onConnectWork(uv_work_t *r);
 static void afterOnConnect (uv_work_t *r);
-
+static void onReadWork(uv_work_t *r);
+static void afterOnRead (uv_work_t *r);
 
 
 public:

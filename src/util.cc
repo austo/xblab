@@ -8,18 +8,17 @@
 #include "crypto.h"
 
 #ifndef XBLAB_NATIVE
-
 #include "participant.h"
 #include "manager.h"
+#else
+#include "native/manager.h"
+#endif
+
 #include "member.h"
 #include "db.h"
 
-#endif
-
-
 
 using namespace std;
-// using namespace Botan;
 
 
 #define DL_EX_PREFIX "Util: "
@@ -75,13 +74,11 @@ string Util::needCredBuf(string& nonce){
     return retval;
 }
 
-
 #ifndef XBLAB_NATIVE
 
 // Validates new member and initializes Manager for requested group if need be
 void Util::unpackMember(DataBaton* baton){
-    string buf =
-        Crypto::hybridDecrypt(baton->xBuffer);
+    string buf = Crypto::hybridDecrypt(baton->xBuffer);
 
     //TODO: switch on transmission type
     Transmission trans;
@@ -154,8 +151,8 @@ void Util::unpackMember(DataBaton* baton){
         throw util_exception("Last nonce does not match transmission nonce.");
     }
 }
-
 #endif
+
 
 #endif
 

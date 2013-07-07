@@ -5,10 +5,8 @@
 #include <map>
 #include <exception>
 
-#ifndef XBLAB_NATIVE
 #include "group.h"
 #include "member.h"
-#endif
 
 #include "protobuf/xblab.pb.h"
 #include "baton.h"

@@ -12,13 +12,10 @@
 #include "group.h"
 #include "member.h"
 
+
 namespace xblab {
 
-#ifndef XBLAB_NATIVE
 class Manager : public node::ObjectWrap {
-#else
-class Manager {
-#endif
 
     public:
         Manager(std::string url) {
@@ -35,10 +32,9 @@ class Manager {
                 throw;
             }
         }
-        
+
         ~Manager(){};
 
-#ifndef XBLAB_NATIVE
 
         static void Init(v8::Handle<v8::Object> module);
         static v8::Handle<v8::Value> NewInstance(const v8::Arguments& args);
@@ -56,9 +52,7 @@ class Manager {
         static v8::Handle<v8::Value> New(const v8::Arguments& args);
 
         std::string encrypt(std::string);
-#else
-    private:
-#endif
+
         Group group_;
         std::map<int, Member> members_;
         std::string pub_key_;

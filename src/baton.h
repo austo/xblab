@@ -33,6 +33,7 @@ struct DataBaton {
 
 #include <uv.h>
 #include "member.h"
+#include "native/manager.h"
 
 struct DataBaton {
     DataBaton(){

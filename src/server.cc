@@ -34,13 +34,13 @@ extern uv_loop_t *loop;
  */
 extern "C" {
     void on_connect(uv_stream_t *server, int status){
-        xblab::Server::onConnect(server, status);
+        Server::onConnect(server, status);
     }
 }
 
 /* public */
 void
-xblab::Server::onConnect(uv_stream_t *server, int status) {
+Server::onConnect(uv_stream_t *server, int status) {
     if (status == -1) {
         // error!
         return;
@@ -175,11 +175,12 @@ Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
         return;
     }
 
+    DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
+
     if (baton->uvBuf.base != NULL){
         free((void *)baton->uvBuf.base);
     }
 
-    DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
     baton->uvBuf = buf;
     baton->uvBuf.len = nread;
 
@@ -189,47 +190,30 @@ Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
         onReadWork,
         (uv_after_work_cb)afterOnRead);
     assert(status == XBGOOD);    
-
-
-    // if (baton->uvBuf != NULL){
-    //     free(&baton->uvBuf);
-    // }
-
-    // uv_write_t *req = (uv_write_t *) malloc(sizeof(uv_write_t));
-    // baton->uvBuf = buf;    
-    // uv_write(req, client, &buf, 1, echoWrite);
-
-    // TODO: hook up to next step in protocol
-
-
-    // DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
-
-    // // test: generate nonce
-    // // baton->nonce = Crypto::generateNonce();
-    // string credbuf = Util::needCredBuf(baton->nonce);
-
-    // uv_write_t *req = (uv_write_t *) malloc(sizeof(uv_write_t));
-
-    // req->data = &credbuf[0]; // &baton->nonce[0];
-    // buf.base =  &credbuf[0]; // &baton->nonce[0];
-    // buf.len = credbuf.size(); // baton->nonce.size();
-    // uv_write(req, client, &buf, 1, echoWrite);
 }
+
 
 void
 Server::onReadWork(uv_work_t *r){
     DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
-    baton->xBuffer = string(baton->uvBuf.base, baton->buf.len);
+    baton->xBuffer = string(baton->uvBuf.base, baton->uvBuf.len);
     baton->err = "";
-    Util::unpackMember(baton);
+    // Util::unpackMember(baton);    
+}
 
-    string nonce;
-    // Get "NEEDCRED" buffer
-    string buf = Util::needCredBuf(nonce);
-    baton->nonce = nonce;
-    baton->xBuffer = buf;
-    baton->uvBuf.base = &baton->xBuffer[0];
-    baton->uvBuf.len = baton->xBuffer.size();
+// TODO: replace with appropriate code
+void
+Server::afterOnRead (uv_work_t *r) {
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    uv_tcp_init(loop, &baton->uvClient);
+
+    if (uv_accept(baton->uvServer, (uv_stream_t*) &baton->uvClient) == XBGOOD) {
+        uv_write(&baton->uvWrite,
+            (uv_stream_t*)&baton->uvClient, &baton->uvBuf, 1, writeNeedCred);        
+    }
+    else {
+        uv_close((uv_handle_t*) &baton->uvClient, NULL);
+    }
 }
 
 
