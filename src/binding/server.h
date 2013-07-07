@@ -1,5 +1,5 @@
-#ifndef XBLAB_H
-#define XBLAB_H
+#ifndef SERVER_H
+#define SERVER_H
 
 #include <map>
 #include <uv.h>

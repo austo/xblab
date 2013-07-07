@@ -9,9 +9,9 @@
 #include <botan/rsa.h>
 #include <botan/look_pk.h>
 
-#include "participant.h"
-#include "util.h"
-#include "nodeUtil.h"
+#include "binding/participant.h"
+#include "binding/util.h"
+#include "binding/nodeUtil.h"
 #include "crypto.h"
 #include "macros.h"
 

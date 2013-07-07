@@ -7,11 +7,11 @@
 #include <node_buffer.h>
 
 #include "macros.h"
-#include "xblab.server.h"
-#include "manager.h"
-#include "util.h"
-#include "nodeUtil.h"
-#include "baton.h"
+#include "binding/server.h"
+#include "binding/manager.h"
+#include "binding/util.h"
+#include "binding/nodeUtil.h"
+#include "binding/clientBaton.h"
 
 
 using namespace v8;
@@ -87,7 +87,7 @@ Handle<Value> Xblab::OnConnect(const Arguments& args) {
     Local<Function> cb = Local<Function>::Cast(args[0]);
     
     // Populate baton struct to pass to uv_queue_work:
-    DataBaton *baton = new DataBaton(cb);    
+    ClientBaton *baton = new ClientBaton(cb);    
     uv_queue_work(uv_default_loop(), &baton->uvWork,
         OnConnectWork, (uv_after_work_cb)AfterOnConnect);
     
@@ -96,7 +96,7 @@ Handle<Value> Xblab::OnConnect(const Arguments& args) {
 
 
 void Xblab::OnConnectWork(uv_work_t *r){
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
 
     string nonce;
     // get serialized "NEEDCRED buffer
@@ -108,7 +108,7 @@ void Xblab::OnConnectWork(uv_work_t *r){
 
 void Xblab::AfterOnConnect (uv_work_t *r) {
     HandleScope scope;
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
 
     TryCatch tc;
 
@@ -206,7 +206,7 @@ Handle<Value> Xblab::DigestBuf(const Arguments& args) {
 
         Xblab *instance = ObjectWrap::Unwrap<Xblab>(pHandle_);
 
-        DataBaton *baton = new DataBaton(cb);
+        ClientBaton *baton = new ClientBaton(cb);
         baton->nonce = NodeUtil::v8ToString(lastNonce);
         baton->xBuffer = buf;        
         baton->auxData = &instance->mptrs;
@@ -229,7 +229,7 @@ Handle<Value> Xblab::DigestBuf(const Arguments& args) {
 // or transfering ownership to Manager
 void Xblab::DigestBufWork(uv_work_t *r){
     try{
-        DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+        ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
         baton->err = "";
         Util::unpackMember(baton);
     }
@@ -242,7 +242,7 @@ void Xblab::DigestBufWork(uv_work_t *r){
 // TODO: callback!
 void Xblab::AfterDigestBuf(uv_work_t *r) {
     HandleScope scope;
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
 
     TryCatch tc;
 

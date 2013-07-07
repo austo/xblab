@@ -33,7 +33,7 @@
 
 #ifndef XBLAB_NATIVE
 
-#include "nodeUtil.h"
+#include "binding/nodeUtil.h"
 
 #define XBGROUP "group"
 #define XBUSERNAME "username"

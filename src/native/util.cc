@@ -66,7 +66,7 @@ Util::needCredBuf(string& nonce){
 
 
 void
-Util::unpackMember(DataBaton* baton){
+Util::unpackMember(ClientBaton* baton){
     string buf = Crypto::hybridDecrypt(baton->xBuffer);
 
     //TODO: switch on transmission type

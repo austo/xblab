@@ -1,6 +1,6 @@
 #include <node_buffer.h>
 
-#include "nodeUtil.h"
+#include "binding/nodeUtil.h"
 
 
 using namespace v8;

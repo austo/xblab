@@ -21,7 +21,7 @@ xblab.o:	$(XB_SRC_N)/xblab.cc $(XB_SRC_N)/server.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/xblab.cc
 
 server.o:	$(XB_SRC_N)/server.cc $(XB_SRC_N)/util.h $(XB_SRC_N)/server.h \
-			$(XB_SRC)/crypto.h $(XB_SRC)/baton.h $(XB_SRC)/macros.h
+			$(XB_SRC)/crypto.h $(XB_SRC_N)/clientBaton.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/server.cc
 
 manager.o:	$(XB_SRC_N)/manager.cc $(XB_SRC_N)/manager.h $(XB_SRC)/crypto.h \
@@ -32,7 +32,7 @@ db.o:		$(XB_SRC)/db.cc $(XB_SRC)/db.h $(XB_SRC)/macros.h $(XB_SRC)/group.h $(XB_
 	$(CC) -c -g $(CFLAGS) $(XB_SRC)/db.cc
 
 util.o:		$(XB_SRC_N)/util.cc $(XB_SRC_N)/manager.h $(XB_SRC_N)/util.h $(XB_SRC_P)/xblab.pb.h \
-			$(XB_SRC)/baton.h $(XB_SRC)/crypto.h $(XB_SRC)/member.h $(XB_SRC)/macros.h
+			$(XB_SRC_N)/clientBaton.h $(XB_SRC)/crypto.h $(XB_SRC)/member.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/util.cc
 
 xblab.pb.o:	$(XB_SRC_P)/xblab.pb.cc $(XB_SRC_P)/xblab.pb.h

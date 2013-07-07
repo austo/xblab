@@ -11,7 +11,7 @@
 
 #include "crypto.h"
 #include "native/util.h"
-#include "baton.h"
+#include "clientBaton.h"
 #include "macros.h"
 #include "server.h"
 #include "native/manager.h"
@@ -51,7 +51,7 @@ Server::onConnect(uv_stream_t *server, int status) {
         return;
     }
 
-    DataBaton *baton = new DataBaton();
+    ClientBaton *baton = new ClientBaton();
     baton->uvServer = server;
     status = uv_queue_work(
         loop,
@@ -131,7 +131,7 @@ Server::allocBuf(uv_handle_t *handle, size_t suggested_size) {
 
 void
 Server::onConnectWork(uv_work_t *r){
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
 
     string nonce;
     // Get "NEEDCRED" buffer
@@ -145,7 +145,7 @@ Server::onConnectWork(uv_work_t *r){
 // TODO: uvWrappers accepting a baton
 void
 Server::afterOnConnect (uv_work_t *r) {
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
     uv_tcp_init(loop, &baton->uvClient);
 
     if (uv_accept(baton->uvServer,
@@ -166,7 +166,7 @@ Server::writeNeedCred(uv_write_t *req, int status) {
             uv_err_name(uv_last_error(loop)));
         return;
     }
-    DataBaton *baton = reinterpret_cast<DataBaton *>(req->data);
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(req->data);
     uv_read_start((uv_stream_t*) &baton->uvClient, allocBuf, readBuf);
 }
 
@@ -182,7 +182,7 @@ Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
         return;
     }
 
-    DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(client->data);
 
     baton->uvBuf = buf;
     baton->uvBuf.len = nread;
@@ -198,7 +198,7 @@ Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
 
 void
 Server::onReadWork(uv_work_t *r){
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
     baton->xBuffer = string(baton->uvBuf.base, baton->uvBuf.len);
     baton->err = "";
     Util::unpackMember(baton);
@@ -207,7 +207,7 @@ Server::onReadWork(uv_work_t *r){
 
 void
 Server::afterOnRead (uv_work_t *r) {
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
     uv_write(&baton->uvWrite,
             (uv_stream_t*)&baton->uvClient, &baton->uvBuf, 1, writeNeedCred);
 }

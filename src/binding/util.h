@@ -5,7 +5,7 @@
 #include <map>
 #include <exception>
 #include "protobuf/xblab.pb.h"
-#include "binding/clientBaton.h"
+#include "clientBaton.h"
 
 
 namespace xblab {

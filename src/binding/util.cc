@@ -4,11 +4,11 @@
 #include <map>
 
 #include "macros.h"
-#include "binding/util.h"
+#include "util.h"
 #include "crypto.h"
 
-#include "binding/participant.h"
-#include "binding/manager.h"
+#include "participant.h"
+#include "manager.h"
 
 #include "member.h"
 #include "db.h"

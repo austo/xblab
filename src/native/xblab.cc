@@ -8,7 +8,7 @@
 
 #include "macros.h"
 #include "server.h"
-#include "native/manager.h"
+#include "manager.h"
 
 namespace xblab {
 

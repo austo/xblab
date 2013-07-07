@@ -5,7 +5,7 @@
 #include <map>
 #include <exception>
 #include "protobuf/xblab.pb.h"
-#include "baton.h"
+#include "clientBaton.h"
 
 
 namespace xblab {
@@ -45,7 +45,7 @@ class Util {
 
     public:        
         static std::string needCredBuf(std::string& nonce);
-        static void unpackMember(DataBaton* baton);
+        static void unpackMember(ClientBaton* baton);
 
     private:
         Util(){ /* keep as "static" class */ };
