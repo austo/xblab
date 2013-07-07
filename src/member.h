@@ -10,6 +10,9 @@ namespace xblab {
 
 // Used by Manager for tracking users once they have joined a chat
 
+// Forward declaration
+class Manager;
+
 struct Member {
     Member(){
         username = "invalid";
@@ -45,7 +48,8 @@ struct Member {
     std::string public_key;
     std::string round_nonce;      
     int round_modulus;
-    bool present;    
+    bool present;
+    Manager *manager;  
 
 };
 } //namespace xblab

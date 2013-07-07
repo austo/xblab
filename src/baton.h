@@ -3,14 +3,11 @@
 
 #include <string>
 
-
-namespace xblab {
-
-
 #ifndef XBLAB_NATIVE
 
 #include <node.h>
 
+namespace xblab {
 
 struct DataBaton {
     DataBaton(v8::Local<v8::Function> cb){
@@ -29,11 +26,15 @@ struct DataBaton {
     v8::Persistent<v8::Function> callback;
 };
 
+} // namespace xblab
+
 #else
 
 #include <uv.h>
 #include "member.h"
 #include "native/manager.h"
+
+namespace xblab {
 
 struct DataBaton {
     DataBaton(){
@@ -58,10 +59,7 @@ struct DataBaton {
     void *auxData;    
 };
 
-
-#endif
-
-
 } // namespace xblab
 
+#endif
 #endif

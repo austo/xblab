@@ -5,10 +5,6 @@
 #include <map>
 #include <exception>
 
-// #ifndef XBLAB_NATIVE
-// #include <node.h>
-// #endif
-
 #include "group.h"
 #include "member.h"
 

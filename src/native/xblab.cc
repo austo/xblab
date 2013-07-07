@@ -3,9 +3,12 @@
 #include <cstring>
 
 #include <string>
+#include <map>
+#include <string>
 
 #include "macros.h"
 #include "server.h"
+#include "native/manager.h"
 
 namespace xblab {
 
@@ -16,6 +19,8 @@ std::string xbPublicKeyFile;
 std::string xbPrivateKeyFile;
 std::string xbKeyPassword;
 std::string xbPort;
+
+std::map<std::string, Manager*> xbManagers;
 
 } // namespace xblab
 

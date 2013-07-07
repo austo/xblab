@@ -5,14 +5,16 @@
 
 #include <iostream>
 #include <string>
+#include <map>
 
 #include <yajl/yajl_tree.h>
 
 #include "crypto.h"
-#include "util.h"
+#include "native/util.h"
 #include "baton.h"
 #include "macros.h"
 #include "server.h"
+#include "native/manager.h"
 
 using namespace std;
 
@@ -26,6 +28,8 @@ extern string xbPublicKeyFile;
 extern string xbPrivateKeyFile;
 extern string xbKeyPassword;
 extern string xbPort;
+
+extern map<string, Manager*> xbManagers;
 
 extern uv_loop_t *loop;
 

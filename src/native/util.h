@@ -1,5 +1,5 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef NATIVE_UTIL_H
+#define NATIVE_UTIL_H
 
 #include <string>
 #include <map>
@@ -10,7 +10,7 @@
 
 namespace xblab {
 
-// Message types enum - global to xblab namespace
+// Message types - global to xblab namespace
 
 enum MessageType {
     NEEDCRED,
@@ -22,7 +22,6 @@ enum MessageType {
     QUIT,
     INVALID
 };
-
 
 
 class util_exception : public std::exception {
@@ -41,21 +40,12 @@ private:
     std::string message_;        
 };
 
+
 class Util {
 
-    public:     
-        
-        #ifndef XBLAB_CLIENT 
-        
+    public:        
         static std::string needCredBuf(std::string& nonce);
         static void unpackMember(DataBaton* baton);
-
-        #endif
-        
-        #ifndef XBLAB_NATIVE
-        static MessageType parseBroadcast(std::string& in, void* out);
-        static std::string packageParticipantCredentials(void* data);
-        #endif 
 
     private:
         Util(){ /* keep as "static" class */ };

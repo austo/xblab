@@ -9,23 +9,21 @@
 
 
 namespace xblab {
-namespace native {
 
-struct Manager {
+class Manager {
 
-// public:
-    // friend class Util;    
-
+public:
     Manager(std::string url);    
     ~Manager(){};
 
-// private:
+    std::map<int, Member> members;
+
+
+private:
     Group group_;
-    std::map<int, Member> members_;
     std::string pub_key_;
     std::string priv_key_;
 };
-} //namespace native
 } //namespace xblab
 
 

@@ -9,8 +9,6 @@
 using namespace std;
 
 namespace xblab{
-namespace native {
-
 
 Manager::Manager(string url) {
     try{
@@ -19,14 +17,21 @@ Manager::Manager(string url) {
         group_ = Db::getGroup(url);
         
         // We've got the room ID, now get our members
-        members_ = Db::getMembers(group_.id);
+        members = Db::getMembers(group_.id);
+
+        // Each member has a reference to the manager
+        map<int, Member>::iterator mitr = members.begin();
+        for (; mitr != members.end(); ++mitr){
+            mitr->second.manager = this;
+        }
+
     }
      catch(std::exception& e){
         cout << "Exception caught: " << e.what() << std::endl;
         throw;
     }
 }
-} // namespace native
+
 } // namespace xblab
 
 
