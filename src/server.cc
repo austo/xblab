@@ -47,40 +47,13 @@ xblab::Server::onConnect(uv_stream_t *server, int status) {
     }
 
     DataBaton *baton = new DataBaton();
-    baton->server = server;
+    baton->uvServer = server;
     status = uv_queue_work(
         loop,
-        &baton->request,
+        &baton->uvWork,
         onConnectWork,
         (uv_after_work_cb)afterOnConnect);
     assert(status == XBGOOD);    
-}
-
-void
-Server::onConnectWork(uv_work_t *r){
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
-
-    string nonce;
-    // Get "NEEDCRED" buffer
-    string buf = Util::needCredBuf(nonce);
-    baton->nonce = nonce;
-    baton->buf = buf;
-    baton->uvBuf.base = &baton->buf[0];
-    baton->uvBuf.len = baton->buf.size();
-}
-
-void
-Server::afterOnConnect (uv_work_t *r) {
-    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
-    uv_tcp_init(loop, &baton->client);
-
-    if (uv_accept(baton->server, (uv_stream_t*) &baton->client) == XBGOOD) {
-        uv_write(&baton->writeRequest,
-            (uv_stream_t*)&baton->client, &baton->uvBuf, 1, writeNeedCred);        
-    }
-    else {
-        uv_close((uv_handle_t*) &baton->client, NULL);
-    }
 }
 
 
@@ -151,21 +124,48 @@ Server::allocBuf(uv_handle_t *handle, size_t suggested_size) {
 
 
 void
-Server::writeNeedCred(uv_write_t *req, int status) {
-    if (status == -1) {
-        fprintf(stderr, "Write error %s\n",
-            uv_err_name(uv_last_error(loop)));
+Server::onConnectWork(uv_work_t *r){
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+
+    string nonce;
+    // Get "NEEDCRED" buffer
+    string buf = Util::needCredBuf(nonce);
+    baton->nonce = nonce;
+    baton->xBuffer = buf;
+    baton->uvBuf.base = &baton->xBuffer[0];
+    baton->uvBuf.len = baton->xBuffer.size();
+}
+
+// TODO: uvWrappers accepting a baton
+void
+Server::afterOnConnect (uv_work_t *r) {
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    uv_tcp_init(loop, &baton->uvClient);
+
+    if (uv_accept(baton->uvServer, (uv_stream_t*) &baton->uvClient) == XBGOOD) {
+        uv_write(&baton->uvWrite,
+            (uv_stream_t*)&baton->uvClient, &baton->uvBuf, 1, writeNeedCred);        
     }
     else {
-        DataBaton *baton = reinterpret_cast<DataBaton *>(req->data);
-
-        uv_read_start((uv_stream_t*) &baton->client, allocBuf, echoRead);
-    }    
+        uv_close((uv_handle_t*) &baton->uvClient, NULL);
+    }
 }
 
 
 void
-Server::echoRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
+Server::writeNeedCred(uv_write_t *req, int status) {
+    if (status == -1) {
+        fprintf(stderr, "Write error %s\n",
+            uv_err_name(uv_last_error(loop)));
+        return;
+    }
+    DataBaton *baton = reinterpret_cast<DataBaton *>(req->data);
+    uv_read_start((uv_stream_t*) &baton->uvClient, allocBuf, readBuf);
+}
+
+
+void
+Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
     if (nread == -1) {
         if (uv_last_error(loop).code != UV_EOF){
             fprintf(stderr, "Read error %s\n", 
@@ -175,12 +175,33 @@ Server::echoRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
         return;
     }
 
-    uv_write_t *req = (uv_write_t *) malloc(sizeof(uv_write_t));
-    req->data = (void*) buf.base;
-    buf.len = nread;
-    uv_write(req, client, &buf, 1, echoWrite);
+    if (baton->uvBuf.base != NULL){
+        free((void *)baton->uvBuf.base);
+    }
+
+    DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
+    baton->uvBuf = buf;
+    baton->uvBuf.len = nread;
+
+    int status = uv_queue_work(
+        loop,
+        &baton->uvWork,
+        onReadWork,
+        (uv_after_work_cb)afterOnRead);
+    assert(status == XBGOOD);    
+
+
+    // if (baton->uvBuf != NULL){
+    //     free(&baton->uvBuf);
+    // }
+
+    // uv_write_t *req = (uv_write_t *) malloc(sizeof(uv_write_t));
+    // baton->uvBuf = buf;    
+    // uv_write(req, client, &buf, 1, echoWrite);
 
     // TODO: hook up to next step in protocol
+
+
     // DataBaton *baton = reinterpret_cast<DataBaton *>(client->data);
 
     // // test: generate nonce
@@ -195,7 +216,25 @@ Server::echoRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
     // uv_write(req, client, &buf, 1, echoWrite);
 }
 
-void Server::echoWrite(uv_write_t *req, int status) {
+void
+Server::onReadWork(uv_work_t *r){
+    DataBaton *baton = reinterpret_cast<DataBaton *>(r->data);
+    baton->xBuffer = string(baton->uvBuf.base, baton->buf.len);
+    baton->err = "";
+    Util::unpackMember(baton);
+
+    string nonce;
+    // Get "NEEDCRED" buffer
+    string buf = Util::needCredBuf(nonce);
+    baton->nonce = nonce;
+    baton->xBuffer = buf;
+    baton->uvBuf.base = &baton->xBuffer[0];
+    baton->uvBuf.len = baton->xBuffer.size();
+}
+
+
+void
+Server::echoWrite(uv_write_t *req, int status) {
     if (status == -1) {
         fprintf(stderr, "Write error %s\n", uv_err_name(uv_last_error(loop)));
     }

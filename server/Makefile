@@ -20,7 +20,7 @@ xblab.o:	$(XB_SRC)/xblab.cc $(XB_SRC)/server.h $(XB_SRC)/macros.h
 server.o:	$(XB_SRC)/server.cc $(XB_SRC)/server.h $(XB_SRC)/crypto.h $(XB_SRC)/baton.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) -D XBLAB_NATIVE=1 $(XB_SRC)/server.cc
 
-util.o:	$(XB_SRC)/util.cc $(XB_SRC)/util.h $(XB_SRC)/protobuf/xblab.pb.h $(XB_SRC)/crypto.h $(XB_SRC)/macros.h
+util.o:		$(XB_SRC)/util.cc $(XB_SRC)/util.h $(XB_SRC)/protobuf/xblab.pb.h $(XB_SRC)/crypto.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) -D XBLAB_NATIVE=1 $(XB_SRC)/util.cc	
 
 xblab.pb.o:	$(XB_SRC)/protobuf/xblab.pb.cc $(XB_SRC)/protobuf/xblab.pb.h

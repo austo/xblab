@@ -33,7 +33,8 @@ struct Member {
     } 
 
     bool operator== (const Member& other) const {
-        std::cout << "this->username: " << username << "\nother.username: " << other.username << std::endl;
+        std::cout << "this->username: " << username
+                  << "\nother.username: " << other.username << std::endl;
         return username == other.username &&
             Crypto::checkPasshash(password, other.password);        
     }
@@ -44,7 +45,7 @@ struct Member {
     std::string public_key;
     std::string round_nonce;      
     int round_modulus;
-    bool present;
+    bool present;    
 
 };
 } //namespace xblab

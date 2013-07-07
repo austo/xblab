@@ -10,7 +10,7 @@ class Server {
 private:
 static uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 static void writeNeedCred(uv_write_t *req, int status);
-static void echoRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf);
+static void readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf);
 static void echoWrite(uv_write_t *req, int status);
 static void fatal(const char *what);
 static void onConnectWork(uv_work_t *r);

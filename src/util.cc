@@ -81,7 +81,7 @@ string Util::needCredBuf(string& nonce){
 // Validates new member and initializes Manager for requested group if need be
 void Util::unpackMember(DataBaton* baton){
     string buf =
-        Crypto::hybridDecrypt(baton->buf);
+        Crypto::hybridDecrypt(baton->xBuffer);
 
     //TODO: switch on transmission type
     Transmission trans;

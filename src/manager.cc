@@ -1,7 +1,6 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
-#include <iostream>
 #include <cstdlib>
 #include <memory>
 #include <botan/botan.h>
@@ -9,8 +8,6 @@
 #include <botan/look_pk.h>
 #include "macros.h"
 #include "manager.h"
-#include "db.h"
-#include "crypto.h"
 
 
 using namespace std;
@@ -20,36 +17,6 @@ using namespace Botan;
 
 namespace xblab {
 
-Manager::Manager(string url) {
-    try{
-        // TODO: clean up calling convention
-        Crypto::generateKey(this->priv_key_, this->pub_key_);
-        group_ = Db::getGroup(url);
-        
-        // We've got the room ID, now get our members
-        members_ = Db::getMembers(group_.id);
-    }
-     catch(exception& e){
-        cout << "Exception caught: " << e.what() << endl;
-        throw;
-    }
-}
-
-// Overload for thread safety - TODO: better management of app-level constants
-Manager::Manager(string conn, string url) {
-    try{
-        // TODO: clean up calling convention
-        Crypto::generateKey(this->priv_key_, this->pub_key_);
-        group_ = Db::getGroup(conn, url);
-        
-        // We've got the room ID, now get our members
-        members_ = Db::getMembers(conn, group_.id);
-    }
-     catch(exception& e){
-        cout << "Exception caught: " << e.what() << endl;
-        throw;
-    }
-}
 
 Persistent<Function> Manager::constructor;
 Persistent<FunctionTemplate> Manager::ctor_template;

@@ -88,7 +88,7 @@ Handle<Value> Xblab::OnConnect(const Arguments& args) {
     
     // Populate baton struct to pass to uv_queue_work:
     DataBaton *baton = new DataBaton(cb);    
-    uv_queue_work(uv_default_loop(), &baton->request,
+    uv_queue_work(uv_default_loop(), &baton->uvWork,
         OnConnectWork, (uv_after_work_cb)AfterOnConnect);
     
     return scope.Close(Undefined());
@@ -102,7 +102,7 @@ void Xblab::OnConnectWork(uv_work_t *r){
     // get serialized "NEEDCRED buffer
     string buf = Util::needCredBuf(nonce);
     baton->nonce = nonce;
-    baton->buf = buf;
+    baton->xBuffer = buf;
 }
 
 
@@ -116,8 +116,8 @@ void Xblab::AfterOnConnect (uv_work_t *r) {
     Local<Value> argv[argc];
 
 
-    const char *c = &(baton->buf[0]); 
-    size_t len = baton->buf.size();
+    const char *c = &(baton->xBuffer[0]); 
+    size_t len = baton->xBuffer.size();
 
     Local<Object> packet = Object::New();    
     packet->Set(String::NewSymbol("nonce"), String::New(baton->nonce.c_str()));
@@ -208,11 +208,11 @@ Handle<Value> Xblab::DigestBuf(const Arguments& args) {
 
         DataBaton *baton = new DataBaton(cb);
         baton->nonce = NodeUtil::v8ToString(lastNonce);
-        baton->buf = buf;        
+        baton->xBuffer = buf;        
         baton->auxData = &instance->mptrs;
 
-        uv_queue_work(uv_default_loop(), &baton->request,
-        DigestBufWork, (uv_after_work_cb)AfterDigestBuf);
+        uv_queue_work(uv_default_loop(), &baton->uvWork,
+            DigestBufWork, (uv_after_work_cb)AfterDigestBuf);
         
     }
     catch (util_exception& e){
