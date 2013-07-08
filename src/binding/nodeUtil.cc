@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include <node_buffer.h>
 
 #include "binding/nodeUtil.h"

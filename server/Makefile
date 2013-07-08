@@ -1,10 +1,10 @@
-XB_SRC=/Users/austin/devProjects/c/xblab/src
-XB_SRC_N=/Users/austin/devProjects/c/xblab/src/native
-XB_SRC_P=/Users/austin/devProjects/c/xblab/src/protobuf
+XB_SRC=$(DVH)/c/xblab/src
+XB_SRC_N=$(DVH)/c/xblab/src/native
+XB_SRC_P=$(DVH)/c/xblab/src/protobuf
 CC = g++
 CFLAGS = -I/usr/local/include -I/usr/local/include/botan-1.10 \
 	-I/usr/local/include/pqxx -I${XB_SRC} -Wall -Wextra -Wno-unused-parameter -D XBLAB_NATIVE=1
-LDFLAGS = -L/usr/local/lib -lm -luv -lbotan-1.10 -lyajl.2 -lprotobuf-lite -lpqxx -lpq
+LDFLAGS = -L/usr/local/lib -lm -luv -lbotan-1.10 -lyajl -lprotobuf-lite -lpqxx -lpq
 
 
 .PHONY: 	all clean
