@@ -192,7 +192,11 @@ Server::onReadWork(uv_work_t *r){
     if (!baton->hasMember()){
         baton->initializeMember();
     }
-    // TODO: digest buffer && set baton->uvWriteCb 
+    /* TODO: digest buffer && set baton->uvWriteCb
+       else{
+        what kind of message is it: decrypt, parse, verify, respond
+     }
+     */     
 }
 
 
