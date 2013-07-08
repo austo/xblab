@@ -10,11 +10,11 @@
 #include <yajl/yajl_tree.h>
 
 #include "crypto.h"
-#include "native/util.h"
+#include "util.h"
 #include "clientBaton.h"
 #include "macros.h"
 #include "server.h"
-#include "native/manager.h"
+#include "manager.h"
 
 using namespace std;
 
@@ -33,10 +33,10 @@ extern string xbNetworkInterface;
 extern map<string, Manager*> xbManagers;
 
 extern uv_loop_t *loop;
+extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 
-/* C linkage for libuv
- * (we're kind of stubborn about making things class members)
- */
+
+/* C linkage for libuv */
 extern "C" {
     void on_connect(uv_stream_t *server, int status){
         Server::onConnect(server, status);
@@ -121,56 +121,6 @@ Server::getConfig(char* filename) {
 }
 
 
-/* private */
-// allocates unattached uv_buf_t's
-uv_buf_t
-Server::allocBuf(uv_handle_t *handle, size_t suggested_size) {
-    return uv_buf_init((char *)malloc(suggested_size), suggested_size);
-}
-
-
-void
-Server::onConnectWork(uv_work_t *r){
-    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
-
-    string nonce;
-    // Get "NEEDCRED" buffer
-    string buf = Util::needCredBuf(nonce);
-    baton->nonce = nonce;
-    baton->xBuffer = buf;
-    baton->uvBuf.base = &baton->xBuffer[0];
-    baton->uvBuf.len = baton->xBuffer.size();
-}
-
-// TODO: uvWrappers accepting a baton
-void
-Server::afterOnConnect (uv_work_t *r) {
-    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
-    uv_tcp_init(loop, &baton->uvClient);
-
-    if (uv_accept(baton->uvServer,
-        (uv_stream_t*) &baton->uvClient) == XBGOOD) {
-        uv_write(&baton->uvWrite,
-            (uv_stream_t*)&baton->uvClient, &baton->uvBuf, 1, writeNeedCred);        
-    }
-    else {
-        uv_close((uv_handle_t*) &baton->uvClient, NULL);
-    }
-}
-
-
-void
-Server::writeNeedCred(uv_write_t *req, int status) {
-    if (status == -1) {
-        fprintf(stderr, "Write error %s\n",
-            uv_err_name(uv_last_error(loop)));
-        return;
-    }
-    ClientBaton *baton = reinterpret_cast<ClientBaton *>(req->data);
-    uv_read_start((uv_stream_t*) &baton->uvClient, allocBuf, readBuf);
-}
-
-
 void
 Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
     if (nread == -1) {
@@ -196,20 +146,67 @@ Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
 }
 
 
+/* private */
+void
+Server::onConnectWork(uv_work_t *r){
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
+
+    string nonce;
+    // Get "NEEDCRED" buffer
+    string buf = Util::needCredBuf(nonce);
+    baton->nonce = nonce;
+    baton->xBuffer = buf;
+    baton->uvBuf.base = &baton->xBuffer[0];
+    baton->uvBuf.len = baton->xBuffer.size();
+}
+
+
+void
+Server::afterOnConnect (uv_work_t *r) {
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
+    uv_tcp_init(loop, &baton->uvClient);
+
+    if (uv_accept(baton->uvServer,
+        (uv_stream_t*) &baton->uvClient) == XBGOOD) {
+        baton->uvReadCb = readBuf;
+        baton->uvWriteCb = ClientBaton::needCredential;
+        uv_write(
+            &baton->uvWrite,
+            (uv_stream_t*)&baton->uvClient,
+            &baton->uvBuf,
+            1,
+            baton->uvWriteCb
+        );        
+    }
+    else {
+        uv_close((uv_handle_t*) &baton->uvClient, NULL);
+    }
+}
+
+
 void
 Server::onReadWork(uv_work_t *r){
     ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
     baton->xBuffer = string(baton->uvBuf.base, baton->uvBuf.len);
     baton->err = "";
-    Util::unpackMember(baton);
-    // TODO: add logic to determine what to do next  
+    if (baton->member == NULL){
+        Util::initializeMember(baton);
+    }
+    // TODO: digest buffer && set baton->uvWriteCb 
 }
+
 
 void
 Server::afterOnRead (uv_work_t *r) {
     ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
-    uv_write(&baton->uvWrite,
-            (uv_stream_t*)&baton->uvClient, &baton->uvBuf, 1, writeNeedCred);
+
+    uv_write(
+        &baton->uvWrite,
+        (uv_stream_t*)&baton->uvClient,
+        &baton->uvBuf,
+        1,
+        baton->uvWriteCb
+    );
 }
 
 

@@ -14,7 +14,7 @@ all:    	xblab
 clean:
 	rm -f xblab *.o
 
-xblab:		crypto.o xblab.pb.o manager.o util.o db.o server.o xblab.o
+xblab:		crypto.o xblab.pb.o manager.o clientBaton.o util.o db.o server.o xblab.o
 	$(CC) $^ -o $@ $(LDFLAGS)
 
 xblab.o:	$(XB_SRC_N)/xblab.cc $(XB_SRC_N)/server.h $(XB_SRC)/macros.h
@@ -34,6 +34,9 @@ db.o:		$(XB_SRC)/db.cc $(XB_SRC)/db.h $(XB_SRC)/macros.h $(XB_SRC)/group.h $(XB_
 util.o:		$(XB_SRC_N)/util.cc $(XB_SRC_N)/manager.h $(XB_SRC_N)/util.h $(XB_SRC_P)/xblab.pb.h \
 			$(XB_SRC_N)/clientBaton.h $(XB_SRC)/crypto.h $(XB_SRC)/member.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/util.cc
+
+clientBaton.o:	$(XB_SRC_N)/clientBaton.cc $(XB_SRC_N)/clientBaton.h $(XB_SRC)/baton.h $(XB_SRC)/member.h
+	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/clientBaton.cc
 
 xblab.pb.o:	$(XB_SRC_P)/xblab.pb.cc $(XB_SRC_P)/xblab.pb.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_P)/xblab.pb.cc	

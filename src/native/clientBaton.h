@@ -4,8 +4,6 @@
 #include <uv.h>
 #include "baton.h"
 #include "member.h"
-#include "manager.h"
-
 
 namespace xblab {
 
@@ -14,6 +12,7 @@ public:
     ClientBaton(){
         uvClient.data = this;
         uvWrite.data = this;
+        member = NULL;
     }
     ~ClientBaton(){ }
 
@@ -21,8 +20,16 @@ public:
     uv_stream_t *uvServer;
     uv_buf_t uvBuf;
     uv_write_t uvWrite;
+    uv_write_cb uvWriteCb; // where we go from here
+    uv_read_cb uvReadCb;
+
+    // TODO: add uv_work_cb and uv_after_work_cb?
    
     Member *member;
+
+    // uv_write_cb's:
+    static void needCredential(uv_write_t *req, int status);
+
 };
 
 } // namespace xblab

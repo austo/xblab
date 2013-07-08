@@ -42,14 +42,13 @@ private:
 
 
 class Util {
+public:        
+    static std::string needCredBuf(std::string& nonce);
+    static void initializeMember(ClientBaton* baton);
 
-    public:        
-        static std::string needCredBuf(std::string& nonce);
-        static void unpackMember(ClientBaton* baton);
-
-    private:
-        Util(){ /* keep as "static" class */ };
-        ~Util(){};  
+private:
+    Util(){ /* keep as "static" class */ };
+    ~Util(){};  
 };
 
 } //namespace xblab

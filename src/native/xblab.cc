@@ -23,6 +23,12 @@ std::string xbNetworkInterface;
 
 std::map<std::string, Manager*> xbManagers;
 
+// global uv buffer allocator
+uv_buf_t
+allocBuf(uv_handle_t *handle, size_t suggested_size) {
+    return uv_buf_init((char *)malloc(suggested_size), suggested_size);
+}
+
 } // namespace xblab
 
 
