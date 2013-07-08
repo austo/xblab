@@ -35,7 +35,8 @@ util.o:		$(XB_SRC_N)/util.cc $(XB_SRC_N)/manager.h $(XB_SRC_N)/util.h $(XB_SRC_P
 			$(XB_SRC_N)/clientBaton.h $(XB_SRC)/crypto.h $(XB_SRC)/member.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/util.cc
 
-clientBaton.o:	$(XB_SRC_N)/clientBaton.cc $(XB_SRC_N)/clientBaton.h $(XB_SRC)/baton.h $(XB_SRC)/member.h
+clientBaton.o:	$(XB_SRC_N)/clientBaton.cc $(XB_SRC_N)/clientBaton.h $(XB_SRC)/baton.h \
+				$(XB_SRC)/member.h util.o
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/clientBaton.cc
 
 xblab.pb.o:	$(XB_SRC_P)/xblab.pb.cc $(XB_SRC_P)/xblab.pb.h

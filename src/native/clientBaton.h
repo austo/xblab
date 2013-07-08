@@ -27,6 +27,10 @@ public:
    
     Member *member;
 
+    void stringifyBuffer();
+    bool hasMember();
+    void initializeMember();
+
     // uv_write_cb's:
     static void needCredential(uv_write_t *req, int status);
 

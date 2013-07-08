@@ -187,10 +187,10 @@ Server::afterOnConnect (uv_work_t *r) {
 void
 Server::onReadWork(uv_work_t *r){
     ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
-    baton->xBuffer = string(baton->uvBuf.base, baton->uvBuf.len);
+    baton->stringifyBuffer();
     baton->err = "";
-    if (baton->member == NULL){
-        Util::initializeMember(baton);
+    if (!baton->hasMember()){
+        baton->initializeMember();
     }
     // TODO: digest buffer && set baton->uvWriteCb 
 }

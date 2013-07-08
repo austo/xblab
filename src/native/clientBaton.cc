@@ -2,6 +2,7 @@
 #include <cstdlib>
 
 #include "clientBaton.h"
+#include "util.h"
 
 using namespace std;
 
@@ -23,6 +24,24 @@ ClientBaton::needCredential(uv_write_t *req, int status) {
         allocBuf,
         baton->uvReadCb
     );
+}
+
+// Read current contents of uvBuf into xBuffer
+void
+ClientBaton::stringifyBuffer(){
+    this->xBuffer = string(this->uvBuf.base, this->uvBuf.len);
+}
+
+bool
+ClientBaton::hasMember(){
+    return this->member != NULL;
+}
+
+void
+ClientBaton::initializeMember(){
+    Util::initializeMember(this);
+    // TODO: set uvWriteCb here if all went well
+    // Welcome to the group
 }
 
 } // namespace xblab
