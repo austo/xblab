@@ -46,7 +46,8 @@ struct Member {
     std::string password;
     std::string handle;
     std::string public_key;
-    std::string round_nonce;      
+    std::string round_nonce;
+    int seed;      
     int round_modulus;
     bool present;
     Manager *manager;  

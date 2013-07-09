@@ -308,6 +308,14 @@ string Crypto::generateNonce(){
     return pipe.read_all_as_string();
 }
 
+int Crypto::generateRandomInt(){
+    SecureVector<byte> buf(sizeof(int));
+    AutoSeeded_RNG rng;
+    rng.randomize(buf, buf.size());
+    int random = int((int)buf[0]);
+    return random;
+}
+
 
 void Crypto::generateKey(string& pr, string& pu){    
     AutoSeeded_RNG rng;
@@ -350,6 +358,19 @@ Crypto::deriveSymmetricKey(const std::string& param,
 
     std::auto_ptr<KDF> kdf(get_kdf(KDF2SHA1));
     return kdf->derive_key(outputlength, masterkey.bits_of(), param);
+}
+
+int
+Crypto::init(){
+    try {
+        // Start crypto on module load
+        Botan::LibraryInitializer init("thread_safe=true");
+        return 0;
+    }
+    catch(std::exception& e) {
+        std::cerr << e.what() << "\n";
+        return 1;
+    }
 }
 
 } //namespace xblab

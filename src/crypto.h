@@ -33,7 +33,8 @@ class Crypto {
 public:
     
     static void generateKey(std::string& pr, std::string& pu);
-    static std::string generateNonce();    
+    static std::string generateNonce();  
+    static int generateRandomInt();
 
     static std::string sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
 
@@ -49,6 +50,7 @@ public:
     static std::string sign(std::string& privateKey, std::string& message);
     static std::string hashPassword(std::string& pw);
     static bool checkPasshash(std::string pw, std::string ph);
+    static int init();
 
 
     #ifndef XBLAB_CLIENT

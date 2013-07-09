@@ -9,6 +9,7 @@
 #include "macros.h"
 #include "server.h"
 #include "manager.h"
+#include "crypto.h"
 
 namespace xblab {
 
@@ -40,6 +41,10 @@ main(int argc, char** argv) {
     }
 
     if (xblab::Server::getConfig(argv[1]) != XBGOOD){
+        return 1;
+    }
+
+    if (xblab::Crypto::init() != XBGOOD){
         return 1;
     }
 

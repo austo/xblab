@@ -14,6 +14,7 @@ public:
     uv_work_t uvWork;
     std::string xBuffer;
     std::string nonce;
+    std::string returnNonce;
     std::string url;
     std::string err;
     void *auxData;

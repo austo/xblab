@@ -64,9 +64,16 @@ Util::groupEntryBuf(ClientBaton* baton){
     baton->nonce = Crypto::generateNonce();
     Broadcast bc;
     Broadcast::Data *data = new Broadcast::Data();
+    Broadcast::Session *sess = new Broadcast::Session();
 
-    data->set_type(Broadcast::NEEDCRED);
+    // TODO: use member for this?
+    data->set_type(Broadcast::GROUPENTRY);
     data->set_nonce(baton->nonce);
+    data->set_return_nonce(baton->returnNonce);
+    sess->set_pub_key(baton->member->manager->pub_key);
+    sess->set_seed(baton->member->seed);
+
+    data->set_allocated_session(sess);
 
     string sig, datastr;
     if (!data->SerializeToString(&datastr)) {
@@ -75,7 +82,7 @@ Util::groupEntryBuf(ClientBaton* baton){
     try{
         sig = Crypto::sign(datastr);
         bc.set_signature(sig);
-        bc.set_allocated_data(data); //bc now owns data - no need to free
+        bc.set_allocated_data(data);
     }
     catch(crypto_exception& e){
         cout << "crypto exception: " << e.what() << endl;
@@ -109,9 +116,11 @@ Util::initializeMember(ClientBaton* baton){
 
     const Transmission::Data& data = trans.data();
 
-    string retNonce(data.return_nonce());    
+    string retNonce(data.return_nonce());
 
     if (baton->nonce == retNonce){
+        // save incoming nonce for rebroadcast
+        baton->returnNonce = string(data.nonce());
 
         // TODO: refactor, change to switch
         if (data.type() == Transmission::CRED){
@@ -157,6 +166,7 @@ Util::initializeMember(ClientBaton* baton){
                                 set session pub key
 
                          */
+                        groupEntryBuf(baton);
                         return; 
                     }
                 }

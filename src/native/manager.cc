@@ -13,7 +13,7 @@ namespace xblab{
 Manager::Manager(string url) {
     try{
         // TODO: clean up calling convention
-        Crypto::generateKey(this->priv_key_, this->pub_key_);
+        Crypto::generateKey(this->priv_key_, this->pub_key);
         group_ = Db::getGroup(url);
         
         // We've got the room ID, now get our members
@@ -23,8 +23,9 @@ Manager::Manager(string url) {
         map<int, Member>::iterator mitr = members.begin();
         for (; mitr != members.end(); ++mitr){
             mitr->second.manager = this;
+            // set seed
+            mitr->second.seed = Crypto::generateRandomInt();
         }
-
     }
      catch(std::exception& e){
         cout << "Exception caught: " << e.what() << std::endl;

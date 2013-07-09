@@ -26,11 +26,13 @@ ClientBaton::needCredential(uv_write_t *req, int status){
     );
 }
 
+
 // Read current contents of uvBuf into xBuffer
 void
 ClientBaton::stringifyBuffer(){
     this->xBuffer = string(this->uvBuf.base, this->uvBuf.len);
 }
+
 
 bool
 ClientBaton::hasMember(){
