@@ -7,6 +7,11 @@ CFLAGS = -I/usr/local/include -I/usr/local/include/botan-1.10 \
 LDFLAGS = -L/usr/local/lib -lm -luv -lbotan-1.10 -lyajl -lprotobuf-lite -lpqxx -lpq
 
 
+ifeq ($(shell uname),Darwin)
+CFLAGS += -mmacosx-version-min=10.6
+endif
+
+
 .PHONY: 	all clean
 
 all:    	xblab	

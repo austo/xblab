@@ -9,6 +9,7 @@ core
 .DS_Store
 *.pem
 xblab.config.json
+xblab
 scraps.cc
 *.o
 native.server
