@@ -9,8 +9,6 @@
 
 #include <yajl/yajl_tree.h>
 
-#include "crypto.h"
-#include "util.h"
 #include "clientBaton.h"
 #include "macros.h"
 #include "server.h"
@@ -47,7 +45,7 @@ extern "C" {
 void
 Server::onConnect(uv_stream_t *server, int status) {
     if (status == -1) {
-        // error!
+        // TODO: handle meaningfully!
         return;
     }
 
@@ -150,14 +148,7 @@ Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
 void
 Server::onConnectWork(uv_work_t *r){
     ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
-
-    string nonce;
-    // Get "NEEDCRED" buffer
-    string buf = Util::needCredBuf(nonce);
-    baton->nonce = nonce;
-    baton->xBuffer = buf;
-    baton->uvBuf.base = &baton->xBuffer[0];
-    baton->uvBuf.len = baton->xBuffer.size();
+    baton->getNeedCredential();    
 }
 
 
@@ -193,9 +184,9 @@ Server::onReadWork(uv_work_t *r){
         baton->initializeMember();
     }
     /* TODO: digest buffer && set baton->uvWriteCb
-       else{
-        what kind of message is it: decrypt, parse, verify, respond
-     }
+     *  else {
+     *      what kind of message is it: decrypt, parse, verify, respond
+     * }
      */     
 }
 

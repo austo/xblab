@@ -25,8 +25,7 @@ xblab:		crypto.o xblab.pb.o manager.o clientBaton.o util.o db.o server.o xblab.o
 xblab.o:	$(XB_SRC_N)/xblab.cc $(XB_SRC_N)/server.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/xblab.cc
 
-server.o:	$(XB_SRC_N)/server.cc $(XB_SRC_N)/util.h $(XB_SRC_N)/server.h \
-			$(XB_SRC)/crypto.h $(XB_SRC_N)/clientBaton.h $(XB_SRC)/macros.h
+server.o:	$(XB_SRC_N)/server.cc $(XB_SRC_N)/server.h $(XB_SRC_N)/clientBaton.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/server.cc
 
 manager.o:	$(XB_SRC_N)/manager.cc $(XB_SRC_N)/manager.h $(XB_SRC)/crypto.h \

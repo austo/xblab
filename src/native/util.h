@@ -37,14 +37,15 @@ public:
         return this->message_.c_str();
     }
 private:
-    std::string message_;        
+    std::string message_;
 };
 
 
 class Util {
 public:        
-    static std::string needCredBuf(std::string& nonce);
+    static void needCredBuf(ClientBaton* baton);
     static void initializeMember(ClientBaton* baton);
+    static void groupEntryBuf(ClientBaton* baton);
 
 private:
     Util(){ /* keep as "static" class */ };

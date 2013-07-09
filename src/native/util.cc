@@ -24,33 +24,23 @@ extern string xbKeyPassword;
 
 extern map<string, Manager*> xbManagers;
 
-
-// TODO: take DataBaton
-string
-Util::needCredBuf(string& nonce){ 
-    // cout << "generating nonce\n";   
-    nonce = Crypto::generateNonce();
-    // cout << "have nonce\n";
+void
+Util::needCredBuf(ClientBaton* baton){ 
+    baton->nonce = Crypto::generateNonce();
     Broadcast bc;
     Broadcast::Data *data = new Broadcast::Data();
-    // cout << "have data\n";
 
     data->set_type(Broadcast::NEEDCRED);
-    data->set_nonce(nonce);
+    data->set_nonce(baton->nonce);
 
     string sig, datastr;
     if (!data->SerializeToString(&datastr)) {
         throw util_exception("Failed to serialize broadcast data.");
     }
     try{
-        // cout << "signing message\n";
-        // cout << privKeyFile << endl << password << endl;
         sig = Crypto::sign(datastr);
-        // cout << "message signed\n";
         bc.set_signature(sig);
-        // cout << "signature set\n";
         bc.set_allocated_data(data); //bc now owns data - no need to free
-        // cout << "data allocated\n";
     }
     catch(crypto_exception& e){
         cout << "crypto exception: " << e.what() << endl;
@@ -61,7 +51,44 @@ Util::needCredBuf(string& nonce){
         throw util_exception("Failed to serialize broadcast.");
     }
 
-    return retval;
+    baton->xBuffer = retval;    
+    baton->uvBuf.base = &baton->xBuffer[0];
+    baton->uvBuf.len = baton->xBuffer.size();
+}
+
+
+void
+Util::groupEntryBuf(ClientBaton* baton){ 
+
+    // TODO: write group entry buffer
+    baton->nonce = Crypto::generateNonce();
+    Broadcast bc;
+    Broadcast::Data *data = new Broadcast::Data();
+
+    data->set_type(Broadcast::NEEDCRED);
+    data->set_nonce(baton->nonce);
+
+    string sig, datastr;
+    if (!data->SerializeToString(&datastr)) {
+        throw util_exception("Failed to serialize broadcast data.");
+    }
+    try{
+        sig = Crypto::sign(datastr);
+        bc.set_signature(sig);
+        bc.set_allocated_data(data); //bc now owns data - no need to free
+    }
+    catch(crypto_exception& e){
+        cout << "crypto exception: " << e.what() << endl;
+    }
+
+    string retval;
+    if (!bc.SerializeToString(&retval)){
+        throw util_exception("Failed to serialize broadcast.");
+    }
+
+    baton->xBuffer = retval;    
+    baton->uvBuf.base = &baton->xBuffer[0];
+    baton->uvBuf.len = baton->xBuffer.size();
 }
 
 
@@ -123,6 +150,13 @@ Util::initializeMember(ClientBaton* baton){
                              << " assumed with pub_key:\n" 
                              << mitr->second.public_key << endl;
                         baton->member = &mitr->second;
+                        /* 
+                            TODO: welcome message:
+                                generate nonce,
+                                set message type,
+                                set session pub key
+
+                         */
                         return; 
                     }
                 }

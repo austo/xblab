@@ -31,6 +31,9 @@ public:
     bool hasMember();
     void initializeMember();
 
+    // message buffer methods
+    void getNeedCredential();
+
     // uv_write_cb's:
     static void needCredential(uv_write_t *req, int status);
 
