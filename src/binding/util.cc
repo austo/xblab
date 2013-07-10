@@ -20,6 +20,7 @@ using namespace std;
 #define DL_EX_PREFIX "Util: "
 
 
+// TODO: minimize this class's differences from native/util
 namespace xblab {
 
 
@@ -32,15 +33,12 @@ extern string xbKeyPassword;
 extern string xbConnectionString;
 
 
-// TODO: take DataBaton
+// TODO: take ClientBaton
 string
 Util::needCredBuf(string& nonce){ 
-  // cout << "generating nonce\n";   
   nonce = Crypto::generateNonce();
-  // cout << "have nonce\n";
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
-  // cout << "have data\n";
 
   data->set_type(Broadcast::NEEDCRED);
   data->set_nonce(nonce);
@@ -50,14 +48,9 @@ Util::needCredBuf(string& nonce){
     throw util_exception("Failed to serialize broadcast data.");
   }
   try{
-    // cout << "signing message\n";
-    // cout << privKeyFile << endl << password << endl;
     sig = Crypto::sign(datastr);
-    // cout << "message signed\n";
     bc.set_signature(sig);
-    // cout << "signature set\n";
-    bc.set_allocated_data(data); //bc now owns data - no need to free
-    // cout << "data allocated\n";
+    bc.set_allocated_data(data);
   }
   catch(crypto_exception& e){
     cout << "crypto exception: " << e.what() << endl;
@@ -154,7 +147,7 @@ Util::unpackMember(ClientBaton* baton){
 
 string
 Util::packageParticipantCredentials(void* auxData){
-  Participant* participant = (Participant *) auxData;
+  Participant* participant = static_cast<Participant *>(auxData);
   string nonce = Crypto::generateNonce();
   Transmission trans;
 
@@ -189,9 +182,6 @@ Util::packageParticipantCredentials(void* auxData){
   }
   // Protobuf-lite doesn't have SerializeToOstream
   stringstream plaintext, ciphertext;
-  // if (!trans.SerializeToOstream(&plaintext)){
-  //     throw util_exception("Failed to serialize broadcast.");
-  // }
 
   string pt;
   if (!trans.SerializeToString(&pt)){
@@ -225,7 +215,7 @@ Util::parseBroadcast(string& in, void* auxData){
   if (Crypto::verify(datastr, bc.signature())){
     const Broadcast::Data& data = bc.data();
 
-    Participant* participant = (Participant *) auxData;
+    Participant* participant = static_cast<Participant *>(auxData);
     participant->return_nonce_ = string(data.nonce());
 
     // TODO: no casts - proper type interrogation
