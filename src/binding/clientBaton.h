@@ -9,13 +9,13 @@ namespace xblab {
 
 class ClientBaton : public DataBaton {
 public:
-    ClientBaton(v8::Local<v8::Function> cb){
-        callback = v8::Persistent<v8::Function>::New(cb);
-    }
-    ~ClientBaton(){
-        callback.Dispose();
-    }    
-    v8::Persistent<v8::Function> callback;
+  ClientBaton(v8::Local<v8::Function> cb){
+    callback = v8::Persistent<v8::Function>::New(cb);
+  }
+  ~ClientBaton(){
+    callback.Dispose();
+  }    
+  v8::Persistent<v8::Function> callback;
 };
 
 } // namespace xblab

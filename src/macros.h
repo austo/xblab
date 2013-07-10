@@ -42,14 +42,14 @@
 #define GET_PROP(obj, setting) obj->Get(String::New(#setting)) 
 
 // HACK - there may be a much nicer way to do this
-#define THROW_FIELD_EX(prop) { stringstream ss;                 \
-            ss << "Unable to set value of readonly field \'"    \
-            << NodeUtil::v8ToString(prop) << "\'";              \
-            ThrowException(String::New(ss.str().c_str())); }
+#define THROW_FIELD_EX(prop) { stringstream ss;           \
+      ss << "Unable to set value of readonly field \'"    \
+      << NodeUtil::v8ToString(prop) << "\'";              \
+      ThrowException(String::New(ss.str().c_str())); }
 
 // Get node::Buffer constructor from JS land
 #define JS_NODE_BUF_CTOR Persistent<Function>::New(Local<Function>:: \
-            Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));     
+      Cast(Context::GetCurrent()->Global()->Get(String::New("Buffer"))));     
 
 #define THROW(prop) ThrowException(String::New(prop));
 
@@ -58,26 +58,26 @@
 #define YAJL_ERR_BUF_SZ 1024
 
 /* property names must be identical to variable names */
-#define GET_PROP(name) {                                        \
-    const char * path[] = { #name, (const char *) 0 };          \
-    yajl_val v = yajl_tree_get(node, path, yajl_t_string);      \
-    if (v) {                                                    \
-        name = YAJL_GET_STRING(v);                              \
-    }                                                           \
-    else {                                                      \
-        printf("no such node: %s\n", path[0]);                  \
-    }                                                           \
+#define GET_PROP(name) {                                      \
+  const char * path[] = { #name, (const char *) 0 };          \
+  yajl_val v = yajl_tree_get(node, path, yajl_t_string);      \
+  if (v) {                                                    \
+    name = YAJL_GET_STRING(v);                                \
+  }                                                           \
+  else {                                                      \
+    printf("no such node: %s\n", path[0]);                    \
+  }                                                           \
 }
 
-#define PRINT_YAJL_ERRBUF(errbuf) {             \
-    fprintf(stderr, "parse_error: ");           \
-    if (strlen(errbuf)) {                       \
-        fprintf(stderr, " %s", errbuf);         \
-    }                                           \
-    else {                                      \
-        fprintf(stderr, "unknown error");       \
-    }                                           \
-    fprintf(stderr, "\n");                      \
+#define PRINT_YAJL_ERRBUF(errbuf) {           \
+  fprintf(stderr, "parse_error: ");           \
+  if (strlen(errbuf)) {                       \
+    fprintf(stderr, " %s", errbuf);           \
+  }                                           \
+  else {                                      \
+    fprintf(stderr, "unknown error");         \
+  }                                           \
+  fprintf(stderr, "\n");                      \
 }
 
 #endif

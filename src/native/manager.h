@@ -13,15 +13,15 @@ namespace xblab {
 class Manager {
 
 public:
-    Manager(std::string url);    
-    ~Manager(){};
+  Manager(std::string url);    
+  ~Manager(){};
 
-    std::map<int, Member> members;
-    std::string pub_key;
-    
+  std::map<int, Member> members;
+  std::string pub_key;
+  
 private:
-    Group group_;    
-    std::string priv_key_;
+  Group group_;    
+  std::string priv_key_;
 };
 } //namespace xblab
 

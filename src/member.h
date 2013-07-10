@@ -14,43 +14,43 @@ namespace xblab {
 class Manager;
 
 struct Member {
-    Member(){
-        username = "invalid";
-    };
+  Member(){
+    username = "invalid";
+  };
 
-    Member(std::string username, std::string password, std::string handle) : 
-        username(username), password(password), handle(handle) { }
+  Member(std::string username, std::string password, std::string handle) : 
+    username(username), password(password), handle(handle) { }
 
-    Member(std::string username, std::string password, std::string pubkey, bool present) : 
-        username(username), password(password), public_key(pubkey), present(present) { }
+  Member(std::string username, std::string password, std::string pubkey, bool present) : 
+    username(username), password(password), public_key(pubkey), present(present) { }
 
-    void assume(const Member& other){
-        public_key = other.public_key;
-        present = other.present;
-    }
+  void assume(const Member& other){
+    public_key = other.public_key;
+    present = other.present;
+  }
 
-    void assume(Member* other){
-        public_key = other->public_key;
-        present = other->present;
-        delete other;
-    } 
+  void assume(Member* other){
+    public_key = other->public_key;
+    present = other->present;
+    delete other;
+  } 
 
-    bool operator== (const Member& other) const {
-        std::cout << "this->username: " << username
-                  << "\nother.username: " << other.username << std::endl;
-        return username == other.username &&
-            Crypto::checkPasshash(password, other.password);        
-    }
+  bool operator== (const Member& other) const {
+    std::cout << "this->username: " << username
+          << "\nother.username: " << other.username << std::endl;
+    return username == other.username &&
+      Crypto::checkPasshash(password, other.password);        
+  }
 
-    std::string username;
-    std::string password;
-    std::string handle;
-    std::string public_key;
-    std::string round_nonce;
-    int seed;      
-    int round_modulus;
-    bool present;
-    Manager *manager;  
+  std::string username;
+  std::string password;
+  std::string handle;
+  std::string public_key;
+  std::string round_nonce;
+  int seed;      
+  int round_modulus;
+  bool present;
+  Manager *manager;  
 
 };
 } //namespace xblab
