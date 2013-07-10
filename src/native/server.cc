@@ -160,7 +160,7 @@ Server::afterOnConnect (uv_work_t *r) {
     if (uv_accept(baton->uvServer,
         (uv_stream_t*) &baton->uvClient) == XBGOOD) {
         baton->uvReadCb = readBuf;
-        baton->uvWriteCb = ClientBaton::needCredential;
+        baton->uvWriteCb = ClientBaton::needCredentialCb;
         uv_write(
             &baton->uvWrite,
             (uv_stream_t*)&baton->uvClient,
@@ -186,6 +186,7 @@ Server::onReadWork(uv_work_t *r){
     /* TODO: digest buffer && set baton->uvWriteCb
      *  else {
      *      what kind of message is it: decrypt, parse, verify, respond
+     *      general Util method accessed through baton
      * }
      */     
 }

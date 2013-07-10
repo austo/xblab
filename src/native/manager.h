@@ -20,8 +20,7 @@ public:
     std::string pub_key;
     
 private:
-    Group group_;
-    
+    Group group_;    
     std::string priv_key_;
 };
 } //namespace xblab

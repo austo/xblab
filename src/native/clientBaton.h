@@ -33,9 +33,10 @@ public:
 
     // message buffer methods
     void getNeedCredential();
+    void getGroupEntry();
 
     // uv_write_cb's:
-    static void needCredential(uv_write_t *req, int status);
+    static void needCredentialCb(uv_write_t *req, int status);
 
 };
 

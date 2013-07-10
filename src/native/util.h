@@ -43,13 +43,21 @@ private:
 
 class Util {
 public:        
-    static void needCredBuf(ClientBaton* baton);
-    static void initializeMember(ClientBaton* baton);
-    static void groupEntryBuf(ClientBaton* baton);
+    friend class ClientBaton;   
 
 private:
-    Util(){ /* keep as "static" class */ };
-    ~Util(){};  
+    Util(){ /* worker for baton */ };
+    ~Util(){};
+
+    static void
+    needCredBuf(ClientBaton* baton);
+    static void
+    groupEntryBuf(ClientBaton* baton);
+    static void
+    initializeMember(ClientBaton* baton);    
+    static void
+    processCredential(ClientBaton*, std::string&,
+        std::string, const Transmission::Credential&);
 };
 
 } //namespace xblab

@@ -12,7 +12,6 @@ namespace xblab{
 
 Manager::Manager(string url) {
     try{
-        // TODO: clean up calling convention
         Crypto::generateKey(this->priv_key_, this->pub_key);
         group_ = Db::getGroup(url);
         
