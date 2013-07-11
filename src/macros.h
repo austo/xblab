@@ -82,5 +82,6 @@
 
 #endif
 
+#define log(x) printf("%s\n", x);
 
 #endif

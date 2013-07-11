@@ -23,6 +23,11 @@ using namespace v8;
 using namespace node;
 
 string xbPublicKeyFile;
+string xbServerAddress;
+string xbServerPort;
+
+uv_loop_t *loop;
+
 v8::Persistent<v8::Function> xbNodeBufCtor;
 
 // args -> username, password, group TODO: make object/callback
@@ -64,8 +69,16 @@ XbClient::SetHandle(Local<String> property,
   instance->handle_ = NodeUtil::v8ToString(value);
 }
 
+// Handle<Value>
+// XbClient::Connect(const Arguments& args){
+//   XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
+
+// }
+
+
 // TODO: error handling!
-Handle<Value> XbClient::SendCred(const Arguments& args) {
+Handle<Value>
+XbClient::SendCred(const Arguments& args) {
   HandleScope scope;
 
   if (!args[0]->IsObject() || !args[1]->IsFunction()) {
@@ -160,14 +173,10 @@ extern "C" {
     HandleScope scope;
 
     xbNodeBufCtor = JS_NODE_BUF_CTOR;
+    loop = uv_default_loop();
 
-
-    try {
-      // Start crypto on module load
-      Botan::LibraryInitializer init("thread_safe=true");
-    }
-    catch(std::exception& e) {
-      std::cerr << e.what() << "\n";
+    if (Crypto::init() != XBGOOD){
+      THROW("XbClient: failed to initialize Crypto.");
     }
 
     Local<FunctionTemplate> t = FunctionTemplate::New(XbClient::New);
