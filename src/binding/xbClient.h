@@ -1,12 +1,12 @@
-#ifndef PARTICIPANT_H
-#define PARTICIPANT_H
+#ifndef XBCLIENT_H
+#define XBCLIENT_H
 
 #include <string>
 #include <node.h>
 
 namespace xblab {
 
-class Participant : public node::ObjectWrap {
+class XbClient : public node::ObjectWrap {
 
   public:
 
@@ -21,8 +21,8 @@ class Participant : public node::ObjectWrap {
 
 
   private:
-    Participant(std::string group = "none");
-    ~Participant(){};        
+    XbClient(std::string group = "none");
+    ~XbClient(){};        
 
     std::string username_;
     std::string password_;

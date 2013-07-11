@@ -7,7 +7,7 @@
 #include "util.h"
 #include "crypto.h"
 
-#include "participant.h"
+#include "xbClient.h"
 #include "manager.h"
 
 #include "member.h"
@@ -147,7 +147,7 @@ Util::unpackMember(ClientBaton* baton){
 
 string
 Util::packageParticipantCredentials(void* auxData){
-  Participant* participant = static_cast<Participant *>(auxData);
+  XbClient *client = static_cast<XbClient *>(auxData);
   string nonce = Crypto::generateNonce();
   Transmission trans;
 
@@ -156,14 +156,14 @@ Util::packageParticipantCredentials(void* auxData){
 
   data->set_type(Transmission::CRED);
   data->set_nonce(nonce);
-  data->set_return_nonce(participant->return_nonce_);
+  data->set_return_nonce(client->return_nonce_);
 
-  cred->set_username(participant->username_);
+  cred->set_username(client->username_);
 
   // Plaintext password will be compared with stored passhash on the server
-  cred->set_password(participant->password_);
-  cred->set_group(participant->group_);
-  cred->set_pub_key(participant->pub_key_);
+  cred->set_password(client->password_);
+  cred->set_group(client->group_);
+  cred->set_pub_key(client->pub_key_);
 
   data->set_allocated_credential(cred);
 
@@ -173,7 +173,7 @@ Util::packageParticipantCredentials(void* auxData){
     throw util_exception("Failed to serialize broadcast data.");
   }
   try{
-    sig = Crypto::sign(participant->priv_key_, datastr);
+    sig = Crypto::sign(client->priv_key_, datastr);
     trans.set_signature(sig);
     trans.set_allocated_data(data);
   }
@@ -215,8 +215,8 @@ Util::parseBroadcast(string& in, void* auxData){
   if (Crypto::verify(datastr, bc.signature())){
     const Broadcast::Data& data = bc.data();
 
-    Participant* participant = static_cast<Participant *>(auxData);
-    participant->return_nonce_ = string(data.nonce());
+    XbClient *client = static_cast<XbClient *>(auxData);
+    client->return_nonce_ = string(data.nonce());
 
     // TODO: no casts - proper type interrogation
     retval = (MessageType) data.type();

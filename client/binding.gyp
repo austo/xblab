@@ -4,7 +4,7 @@
       "target_name": "xblab",
       "sources": [  "../src/binding/util.cc", 
       "../src/binding/nodeUtil.cc", "../src/protobuf/xblab.pb.cc",
-      "../src/crypto.cc", "../src/binding/participant.cc" ],
+      "../src/crypto.cc", "../src/binding/xbClient.cc" ],
       'defines': [ 'XBLAB_CLIENT' ],
       'conditions': [
           ['OS!="win"', {

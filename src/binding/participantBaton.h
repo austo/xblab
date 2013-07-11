@@ -1,5 +1,5 @@
-#ifndef CLIENT_BATON_H
-#define CLIENT_BATON_H
+#ifndef PARTICIPANT_BATON_H
+#define PARTICIPANT_BATON_H
 
 #include "baton.h"
 
@@ -7,12 +7,12 @@
 
 namespace xblab {
 
-class ClientBaton : public DataBaton {
+class ParticipantBaton : public DataBaton {
 public:
-  ClientBaton(v8::Local<v8::Function> cb){
+  ParticipantBaton(v8::Local<v8::Function> cb){
     jsCallback = v8::Persistent<v8::Function>::New(cb);
   }
-  ~ClientBaton(){
+  ~ParticipantBaton(){
     jsCallback.Dispose();
   }    
   v8::Persistent<v8::Function> jsCallback;

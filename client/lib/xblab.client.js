@@ -17,7 +17,7 @@ function xblabClient (cfg, ws){
 
     cfg.group = ws.group;
 
-    self.participant = new xblab.Participant(cfg);
+    self.participant = new xblab.XbClient(cfg);
 
     // referenced object don't pollute! 
     delete cfg.group;

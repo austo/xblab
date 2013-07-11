@@ -9,7 +9,7 @@
 #include <botan/rsa.h>
 #include <botan/look_pk.h>
 
-#include "binding/participant.h"
+#include "binding/xbClient.h"
 #include "binding/util.h"
 #include "binding/nodeUtil.h"
 #include "crypto.h"
@@ -27,12 +27,12 @@ v8::Persistent<v8::Function> xbNodeBufCtor;
 
 // args -> username, password, group TODO: make object/callback
 Handle<Value>
-Participant::New(const Arguments& args){
+XbClient::New(const Arguments& args){
   HandleScope scope; 
 
-  Participant* instance;
+  XbClient* instance;
   if (!args[0]->IsObject()){
-    THROW("xblab.Participant requires configuration object.");
+    THROW("xblab.XbClient requires configuration object.");
   }
 
   Handle<Object> cfg = Handle<Object>::Cast(args[0]);
@@ -41,7 +41,7 @@ Participant::New(const Arguments& args){
 
   xbPublicKeyFile = string(*(String::Utf8Value(pubkfile)));
 
-  instance = new Participant(NodeUtil::v8ToString(group));   
+  instance = new XbClient(NodeUtil::v8ToString(group));   
 
   instance->Wrap(args.This());
   return scope.Close(args.This());
@@ -49,23 +49,23 @@ Participant::New(const Arguments& args){
 
 
 Handle<Value>
-Participant::GetHandle(Local<String> property, const AccessorInfo& info){
+XbClient::GetHandle(Local<String> property, const AccessorInfo& info){
   // Extract C++ request object from JS wrapper
-  Participant* instance = ObjectWrap::Unwrap<Participant>(info.Holder());
+  XbClient* instance = ObjectWrap::Unwrap<XbClient>(info.Holder());
   return String::New(instance->handle_.c_str());
 }
 
 
 void
-Participant::SetHandle(Local<String> property,
+XbClient::SetHandle(Local<String> property,
   Local<Value> value, const AccessorInfo& info){
-  Participant* instance =
-    ObjectWrap::Unwrap<Participant>(info.Holder());
+  XbClient* instance =
+    ObjectWrap::Unwrap<XbClient>(info.Holder());
   instance->handle_ = NodeUtil::v8ToString(value);
 }
 
 // TODO: error handling!
-Handle<Value> Participant::SendCred(const Arguments& args) {
+Handle<Value> XbClient::SendCred(const Arguments& args) {
   HandleScope scope;
 
   if (!args[0]->IsObject() || !args[1]->IsFunction()) {
@@ -76,7 +76,7 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
   Local<Value> username = credentials->Get(String::New(XBUSERNAME));
   Local<Value> password = credentials->Get(String::New(XBPASSWORD));
 
-  Participant* instance = ObjectWrap::Unwrap<Participant>(args.This());
+  XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
   instance->username_ = NodeUtil::v8ToString(username);
   instance->password_ = NodeUtil::v8ToString(password);
 
@@ -95,7 +95,7 @@ Handle<Value> Participant::SendCred(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
-Handle<Value> Participant::DigestBuffer(const Arguments& args) {
+Handle<Value> XbClient::DigestBuffer(const Arguments& args) {
   HandleScope scope;
 
   if (!args[0]->IsObject() || !args[1]->IsFunction()){
@@ -106,11 +106,12 @@ Handle<Value> Participant::DigestBuffer(const Arguments& args) {
   char* bufData = Buffer::Data(args[0]->ToObject());
   int bufLen = Buffer::Length(args[0]->ToObject());    
 
-  string buf(bufData, bufData + bufLen); // copy node::Buffer contents into string
+  // copy node::Buffer contents into string
+  string buf(bufData, bufData + bufLen);
   
   try {
 
-    Participant* instance = ObjectWrap::Unwrap<Participant>(args.This());
+    XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
     cout << "group: " << instance->group_ << endl;
 
     // TODO: parseBuf needs to return a way for us to decide what
@@ -140,7 +141,7 @@ Handle<Value> Participant::DigestBuffer(const Arguments& args) {
 }
 
 
-Participant::Participant(string group) {
+XbClient::XbClient(string group) {
   this->group_ = group;
   try{
     Crypto::generateKey(this->priv_key_, this->pub_key_);      
@@ -154,7 +155,7 @@ Participant::Participant(string group) {
 
 extern "C" {
 
-  // TODO: move majority of this code to Participant::Init()
+  // TODO: move majority of this code to XbClient::Init()
   void init(Handle<Object> module) {
     HandleScope scope;
 
@@ -169,17 +170,17 @@ extern "C" {
       std::cerr << e.what() << "\n";
     }
 
-    Local<FunctionTemplate> t = FunctionTemplate::New(Participant::New);
+    Local<FunctionTemplate> t = FunctionTemplate::New(XbClient::New);
     t->InstanceTemplate()->SetInternalFieldCount(1);
-    t->SetClassName(String::New("Participant"));
+    t->SetClassName(String::New("XbClient"));
     t->InstanceTemplate()->SetAccessor(String::New("handle"),
-      Participant::GetHandle, Participant::SetHandle);
+      XbClient::GetHandle, XbClient::SetHandle);
 
     // Only methods exposed to JS should go here, emitted events are "private"
-    NODE_SET_PROTOTYPE_METHOD(t, "digestBuffer", Participant::DigestBuffer);
-    NODE_SET_PROTOTYPE_METHOD(t, "sendCred", Participant::SendCred);
+    NODE_SET_PROTOTYPE_METHOD(t, "digestBuffer", XbClient::DigestBuffer);
+    NODE_SET_PROTOTYPE_METHOD(t, "sendCred", XbClient::SendCred);
 
-    module->Set(String::NewSymbol("Participant"), t->GetFunction());        
+    module->Set(String::NewSymbol("XbClient"), t->GetFunction());        
   }   
   NODE_MODULE(xblab, init);
 }

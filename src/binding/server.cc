@@ -126,7 +126,7 @@ void Xblab::AfterOnConnect (uv_work_t *r) {
   argv[0] = Local<Value>::New(Undefined());
   argv[1] = packet;
 
-  baton->callback->Call(Context::GetCurrent()->Global(), argc, argv);
+  baton->jsCallback->Call(Context::GetCurrent()->Global(), argc, argv);
 
   delete baton;
 
