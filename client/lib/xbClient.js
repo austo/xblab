@@ -34,14 +34,17 @@ function xblabClient (cfg, ws){
     console.log(buf);
 
     // TODO: get credentials from the user
-    self.wsClient.send(JSON.stringify({status: 'connected', state: 'NEEDCRED'}));
+    self.wsClient.send(JSON.stringify(
+      {status: 'connected', state: 'NEEDCRED'}
+    ));
   });
 
   // self.client.on('haveCred', function (buf){
   //     console.log(buf);
   //     self.socket.write(buf);
   //     // TODO: get credentials from the user
-  //     // self.wsClient.send(JSON.stringify({status: 'connected', state: 'NEEDCRED'}));
+  //     // self.wsClient.send(JSON.stringify(
+  //   {status: 'connected', state: 'NEEDCRED'}));
   // });
 
   // self.socket.on('data', function (data) {
@@ -50,31 +53,33 @@ function xblabClient (cfg, ws){
   //     });        
   // });
 
-  // self.wsClient.on('message', function (message) {
-  //     if (message.type === 'utf8') {
-  //         if (cfg.debug){
-  //             console.log("Received utf-8 message of %s characters. Message: '%s'.",
-  //                 message.utf8Data.length, message.utf8Data);
-  //         }
-  //         var userMessage = JSON.parse(message.utf8Data);
-  //         if (userMessage && userMessage.type){
-  //             switch(userMessage.type){
-  //                 case 'CRED':
-  //                     self.client.sendCred(userMessage, function (err){
-  //                         console.log(err);
-  //                     });
-  //                     break;      
-  //             }
-  //         }            
-  //     }
-  //     // This should never happen as we are using JSON between local server and page
-  //     else if (message.type === 'binary') {
-  //         if (cfg.debug){
-  //             console.log("Received binary message of %s bytes.",
-  //                 message.binaryData.length);
-  //         }
-  //     }
-  // });
+  self.wsClient.on('message', function (message) {
+    if (message.type === 'utf8') {
+      if (cfg.debug){
+          console.log(
+            "Received utf-8 message of %s characters. Message: '%s'.",
+              message.utf8Data.length, message.utf8Data);
+      }
+      var userMessage = JSON.parse(message.utf8Data);
+      if (userMessage && userMessage.type){
+        switch(userMessage.type){
+          case 'CRED':
+            self.client.sendCred(userMessage, function (err){
+              console.log(err);
+            });
+            break; 
+        }
+      }  
+    }
+    // We're using JSON between local server and page,
+    // so this should never happen
+    else if (message.type === 'binary') {
+      if (cfg.debug){
+        console.log("Received binary message of %s bytes.",
+          message.binaryData.length);
+      }
+    }
+  });
 
   self.wsClient.on('close', function (reasonCode, description) {
     if (cfg.debug){
@@ -84,8 +89,10 @@ function xblabClient (cfg, ws){
   });    
   
   self.wsClient.on('error', function (error) {
-    console.log('Connection error for xblab presentation client at %s.\n Details: %s',
-    self.wsClient.remoteAddress, error);
+    console.log(
+      'Connection error for xblab presentation client at %s.\n Details: %s',
+        self.wsClient.remoteAddress, error
+    );
   });
 
   self.client.on('end', function () {

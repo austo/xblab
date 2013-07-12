@@ -13,12 +13,25 @@ class XbClient;
 class XbClient : public node::ObjectWrap {
 
 public:
-  static v8::Handle<v8::Value> New(const v8::Arguments& args);
-  static v8::Handle<v8::Value> GetHandle(v8::Local<v8::String>, const v8::AccessorInfo&);
-  static void SetHandle(v8::Local<v8::String>, v8::Local<v8::Value>, const v8::AccessorInfo&);
-  static v8::Handle<v8::Value> DigestBuffer(const v8::Arguments& args);
-  static v8::Handle<v8::Value> SendCredential(const v8::Arguments& args);
-  static v8::Handle<v8::Value> Connect(const v8::Arguments& args);
+
+  static v8::Handle<v8::Value>
+  New(const v8::Arguments& args);
+
+  static v8::Handle<v8::Value>
+  GetHandle(v8::Local<v8::String>, const v8::AccessorInfo&);
+
+  static void
+  SetHandle(v8::Local<v8::String>,
+    v8::Local<v8::Value>, const v8::AccessorInfo&);
+
+  static v8::Handle<v8::Value>
+  DigestBuffer(const v8::Arguments& args);
+
+  static v8::Handle<v8::Value>
+  SendCredential(const v8::Arguments& args);
+
+  static v8::Handle<v8::Value>
+  Connect(const v8::Arguments& args);
 
   v8::Handle<v8::Value> RequestCredential();
 

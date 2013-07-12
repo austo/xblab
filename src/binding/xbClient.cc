@@ -214,9 +214,8 @@ extern "C" {
     t->InstanceTemplate()->SetAccessor(String::New("handle"),
       XbClient::GetHandle, XbClient::SetHandle);
 
-    // Only methods exposed to JS should go here, emitted events are "private"
+     // Only methods exposed to JS should go here, emitted events are "private"
      NODE_SET_PROTOTYPE_METHOD(t, "connect", XbClient::Connect);
-    // NODE_SET_PROTOTYPE_METHOD(t, "sendCred", XbClient::SendCred);
 
     module->Set(String::NewSymbol("XbClient"), t->GetFunction());        
   }   
