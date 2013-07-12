@@ -7,6 +7,10 @@
 #include "native/participantUtil.h"
 #include "binding/xbClient.h"
 
+using namespace std;
+
+namespace xblab {
+
 
 extern string xbPublicKeyFile;
 
@@ -19,15 +23,15 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton){
   Transmission::Credential *cred = new Transmission::Credential();
 
   data->set_type(Transmission::CRED);
-  data->set_nonce(nonce);
-  data->set_return_nonce(client->return_nonce_);
+  data->set_nonce(baton->nonce);
+  data->set_return_nonce(baton->returnNonce);
 
-  cred->set_username(client->username_);
+  cred->set_username(baton->participant.username);
 
   // Plaintext password will be compared with stored passhash on the server
-  cred->set_password(client->password_);
-  cred->set_group(client->group_);
-  cred->set_pub_key(client->pub_key_);
+  cred->set_password(baton->participant.password);
+  cred->set_pub_key(baton->participant.publicKey);
+  cred->set_group(baton->url);
 
   data->set_allocated_credential(cred);
 
@@ -37,7 +41,7 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton){
     throw util_exception("Failed to serialize broadcast data.");
   }
   try{
-    sig = Crypto::sign(client->priv_key_, datastr);
+    sig = Crypto::sign(baton->participant.privateKey, datastr);
     trans.set_signature(sig);
     trans.set_allocated_data(data);
   }
@@ -66,7 +70,7 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
 
   //TODO: switch on broadcast type
   Broadcast bc;
-  if (!bc.ParseFromString(baton->xbuffer)){
+  if (!bc.ParseFromString(baton->xBuffer)){
     throw util_exception("Failed to deserialize broadcast.");
   }    
 
@@ -83,8 +87,8 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
     // TODO: no casts - proper type interrogation
     switch(data.type()){
       case Broadcast::NEEDCRED:
-        baton->jsCallback = XbClient::RequestCredential;
-        baton->hasJsCallback = true;
+        baton->jsCallbackFactory = XbClient::requestCredentialFactory;
+        baton->needsJsCallback = true;
         return;
       case Broadcast::GROUPLIST:
       case Broadcast::GROUPENTRY:
@@ -97,3 +101,5 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
   }
   return;
 }
+
+} // namespace xblab

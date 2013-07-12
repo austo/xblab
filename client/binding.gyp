@@ -2,7 +2,8 @@
     "targets": [
     {
       "target_name": "xblab",
-      "sources": [  "../src/binding/util.cc", 
+      "sources": [  "../src/native/participantBaton.cc",
+      "../src/native/participantUtil.cc",
       "../src/binding/nodeUtil.cc", "../src/protobuf/xblab.pb.cc",
       "../src/crypto.cc", "../src/binding/xbClient.cc" ],
       'defines': [ 'XBLAB_CLIENT' ],

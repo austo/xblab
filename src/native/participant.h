@@ -14,7 +14,7 @@ struct Participant {
   std::string password;
   std::string handle;
   std::string publicKey;
-  std::string privateKey
+  std::string privateKey;
   int seed;      
   int modulus;
   bool hasKeys;

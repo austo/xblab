@@ -8,8 +8,6 @@
 
 namespace xblab {
 
-class XbClient;
-
 class XbClient : public node::ObjectWrap {
 
 public:
@@ -28,19 +26,27 @@ public:
   DigestBuffer(const v8::Arguments& args);
 
   static v8::Handle<v8::Value>
-  SendCredential(const v8::Arguments& args);
+  requestCredentialFactory(XbClient*);
+
+  // static v8::Handle<v8::Value>
+  // SendCredential(const v8::Arguments& args);
 
   static v8::Handle<v8::Value>
   Connect(const v8::Arguments& args);
-
-  v8::Handle<v8::Value> RequestCredential();
-
+  
 
 private:
   XbClient(std::string group = "none");
   ~XbClient();
 
-  bool hasParticipant();
+  bool
+  hasParticipant();
+
+  void
+  initializeBaton(/*uv_connect_cb cb*/);
+
+  v8::Handle<v8::Value>
+  requestCredential();
 
   std::string group_;
   ParticipantBaton *baton_;

@@ -44,7 +44,7 @@
 // HACK - there may be a much nicer way to do this
 #define THROW_FIELD_EX(prop) { stringstream ss;           \
       ss << "Unable to set value of readonly field \'"    \
-      << NodeUtil::v8ToString(prop) << "\'";              \
+      << xblab::NodeUtil::v8ToString(prop) << "\'";              \
       ThrowException(String::New(ss.str().c_str())); }
 
 // Get node::Buffer constructor from JS land

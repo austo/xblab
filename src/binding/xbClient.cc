@@ -2,18 +2,12 @@
 #include <sstream>
 #include <fstream>
 
-
-// #include <node_buffer.h>
-
-// #include <botan/botan.h>
-// #include <botan/bcrypt.h>
-// #include <botan/rsa.h>
-// #include <botan/look_pk.h>
-
 #include "binding/xbClient.h"
 #include "binding/nodeUtil.h"
 #include "native/client.h"
+#include "native/participantUtil.h"
 #include "macros.h"
+#include "crypto.h"
 
 using namespace std;
 using namespace v8;
@@ -21,6 +15,10 @@ using namespace node;
 
 
 namespace xblab {
+
+
+
+extern void on_connect(uv_connect_t *req, int status);    
 
 
 string xbPublicKeyFile;
@@ -35,13 +33,13 @@ uv_loop_t *loop;
 
 XbClient::XbClient(string group) {
   this->group_ = group;
-  this->baton_ = NULL;  
+  this->baton_ = new ParticipantBaton();  
 }
 
 
-~XbClient() {
-  if (baton != NULL){
-    delete baton;
+XbClient::~XbClient() {
+  if (this->baton_ != NULL){
+    delete baton_;
   }
 }
 
@@ -53,10 +51,35 @@ XbClient::hasParticipant() {
 
 
 void
-XbClient::initializeBaton(uv_connect_cb cb) {
+XbClient::initializeBaton() {
   if (!this->hasParticipant()){
-    this->baton_ = new ParticipantBaton(cb);
+    this->baton_ = new ParticipantBaton();
+  }  
+}
+
+
+Handle<Value>
+XbClient::requestCredential(){
+  HandleScope scope;
+
+  try {
+
+    Handle<Value> argv[2] = {
+      String::New("needCred"),
+      String::New("Need credentials, buster!")
+    };
+    node::MakeCallback(this->handle_, "emit", 2, argv);
   }
+
+  catch (util_exception& e) {
+    Handle<Value> argv[2] = {
+      String::New("error"),
+      String::New(e.what())
+    };
+    node::MakeCallback(this->handle_, "emit", 2, argv);
+  }
+
+  return scope.Close(Undefined());  
 }
 
 
@@ -95,7 +118,7 @@ Handle<Value>
 XbClient::GetHandle(Local<String> property, const AccessorInfo& info){
   // Extract C++ request object from JS wrapper
   XbClient* instance = ObjectWrap::Unwrap<XbClient>(info.Holder());
-  return String::New(instance->handle_.c_str());
+  return String::New(instance->baton_->participant.handle.c_str());
 }
 
 
@@ -104,7 +127,7 @@ XbClient::SetHandle(Local<String> property,
   Local<Value> value, const AccessorInfo& info){
   XbClient* instance =
     ObjectWrap::Unwrap<XbClient>(info.Holder());
-  instance->handle_ = NodeUtil::v8ToString(value);
+  instance->baton_->participant.handle = NodeUtil::v8ToString(value);
 }
 
 
@@ -140,30 +163,9 @@ XbClient::SetHandle(Local<String> property,
 //   return scope.Close(Undefined());
 // }
 
-
 Handle<Value>
-XbClient::RequestCredential(){
-  HandleScope scope;
-
-  try {
-
-    Handle<Value> argv[2] = {
-      String::New("needCred"),
-      String::New("Need credentials, buster!")
-    };
-    node::MakeCallback(this->handle_, "emit", 2, argv);
-  }
-
-  catch (util_exception& e) {
-    Handle<Value> argv[2] = {
-      String::New("error"),
-      String::New(e.what().c_str());
-    };
-
-    node::MakeCallback(args.This(), "emit", 2, argv);
-  }
-
-  return scope.Close(Undefined());  
+XbClient::requestCredentialFactory(XbClient* xbClient) {
+  return xbClient->requestCredential();
 }
 
 
@@ -175,51 +177,63 @@ XbClient::Connect(const Arguments& args){
   }
 
   // Error callback only
-  Local<Function> cb = Local<Function>::Cast(args[0]);
+  //Local<Function> cb = Local<Function>::Cast(args[0]);
   
   XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
+  cout << "unwrapped xblab object\n";
 
-  int port = atoi(xbPort.c_str());
+  int port = atoi(xblab::xbServerPort.c_str());
   struct sockaddr_in xb_addr = uv_ip4_addr(xbServerAddress.c_str(), port);
   loop = uv_default_loop();
 
-  instance->initializeBaton(Client::onConnect);  
-  uv_tcp_connect(
-    &instance->baton_->uvConnect,
+  instance->initializeBaton(); 
+  cout << "after init baton\n"; 
+  uv_tcp_init(loop, &instance->baton_->uvClient);
+  int status = uv_tcp_connect(
+    instance->baton_->uvConnect,
     &instance->baton_->uvClient,
     xb_addr,
-    instance->baton_->uvConnectCb
+    //instance->baton_->uvConnectCb
+    on_connect
   );
-  
+
+  // Handle<Value> argv[1];
+  // if (status == XBGOOD){
+  //   argv[0] = Undefined();
+  // }
+  // else{
+  //     argv[0] = String::New("Unable to connect to xblab server.");
+  // }
+  // cb->Call(Context::GetCurrent()->Global(), 1, argv);
   return scope.Close(Undefined());
 }
 
+} //namespace xblab
 
-extern "C" {
+extern "C" { 
 
   // TODO: move majority of this code to XbClient::Init()
   void init(Handle<Object> module) {
     HandleScope scope;
 
-    xbNodeBufCtor = JS_NODE_BUF_CTOR;
-    loop = uv_default_loop();
+    xblab::xbNodeBufCtor = JS_NODE_BUF_CTOR;
+    xblab::loop = uv_default_loop();
 
-    if (Crypto::init() != XBGOOD){
+    if (xblab::Crypto::init() != XBGOOD){
       THROW("XbClient: failed to initialize Crypto.");
     }
 
-    Local<FunctionTemplate> t = FunctionTemplate::New(XbClient::New);
+    Local<FunctionTemplate> t = FunctionTemplate::New(xblab::XbClient::New);
     t->InstanceTemplate()->SetInternalFieldCount(1);
     t->SetClassName(String::New("XbClient"));
     t->InstanceTemplate()->SetAccessor(String::New("handle"),
-      XbClient::GetHandle, XbClient::SetHandle);
+      xblab::XbClient::GetHandle, xblab::XbClient::SetHandle);
 
      // Only methods exposed to JS should go here, emitted events are "private"
-     NODE_SET_PROTOTYPE_METHOD(t, "connect", XbClient::Connect);
+    NODE_SET_PROTOTYPE_METHOD(t, "connect", xblab::XbClient::Connect);
 
     module->Set(String::NewSymbol("XbClient"), t->GetFunction());        
-  }   
+  }
+
   NODE_MODULE(xblab, init);
 }
-
-} //namespace xblab

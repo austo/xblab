@@ -27,17 +27,17 @@ private:
   std::string message_;        
 };
 
-class Util {
+class ParticipantUtil {
 
 public:   
   friend class participantBaton;
 
   static std::string packageCredential(ParticipantBaton *baton);
-  static void digestBroadcast(ParticipantBaton *baton)
+  static void digestBroadcast(ParticipantBaton *baton);
 
 private:
-  Util(){};
-  ~Util(){};  
+  ParticipantUtil(){};
+  ~ParticipantUtil(){};  
 };
 
 } //namespace xblab
