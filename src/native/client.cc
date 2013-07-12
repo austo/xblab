@@ -6,15 +6,21 @@
 #include <iostream>
 #include <string>
 
-#include "participantBaton.h"
+#include "native/participantBaton.h"
 #include "macros.h"
-#include "client.h"
+#include "native/client.h"
+#include "native/participantUtil.h"
 
 namespace xblab {
 
+// global uv buffer allocator
+uv_buf_t
+allocBuf(uv_handle_t *handle, ssize_t suggested_size) {
+  return uv_buf_init((char *)malloc(suggested_size), suggested_size);
+}
+
 // xbClient.cc
 extern uv_loop_t *loop;
-extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 
 extern string xbPublicKeyFile;
 extern string xbServerAddress;
@@ -38,6 +44,44 @@ Client::echoRead(uv_stream_t *server, ssize_t nread, uv_buf_t buf) {
 }
 
 
+// set as read callback only after connection (need credential)
+void
+Client::onFirstRead(uv_stream_t* server, ssize_t nread, uv_buf_t buf) {
+
+  if (nread == -1) {
+    if (uv_last_error(loop).code != UV_EOF) {
+      fprintf(stderr, "Read error %s\n", 
+        uv_err_name(uv_last_error(loop)));
+    }
+  }
+
+  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(server->data);
+  baton->uvBuf = buf;
+  baton->uvBuf.len = nread;
+
+  int status = uv_queue_work(
+    loop,
+    &baton->uvWork,
+    onFirstReadWork,
+    afterFirstRead);
+  assert(status == XBGOOD);   
+}
+
+
+void
+Client::onFirstReadWork(uv_work_t *r){
+  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
+  baton->stringifyBuffer();
+  baton->err = "";
+}
+
+
+void
+afterFirstRead(uv_work_t *r){
+
+}
+
+
 void
 Client::onWriteEnd(uv_write_t *req, int status) {
   if (status == -1) {
@@ -52,13 +96,28 @@ Client::onWriteEnd(uv_write_t *req, int status) {
 void
 Client::onConnect(uv_connect_t *req, int status) {
   if (status == -1) {
-    fprintf(stderr, "Error connecting to xblab server.\n");
+    fprintf(stderr, "Error connecting to xblab server: %s\n",
+      uv_err_name(uv_last_error(loop)));
     return;
   }
 
-  // init participant baton
-  ParticipantBaton *baton = new ParticipantBaton(req); 
+  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(req->data);
+  baton->uvServer = req->handle;
+  baton->uvReadCb = onFirstRead;
 
+  // we expect a NEEDCRED message from the server
+  uv_read_start((uv_stream_t*) baton->uvServer, allocBuf, baton->uvReadCb);
+
+  // start uv_queue_work
+  // ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(req->data);
+  // baton->setConnectionWork();
+  // baton->uvServer = req->handle;
+  // status = uv_queue_work(
+  //   loop,
+  //   &baton->uvWork,
+  //   onConnectWork,
+  //   (uv_after_work_cb)afterOnConnect);
+  // assert(status == XBGOOD); 
 
   // char *message = "hello.txt";
   // int len = strlen(message);

@@ -2,33 +2,65 @@
 #include <sstream>
 #include <fstream>
 
-#include <node_buffer.h>
 
-#include <botan/botan.h>
-#include <botan/bcrypt.h>
-#include <botan/rsa.h>
-#include <botan/look_pk.h>
+// #include <node_buffer.h>
+
+// #include <botan/botan.h>
+// #include <botan/bcrypt.h>
+// #include <botan/rsa.h>
+// #include <botan/look_pk.h>
 
 #include "binding/xbClient.h"
-#include "binding/util.h"
 #include "binding/nodeUtil.h"
-#include "crypto.h"
+#include "native/client.h"
 #include "macros.h"
-
-
-namespace xblab {
 
 using namespace std;
 using namespace v8;
 using namespace node;
 
+
+namespace xblab {
+
+
 string xbPublicKeyFile;
 string xbServerAddress;
 string xbServerPort;
+Persistent<Function> xbNodeBufCtor;
 
 uv_loop_t *loop;
 
-v8::Persistent<v8::Function> xbNodeBufCtor;
+
+/* instance member functions */
+
+XbClient::XbClient(string group) {
+  this->group_ = group;
+  this->baton_ = NULL;  
+}
+
+
+~XbClient() {
+  if (baton != NULL){
+    delete baton;
+  }
+}
+
+
+bool
+XbClient::hasParticipant() {
+  return this->baton_ != NULL;
+}
+
+
+void
+XbClient::initializeBaton(uv_connect_cb cb) {
+  if (!this->hasParticipant()){
+    this->baton_ = new ParticipantBaton(cb);
+  }
+}
+
+
+/* static member functions */
 
 // args -> username, password, group TODO: make object/callback
 Handle<Value>
@@ -69,12 +101,6 @@ XbClient::SetHandle(Local<String> property,
   instance->handle_ = NodeUtil::v8ToString(value);
 }
 
-// Handle<Value>
-// XbClient::Connect(const Arguments& args){
-//   XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
-
-// }
-
 
 // TODO: error handling!
 Handle<Value>
@@ -108,7 +134,9 @@ XbClient::SendCred(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
-Handle<Value> XbClient::DigestBuffer(const Arguments& args) {
+
+Handle<Value>
+XbClient::DigestBuffer(const Arguments& args) {
   HandleScope scope;
 
   if (!args[0]->IsObject() || !args[1]->IsFunction()){
@@ -154,15 +182,33 @@ Handle<Value> XbClient::DigestBuffer(const Arguments& args) {
 }
 
 
-XbClient::XbClient(string group) {
-  this->group_ = group;
-  try{
-    Crypto::generateKey(this->priv_key_, this->pub_key_);      
+
+
+Handle<Value>
+XbClient::Connect(const Arguments& args){
+  HandleScope scope;
+  if (!args[0]->IsFunction()){
+    THROW("xblab.getConnectionBuffer requires callback argument");
   }
-  catch(exception& e){
-    cout << "Exception caught: " << e.what() << endl;
-    throw;
-  }
+
+  // Error callback only
+  Local<Function> cb = Local<Function>::Cast(args[0]);
+  
+  XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
+
+  int port = atoi(xbPort.c_str());
+  struct sockaddr_in xb_addr = uv_ip4_addr(xbServerAddress.c_str(), port);
+  loop = uv_default_loop();
+
+  instance->initializeBaton(Client::onConnect);  
+  uv_tcp_connect(
+    &instance->baton_->uvConnect,
+    &instance->baton_->uvClient,
+    xb_addr,
+    instance->baton_->uvConnectCb
+  );
+  
+  return scope.Close(Undefined());
 }
 
 
