@@ -176,6 +176,7 @@ Server::afterOnConnect (uv_work_t *r) {
 }
 
 
+// Wherever it appears, onReadWork has to be a kind of routing function
 void
 Server::onReadWork(uv_work_t *r){
   ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);

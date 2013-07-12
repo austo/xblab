@@ -73,10 +73,16 @@ XbClient::New(const Arguments& args){
   }
 
   Handle<Object> cfg = Handle<Object>::Cast(args[0]);
+
   Handle<Value> pubkfile = GET_PROP(cfg, xbPublicKeyFile);
+  Handle<Value> servaddr = GET_PROP(cfg, xbServerAddress);
+  Handle<Value> servport = GET_PROP(cfg, xbServerPort);
+
   Local<Value> group = cfg->Get(String::New(XBGROUP));
 
   xbPublicKeyFile = string(*(String::Utf8Value(pubkfile)));
+  xbServerAddress = string(*(String::Utf8Value(servaddr)));
+  xbServerPort = string(*(String::Utf8Value(servport)));
 
   instance = new XbClient(NodeUtil::v8ToString(group));   
 
@@ -103,85 +109,62 @@ XbClient::SetHandle(Local<String> property,
 
 
 // TODO: error handling!
+// Handle<Value>
+// XbClient::SendCred(const Arguments& args) {
+//   HandleScope scope;
+
+//   if (!args[0]->IsObject() || !args[1]->IsFunction()) {
+//     THROW("xblab: sendCred() requires object and callback arguments");
+//   }
+
+//   Local<Object> credentials = Local<Object>::Cast(args[0]);
+//   Local<Value> username = credentials->Get(String::New(XBUSERNAME));
+//   Local<Value> password = credentials->Get(String::New(XBPASSWORD));
+
+//   XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
+//   instance->username_ = NodeUtil::v8ToString(username);
+//   instance->password_ = NodeUtil::v8ToString(password);
+
+//   string buf = Util::packageParticipantCredentials(instance);
+
+//   const char *c = &buf[0];
+//   size_t len = buf.size();
+
+//   Handle<Value> argv[2] = {
+//     String::New("haveCred"),
+//     NodeUtil::wrapBuf(c, len)
+//   };
+
+//   node::MakeCallback(args.This(), "emit", 2, argv);
+
+//   return scope.Close(Undefined());
+// }
+
+
 Handle<Value>
-XbClient::SendCred(const Arguments& args) {
+XbClient::RequestCredential(){
   HandleScope scope;
 
-  if (!args[0]->IsObject() || !args[1]->IsFunction()) {
-    THROW("xblab: sendCred() requires object and callback arguments");
-  }
-
-  Local<Object> credentials = Local<Object>::Cast(args[0]);
-  Local<Value> username = credentials->Get(String::New(XBUSERNAME));
-  Local<Value> password = credentials->Get(String::New(XBPASSWORD));
-
-  XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
-  instance->username_ = NodeUtil::v8ToString(username);
-  instance->password_ = NodeUtil::v8ToString(password);
-
-  string buf = Util::packageParticipantCredentials(instance);
-
-  const char *c = &buf[0];
-  size_t len = buf.size();
-
-  Handle<Value> argv[2] = {
-    String::New("haveCred"),
-    NodeUtil::wrapBuf(c, len)
-  };
-
-  node::MakeCallback(args.This(), "emit", 2, argv);
-
-  return scope.Close(Undefined());
-}
-
-
-Handle<Value>
-XbClient::DigestBuffer(const Arguments& args) {
-  HandleScope scope;
-
-  if (!args[0]->IsObject() || !args[1]->IsFunction()){
-    THROW("xblab: digestBuffer() requires buffer and callback argument");
-  }
-
-  // Parse binary data from node::Buffer
-  char* bufData = Buffer::Data(args[0]->ToObject());
-  int bufLen = Buffer::Length(args[0]->ToObject());    
-
-  // copy node::Buffer contents into string
-  string buf(bufData, bufData + bufLen);
-  
   try {
 
-    XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
-    cout << "group: " << instance->group_ << endl;
-
-    // TODO: parseBuf needs to return a way for us to decide what
-    // event to emit, and optionally some data for us to broadcast
-    
-    MessageType messagetype = Util::parseBroadcast(buf, instance);
-    if (messagetype == NEEDCRED){
-
-      Handle<Value> argv[2] = {
-        String::New("needCred"),
-        String::New("Need credentials, buster!")
-      };
-
-      node::MakeCallback(args.This(), "emit", 2, argv);
-    }
-
-  }
-  catch (util_exception& e){
-    
-    // TODO: should errors always be handled in user-supplied callback?
-    Local<Function> cb = Local<Function>::Cast(args[1]);
-    Local<Value> argv[1] = { String::New(e.what()) };
-    cb->Call(Context::GetCurrent()->Global(), 1, argv);
+    Handle<Value> argv[2] = {
+      String::New("needCred"),
+      String::New("Need credentials, buster!")
+    };
+    node::MakeCallback(this->handle_, "emit", 2, argv);
   }
 
-  return scope.Close(Undefined());
+  catch (util_exception& e) {
+    Handle<Value> argv[2] = {
+      String::New("error"),
+      String::New(e.what().c_str());
+    };
+
+    node::MakeCallback(args.This(), "emit", 2, argv);
+  }
+
+  return scope.Close(Undefined());  
 }
-
-
 
 
 Handle<Value>
@@ -232,8 +215,8 @@ extern "C" {
       XbClient::GetHandle, XbClient::SetHandle);
 
     // Only methods exposed to JS should go here, emitted events are "private"
-    NODE_SET_PROTOTYPE_METHOD(t, "digestBuffer", XbClient::DigestBuffer);
-    NODE_SET_PROTOTYPE_METHOD(t, "sendCred", XbClient::SendCred);
+     NODE_SET_PROTOTYPE_METHOD(t, "connect", XbClient::Connect);
+    // NODE_SET_PROTOTYPE_METHOD(t, "sendCred", XbClient::SendCred);
 
     module->Set(String::NewSymbol("XbClient"), t->GetFunction());        
   }   

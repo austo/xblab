@@ -1,28 +1,15 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef PARTICIPANT_UTIL_H
+#define PARTICIPANT_UTIL_H
 
 #include <string>
-#include <map>
 #include <exception>
 #include "protobuf/xblab.pb.h"
-#include "participantBaton.h"
+#include "native/participantBaton.h"
 
 
 namespace xblab {
 
 // Message types enum - global to xblab namespace
-
-enum MessageType {
-  NEEDCRED,
-  GROUPLIST,
-  GROUPENTRY,
-  BEGIN,
-  BROADCAST,
-  GROUPEXIT,
-  QUIT,
-  INVALID
-};
-
 
 class util_exception : public std::exception {
 public:
@@ -45,8 +32,8 @@ class Util {
 public:   
   friend class participantBaton;
 
-  static MessageType parseBroadcast(participantBaton *baton);
-  static std::string packageParticipantCredentials(participantBaton *baton);
+  static std::string packageCredential(ParticipantBaton *baton);
+  static void digestBroadcast(ParticipantBaton *baton)
 
 private:
   Util(){};

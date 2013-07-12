@@ -4,12 +4,14 @@
 
 #include "macros.h"
 #include "crypto.h"
+#include "native/participantUtil.h"
+#include "binding/xbClient.h"
 
 
 extern string xbPublicKeyFile;
 
 string
-Util::packageParticipantCredentials(ParticipantBaton *baton){
+ParticipantUtil::packageCredential(ParticipantBaton *baton){
   baton->nonce = Crypto::generateNonce();
   
   Transmission trans;
@@ -59,11 +61,9 @@ Util::packageParticipantCredentials(ParticipantBaton *baton){
 
 
 // Mainly for consumption by the client, return Broadcast::Type
-MessageType
-Util::parseNeedCredential(ParticipantBaton *baton){
+void
+ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
 
-  baton->stringifyBuffer();
-  MessageType retval = INVALID;
   //TODO: switch on broadcast type
   Broadcast bc;
   if (!bc.ParseFromString(baton->xbuffer)){
@@ -78,11 +78,22 @@ Util::parseNeedCredential(ParticipantBaton *baton){
   if (Crypto::verify(datastr, bc.signature())){
     const Broadcast::Data& data = bc.data();
 
-    baton->return_nonce_ = string(data.nonce());
+    baton->returnNonce = string(data.nonce());
 
     // TODO: no casts - proper type interrogation
-    retval = (MessageType) data.type();
-  }       
-
-  return retval;
+    switch(data.type()){
+      case Broadcast::NEEDCRED:
+        baton->jsCallback = XbClient::RequestCredential;
+        baton->hasJsCallback = true;
+        return;
+      case Broadcast::GROUPLIST:
+      case Broadcast::GROUPENTRY:
+      case Broadcast::BEGIN:
+      case Broadcast::BROADCAST:
+      case Broadcast::GROUPEXIT:
+      case Broadcast::QUIT:
+        throw util_exception("Broadcast type not implemented.");
+    }
+  }
+  return;
 }

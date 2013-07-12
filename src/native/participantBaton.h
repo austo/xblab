@@ -1,12 +1,19 @@
 #ifndef PARTICIPANT_BATON_H
 #define PARTICIPANT_BATON_H
 
-#include <node.h>
+#include <uv.h>
+#include <v8.h>
 
 #include "baton.h"
+#include "native/participant.h"
 
 
 namespace xblab {
+
+class XbClient; // forward declaration
+
+// pointer to member callback
+typedef v8::Handle<v8::Value> (*JsCallback)(XbClient::*);
 
 class ParticipantBaton : public DataBaton {
 public:
@@ -16,13 +23,11 @@ public:
 
   void stringifyBuffer();
   void createCredential();
+  bool hasKeys();
+  void getKeys();
+  void digestBroadcast();
 
-  std::string username;
-  std::string password;
-  std::string handle;
-  std::string publicKey;
-  std::string sessionServerKey;  
-  int modulus;
+  Participant participant;
 
   uv_connect_t uvConnect;
   uv_stream_t *uvServer;
@@ -32,7 +37,10 @@ public:
   uv_read_cb uvReadCb;
   uv_connect_cb uvConnectCb;
 
-  v8::Persistent<v8::Function> jsCallback;
+  XbClient *wrapper;
+  bool hasJsCallback;
+  JsCallback jsCallback;
+
 
   // TODO: add uv_work_cb and uv_after_work_cb?
    
