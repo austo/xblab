@@ -62,7 +62,6 @@ ParticipantBaton::digestBroadcast(){
 
 void 
 ParticipantBaton::packageCredential(){
-  // stringifyBuffer();
   ParticipantUtil::packageCredential(this);
 }
 

@@ -65,7 +65,6 @@ Client::onReadWork(uv_work_t *r){
     baton->getKeys();
   }
 
-  // cout << baton->participant.publicKey << endl;
   baton->needsJsCallback = false;
   baton->digestBroadcast();
 }
@@ -75,7 +74,6 @@ void
 Client::afterOnRead(uv_work_t *r){
   ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
   if (baton->needsJsCallback){
-    // cout << "baton needsJsCallback...\n";
     // call stored XbClient member function
     baton->needsJsCallback = false;
     baton->jsCallbackFactory(baton->wrapper);
@@ -134,7 +132,6 @@ Client::writeSendCredential(uv_write_t *req, int status){
 
 void
 Client::onConnect(uv_connect_t *req, int status) {
-  // cout << "inside onConnect\n";
   if (status == -1) {
     fprintf(stderr, "Error connecting to xblab server: %s\n",
       uv_err_name(uv_last_error(loop)));
