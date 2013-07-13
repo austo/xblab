@@ -5,7 +5,7 @@
 #include "binding/xbClient.h"
 #include "binding/nodeUtil.h"
 #include "native/client.h"
-#include "native/participantUtil.h"
+#include "native/util_exception.h"
 #include "macros.h"
 #include "crypto.h"
 

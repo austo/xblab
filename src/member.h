@@ -10,19 +10,30 @@ namespace xblab {
 
 // Used by Manager for tracking users once they have joined a chat
 
-// Forward declaration
-class Manager;
+class Manager; // Forward declaration
 
 struct Member {
   Member(){
     username = "invalid";
   };
 
-  Member(std::string username, std::string password, std::string handle) : 
-    username(username), password(password), handle(handle) { }
+  Member(
+    std::string username,
+    std::string password,
+    std::string handle) :
+    username(username),
+    password(password),
+    handle(handle) { }
 
-  Member(std::string username, std::string password, std::string pubkey, bool present) : 
-    username(username), password(password), public_key(pubkey), present(present) { }
+  Member(
+    std::string username,
+    std::string password,
+    std::string pubkey,
+    bool present) : 
+    username(username),
+    password(password),
+    public_key(pubkey),
+    present(present) { }
 
   void assume(const Member& other){
     public_key = other.public_key;

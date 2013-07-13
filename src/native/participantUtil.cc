@@ -36,27 +36,27 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton){
   data->set_allocated_credential(cred);
 
 
-  string sig, datastr;
+  string sigstr, datastr;
   if (!data->SerializeToString(&datastr)) {
     throw util_exception("Failed to serialize broadcast data.");
   }
   try{
-    sig = Crypto::sign(baton->participant.privateKey, datastr);
-    trans.set_signature(sig);
+    sigstr = Crypto::sign(baton->participant.privateKey, datastr);
+    trans.set_signature(sigstr);
     trans.set_allocated_data(data);
   }
   catch(crypto_exception& e){
     cout << "crypto exception: " << e.what() << endl;
   }
-  // Protobuf-lite doesn't have SerializeToOstream
+  // Protobuf-lite doesn't support SerializeToOstream
   stringstream plaintext, ciphertext;
 
-  string pt;
-  if (!trans.SerializeToString(&pt)){
+  string ptstr;
+  if (!trans.SerializeToString(&ptstr)){
     throw util_exception("Failed to serialize broadcast.");
   }
 
-  plaintext << pt;
+  plaintext << ptstr;
   Crypto::hybridEncrypt(plaintext, ciphertext);
 
   baton->xBuffer = ciphertext.str();
@@ -80,7 +80,6 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
 
   if (Crypto::verify(datastr, bc.signature())){
     const Broadcast::Data& data = bc.data();
-
 
     baton->returnNonce = string(data.nonce());
 

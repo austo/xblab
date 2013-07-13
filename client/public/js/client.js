@@ -2,13 +2,14 @@
 
   ns.Chat = {
     socket: null,
-    wsUrl: document.URL.replace(/^https?:\/\//, 'ws://'), //port 80 when using nginx
+    // would need to be port 80 if using nginx
+    wsUrl: document.URL.replace(/^https?:\/\//, 'ws://'),
     initialize: function() {
       var ws = new WebSocket(ns.Chat.wsUrl, xblab.chatProtocol);
       ws.onmessage = ns.Chat.handleMessage;
       ws.onclose = ns.Chat.close;
       
-      //Send message on button click or enter
+      // Send message on button click or enter
       $('#send').click(function() {
         ns.Chat.send();
       });            
@@ -29,13 +30,13 @@
       ns.Chat.socket = ws;      
     },
 
-    //Add new message to chat.
+    // Add new message to chat.
     handleMessage: function(data) {
       console.log(data);
       if (typeof data.data === 'string' && /^{/.test(data.data)){
         var res = JSON.parse(data.data);
 
-        // May need another dialog permutation - wait for others to arrive
+        // TODO: May need another broadcast type - wait for others to arrive
         if (res.state && res.state === 'NEEDCRED'){
           $('#login').dialog('open');
         }
@@ -65,7 +66,7 @@
       }
     },
 
-    //TODO: highlight user-posted messages in chat
+    // TODO: highlight user-posted messages in chat
     send: function() {
       var packet = JSON.stringify({
         name: $('#name').val(),

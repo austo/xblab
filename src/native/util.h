@@ -3,7 +3,8 @@
 
 #include <string>
 #include <map>
-#include <exception>
+
+#include "util_exception.h"
 #include "protobuf/xblab.pb.h"
 #include "clientBaton.h"
 
@@ -21,23 +22,6 @@ enum MessageType {
   GROUPEXIT,
   QUIT,
   INVALID
-};
-
-
-class util_exception : public std::exception {
-public:
-  util_exception(){
-    message_ = std::string("Data integrity exception.");
-  }
-  util_exception(std::string err_msg){
-    message_ = err_msg;
-  }
-  ~util_exception() throw(){};
-  virtual const char* what() const throw(){
-    return this->message_.c_str();
-  }
-private:
-  std::string message_;
 };
 
 

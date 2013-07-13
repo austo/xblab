@@ -35,7 +35,7 @@ manager.o:	$(XB_SRC_N)/manager.cc $(XB_SRC_N)/manager.h $(XB_SRC)/crypto.h \
 db.o:		$(XB_SRC)/db.cc $(XB_SRC)/db.h $(XB_SRC)/macros.h $(XB_SRC)/group.h $(XB_SRC_N)/manager.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC)/db.cc
 
-util.o:		$(XB_SRC_N)/util.cc $(XB_SRC_N)/manager.h $(XB_SRC_N)/util.h $(XB_SRC_P)/xblab.pb.h \
+util.o:		$(XB_SRC_N)/util.cc $(XB_SRC_N)/util_exception.h $(XB_SRC_N)/manager.h $(XB_SRC_N)/util.h $(XB_SRC_P)/xblab.pb.h \
 			$(XB_SRC_N)/clientBaton.h $(XB_SRC)/crypto.h $(XB_SRC)/member.h $(XB_SRC)/macros.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_N)/util.cc
 
