@@ -18,14 +18,14 @@ ParticipantBaton::ParticipantBaton(uv_connect_t *req){
 
 ParticipantBaton::ParticipantBaton(){
   uvWrite.data = this;
-  //uvConnect.data = this;
+  uvConnect.data = this;
   needsJsCallback = false;    
 }
 
 
 ParticipantBaton::ParticipantBaton(uv_connect_cb cb){
   uvWrite.data = this;
-  //uvConnect.data = this;
+  uvConnect.data = this;
   uvConnectCb = cb;
   needsJsCallback = false;  
 }
@@ -52,10 +52,18 @@ ParticipantBaton::getKeys() {
   );
 }
 
+
 void
 ParticipantBaton::digestBroadcast(){
   this->stringifyBuffer();
   ParticipantUtil::digestBroadcast(this);
+}
+
+
+void 
+ParticipantBaton::packageCredential(){
+  // stringifyBuffer();
+  ParticipantUtil::packageCredential(this);
 }
 
 } // namespace xblab

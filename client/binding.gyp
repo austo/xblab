@@ -2,7 +2,8 @@
     "targets": [
     {
       "target_name": "xblab",
-      "sources": [  "../src/native/participantBaton.cc",
+      "sources": [   "../src/native/client.cc",
+      "../src/native/participantBaton.cc",
       "../src/native/participantUtil.cc",
       "../src/binding/nodeUtil.cc", "../src/protobuf/xblab.pb.cc",
       "../src/crypto.cc", "../src/binding/xbClient.cc" ],

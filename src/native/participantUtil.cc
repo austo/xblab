@@ -14,7 +14,7 @@ namespace xblab {
 
 extern string xbPublicKeyFile;
 
-string
+void
 ParticipantUtil::packageCredential(ParticipantBaton *baton){
   baton->nonce = Crypto::generateNonce();
   
@@ -60,15 +60,16 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton){
 
   Crypto::hybridEncrypt(plaintext, ciphertext);
 
-  return ciphertext.str();
+  baton->xBuffer = ciphertext.str();
+  baton->uvBuf.base = &baton->xBuffer[0];
+  baton->uvBuf.len = baton->xBuffer.size();
 }
 
 
 // Mainly for consumption by the client, return Broadcast::Type
 void
 ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
-
-  //TODO: switch on broadcast type
+  
   Broadcast bc;
   if (!bc.ParseFromString(baton->xBuffer)){
     throw util_exception("Failed to deserialize broadcast.");
@@ -82,14 +83,15 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
   if (Crypto::verify(datastr, bc.signature())){
     const Broadcast::Data& data = bc.data();
 
+
     baton->returnNonce = string(data.nonce());
 
-    // TODO: no casts - proper type interrogation
     switch(data.type()){
-      case Broadcast::NEEDCRED:
+      case Broadcast::NEEDCRED: {
         baton->jsCallbackFactory = XbClient::requestCredentialFactory;
         baton->needsJsCallback = true;
         return;
+      }
       case Broadcast::GROUPLIST:
       case Broadcast::GROUPENTRY:
       case Broadcast::BEGIN:

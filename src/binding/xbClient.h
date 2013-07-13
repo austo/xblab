@@ -28,8 +28,8 @@ public:
   static v8::Handle<v8::Value>
   requestCredentialFactory(XbClient*);
 
-  // static v8::Handle<v8::Value>
-  // SendCredential(const v8::Arguments& args);
+  static v8::Handle<v8::Value>
+  SendCredential(const v8::Arguments& args);
 
   static v8::Handle<v8::Value>
   Connect(const v8::Arguments& args);
@@ -50,6 +50,8 @@ private:
 
   std::string group_;
   ParticipantBaton *baton_;
+  static v8::Persistent<v8::Object> pHandle_;
+
 };
 
 } //namespace xblab

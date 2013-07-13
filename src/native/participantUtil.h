@@ -32,7 +32,7 @@ class ParticipantUtil {
 public:   
   friend class participantBaton;
 
-  static std::string packageCredential(ParticipantBaton *baton);
+  static void packageCredential(ParticipantBaton *baton);
   static void digestBroadcast(ParticipantBaton *baton);
 
 private:

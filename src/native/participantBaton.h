@@ -27,10 +27,12 @@ public:
   bool hasKeys();
   void getKeys();
   void digestBroadcast();
+  void packageCredential();
+
 
   Participant participant;
 
-  uv_connect_t *uvConnect;
+  uv_connect_t uvConnect;
   uv_stream_t *uvServer;
   uv_buf_t uvBuf;
   uv_write_t uvWrite;
@@ -44,13 +46,7 @@ public:
 
 
   // TODO: add uv_work_cb and uv_after_work_cb?
-   
-  
-private:
-  std::string privateKey_;
-
   // uv_write_cb's:
-
 
 };
 

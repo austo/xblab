@@ -25,10 +25,12 @@ extern string xbPublicKeyFile;
 extern string xbPrivateKeyFile;
 extern string xbKeyPassword;
 
-string Crypto::sign(string& message){
+string
+Crypto::sign(string& message){
   AutoSeeded_RNG rng;
   // cout << pr << pw << endl;
-  auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(xbPrivateKeyFile, rng, xbKeyPassword));
+  auto_ptr<PKCS8_PrivateKey> key(
+    PKCS8::load_key(xbPrivateKeyFile, rng, xbKeyPassword));
   RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
 
   if(!rsakey){
@@ -40,9 +42,11 @@ string Crypto::sign(string& message){
 }
 
 
-string Crypto::hybridDecrypt(string& ciphertext){
+string
+Crypto::hybridDecrypt(string& ciphertext){
   AutoSeeded_RNG rng;
-  auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(xbPrivateKeyFile, rng, xbKeyPassword));
+  auto_ptr<PKCS8_PrivateKey> key(
+    PKCS8::load_key(xbPrivateKeyFile, rng, xbKeyPassword));
   RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
 
   if(!rsakey){
@@ -60,7 +64,8 @@ string Crypto::hybridDecrypt(string& ciphertext){
 #endif
 
 
-string Crypto::sign(string& privateKey, string& message){
+string
+Crypto::sign(string& privateKey, string& message){
   AutoSeeded_RNG rng;
   DataSource_Memory ds(privateKey);
   // cout << "got DataSource_Memory\n";
@@ -78,7 +83,8 @@ string Crypto::sign(string& privateKey, string& message){
 }
 
 
-string Crypto::sign(AutoSeeded_RNG& rng, RSA_PrivateKey*& rsakey, string& message){
+string
+Crypto::sign(AutoSeeded_RNG& rng, RSA_PrivateKey*& rsakey, string& message){
   PK_Signer signer(*rsakey, SHA1);
 
   DataSource_Memory in(message);
@@ -92,7 +98,8 @@ string Crypto::sign(AutoSeeded_RNG& rng, RSA_PrivateKey*& rsakey, string& messag
 }
 
 
-bool Crypto::verify(string publicKey, string message, string signature){
+bool
+Crypto::verify(string publicKey, string message, string signature){
   DataSource_Memory ds(publicKey);
 
   std::auto_ptr<X509_PublicKey> key(X509::load_key(ds));
@@ -106,7 +113,8 @@ bool Crypto::verify(string publicKey, string message, string signature){
 }
 
 
-bool Crypto::verify(string message, string signature){
+bool
+Crypto::verify(string message, string signature){
   std::auto_ptr<X509_PublicKey> key(X509::load_key(xbPublicKeyFile));
   RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
 
@@ -118,7 +126,8 @@ bool Crypto::verify(string message, string signature){
 }
 
 
-bool Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){   
+bool
+Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){   
 
   Pipe pipe(new Base64_Decoder);
   pipe.process_msg(signature);
@@ -143,7 +152,8 @@ bool Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
   under the terms of the Botan license.
 */
 
-string Crypto::hybridEncrypt(string& publicKey, string& plaintext){
+string
+Crypto::hybridEncrypt(string& publicKey, string& plaintext){
   AutoSeeded_RNG rng;
   DataSource_Memory ds(publicKey);
 
@@ -157,7 +167,8 @@ string Crypto::hybridEncrypt(string& publicKey, string& plaintext){
 }
 
 
-void Crypto::hybridEncrypt(stringstream& in, stringstream& out){        
+void
+Crypto::hybridEncrypt(stringstream& in, stringstream& out){        
 
   std::auto_ptr<X509_PublicKey> key(X509::load_key(xbPublicKeyFile));
   RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
@@ -170,7 +181,9 @@ void Crypto::hybridEncrypt(stringstream& in, stringstream& out){
 }
 
 
-void Crypto::hybridEncrypt(RSA_PublicKey* rsakey, stringstream& in, stringstream& out){
+void
+Crypto::hybridEncrypt(
+  RSA_PublicKey* rsakey, stringstream& in, stringstream& out){
   try {
 
     AutoSeeded_RNG rng;
@@ -180,8 +193,9 @@ void Crypto::hybridEncrypt(RSA_PublicKey* rsakey, stringstream& in, stringstream
       Generate the master key from which others are derived.
 
       Make the master key as large as can be encrypted by the public key,
-      up to a limit of 256 bits. For 512-bit public keys, the master key will be >160
-      bits. A >600 bit public key will use the full 256-bit master key.
+      up to a limit of 256 bits. For 512-bit public keys, 
+      he master key will be >160 bits.
+      A >600 bit public key will use the full 256-bit master key.
 
       In theory, this is not enough, because
       including the initial vector, we derive 320 bits
@@ -189,20 +203,26 @@ void Crypto::hybridEncrypt(RSA_PublicKey* rsakey, stringstream& in, stringstream
       In practice, however, it should be fine.
     */
 
-    SymmetricKey masterkey(rng, std::min<size_t>(32, encryptor.maximum_input_size()));
+    SymmetricKey masterkey(
+      rng, std::min<size_t>(32, encryptor.maximum_input_size()));
 
     SymmetricKey cast_key = deriveSymmetricKey(CAST, masterkey, CASTBYTES);
     SymmetricKey hmac_key = deriveSymmetricKey(MAC, masterkey, MACBYTES);
     SymmetricKey init_vec = deriveSymmetricKey(IV, masterkey, IVBYTES);
 
-    SecureVector<byte> encrypted_key = encryptor.encrypt(masterkey.bits_of(), rng);
+    SecureVector<byte> encrypted_key =
+      encryptor.encrypt(masterkey.bits_of(), rng);
 
     out << b64Encode(encrypted_key) << endl;
 
     Pipe pipe(
       new Fork(
-        new Chain(get_cipher(CAST128, cast_key, init_vec, ENCRYPTION), new Base64_Encoder(true)),
-        new Chain(new MAC_Filter(HMACSHA1, hmac_key, MACOUTLEN), new Base64_Encoder)
+        new Chain(
+          get_cipher(CAST128, cast_key, init_vec, ENCRYPTION),
+          new Base64_Encoder(true)),
+        new Chain(
+          new MAC_Filter(HMACSHA1, hmac_key, MACOUTLEN),
+          new Base64_Encoder)
       )
     );
 
@@ -227,7 +247,8 @@ void Crypto::hybridEncrypt(RSA_PublicKey* rsakey, stringstream& in, stringstream
 
 
 
-string Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
+string
+Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
   AutoSeeded_RNG rng;
   DataSource_Memory ds(privateKey);
   auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(ds, rng));
@@ -255,14 +276,16 @@ Crypto::hybridDecrypt(AutoSeeded_RNG& rng,
     string encryptingMasterKeyString;
     getline(in, encryptingMasterKeyString);
 
-    cout << "encryptingMasterKeyString:\n" << encryptingMasterKeyString << endl;
+    cout << "encryptingMasterKeyString:\n" 
+         << encryptingMasterKeyString << endl;
 
     string macString;
     getline(in, macString);
 
     cout << "macString:\n" << macString << endl;
 
-    SecureVector<byte> encryptingMasterKey = b64Decode(encryptingMasterKeyString);
+    SecureVector<byte> encryptingMasterKey =
+      b64Decode(encryptingMasterKeyString);
 
     PK_Decryptor_EME decryptor(*rsakey, EMESHA1);
 
@@ -276,7 +299,9 @@ Crypto::hybridDecrypt(AutoSeeded_RNG& rng,
     Pipe pipe(
       new Base64_Decoder, get_cipher(CAST128, cast_key, init_vec, DECRYPTION),
       new Fork(
-        0, new Chain(new MAC_Filter(HMACSHA1, hmac_key, MACOUTLEN), new Base64_Encoder)
+        0, new Chain(
+          new MAC_Filter(HMACSHA1, hmac_key, MACOUTLEN),
+          new Base64_Encoder)
       )
     );
 
@@ -299,7 +324,8 @@ Crypto::hybridDecrypt(AutoSeeded_RNG& rng,
 }
 
 
-string Crypto::generateNonce(){
+string
+Crypto::generateNonce(){
   SecureVector<byte> buf(NONCE_SIZE);
   AutoSeeded_RNG rng;
   rng.randomize(buf, buf.size());
@@ -308,7 +334,8 @@ string Crypto::generateNonce(){
   return pipe.read_all_as_string();
 }
 
-int Crypto::generateRandomInt(){
+int
+Crypto::generateRandomInt(){
   SecureVector<byte> buf(sizeof(int));
   AutoSeeded_RNG rng;
   rng.randomize(buf, buf.size());
@@ -317,7 +344,8 @@ int Crypto::generateRandomInt(){
 }
 
 
-void Crypto::generateKey(string& pr, string& pu){    
+void
+Crypto::generateKey(string& pr, string& pu){    
   AutoSeeded_RNG rng;
   RSA_PrivateKey key(rng, BITSIZE);
   pr = PKCS8::PEM_encode(key);
@@ -325,12 +353,14 @@ void Crypto::generateKey(string& pr, string& pu){
 }
 
 
-string Crypto::hashPassword(string& pw){
+string
+Crypto::hashPassword(string& pw){
   AutoSeeded_RNG rng;
   return generate_bcrypt(pw, rng, BCRYPT_WORK_FACTOR);
 }
 
-bool Crypto::checkPasshash(string pw, string ph){
+bool
+Crypto::checkPasshash(string pw, string ph){
   cout << "password: " << pw << endl << "passhash: " << ph << endl;
   cout << "passhash length: " << ph.size() << endl;
 
@@ -338,14 +368,16 @@ bool Crypto::checkPasshash(string pw, string ph){
 }
 
 
-string Crypto::b64Encode(const SecureVector<byte>& in) {
+string
+Crypto::b64Encode(const SecureVector<byte>& in) {
   Pipe pipe(new Base64_Encoder);
   pipe.process_msg(in);
   return pipe.read_all_as_string();
 }
 
 
-Botan::SecureVector<byte> Crypto::b64Decode(const std::string& in) {
+Botan::SecureVector<byte>
+Crypto::b64Decode(const std::string& in) {
   Pipe pipe(new Base64_Decoder);
   pipe.process_msg(in);
   return pipe.read_all();
