@@ -7,11 +7,11 @@ var xblab = require('../build/Debug/xblab'),
     events = require('events');   
 
 
-var p = xblab.XbClient;
+var p = xblab.Client;
 inherits(p, events.EventEmitter);
 
 for (var f in xblab){
-    if (f === 'XbClient'){
+    if (f === 'Client'){
         exports[f] = p;        
     }
     else {

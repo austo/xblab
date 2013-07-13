@@ -139,6 +139,7 @@ Util::initializeMember(ClientBaton* baton){
   }
 }
 
+
 void
 Util::processCredential(ClientBaton *baton, string& datastr,
   string signature, const Transmission::Credential& cred) {

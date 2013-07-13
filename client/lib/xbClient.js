@@ -2,7 +2,7 @@ var util = require('util'),
   xblab = require('./xblab.wrapper'),
   path = require('path');
 
-exports.Client = xblabClient;
+exports.Client = xbClient;
 
 function sendCallback(err) {
   if (err) console.error("send() error: " + err);
@@ -10,18 +10,18 @@ function sendCallback(err) {
 
 
 // TODO: cleanup and expose more to clients
-function xblabClient (cfg, ws){
+function xbClient (cfg, ws){
   var self = this;
   self.wsClient = ws;
 
   cfg.group = ws.group;
 
-  self.client = new xblab.XbClient(cfg);
+  self.xbClient = new xblab.Client(cfg);
 
-  // referenced object don't pollute! 
+  // referenced object, don't pollute 
   delete cfg.group;
 
-  self.client.connect(function(err){
+  self.xbClient.connect(function(err){
     if (err) {
       console.log(err);
     }
@@ -30,28 +30,14 @@ function xblabClient (cfg, ws){
     }
   });
 
-  self.client.on('needCred', function (buf){
+  self.xbClient.on('needCred', function (buf){
     console.log(buf);
 
     // TODO: get credentials from the user
     self.wsClient.send(JSON.stringify(
       {status: 'connected', state: 'NEEDCRED'}
     ));
-  });
-
-  // self.client.on('haveCred', function (buf){
-  //     console.log(buf);
-  //     self.socket.write(buf);
-  //     // TODO: get credentials from the user
-  //     // self.wsClient.send(JSON.stringify(
-  //   {status: 'connected', state: 'NEEDCRED'}));
-  // });
-
-  // self.socket.on('data', function (data) {
-  //     self.client.digestBuffer(data, function (err){
-  //         console.log(err);
-  //     });        
-  // });
+  });  
 
   self.wsClient.on('message', function (message) {
     if (message.type === 'utf8') {
@@ -64,9 +50,12 @@ function xblabClient (cfg, ws){
       if (userMessage && userMessage.type){
         switch(userMessage.type){
           case 'CRED':
-            self.client.sendCred(userMessage, function (err){
-              console.log(err);
-            });
+            self.xbClient.sendCredential(
+              userMessage,
+              function (err){
+                console.log(err);
+              }
+            );
             break; 
         }
       }  
@@ -75,7 +64,7 @@ function xblabClient (cfg, ws){
     // so this should never happen
     else if (message.type === 'binary') {
       if (cfg.debug){
-        console.log("Received binary message of %s bytes.",
+        console.error("Received binary message of %s bytes.",
           message.binaryData.length);
       }
     }
@@ -95,12 +84,16 @@ function xblabClient (cfg, ws){
     );
   });
 
-  self.client.on('end', function () {
-    console.log('xblab relay client disconnected');        
+  // self.client.on('end', function () {
+  //   console.log('xblab relay client disconnected');        
+  // });
+
+  self.xbClient.on('groupEntry', function (buf){
+    console.log(buf);
   });
 
-  self.client.on('error', function(err){
-    console.log(err);
+  self.xbClient.on('error', function(err){
+    console.error(err);
   })
 };
 

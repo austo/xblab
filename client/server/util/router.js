@@ -18,7 +18,6 @@ exports.handleWsRequest = function(request) {
         new Date(), request.protocol, request.origin, connection.remoteAddress,
         connection.webSocketVersion);
       
-      // TODO: Make host and port configurable
       var xClient = new xblab.Client(cfg, connection);
     }
   }    

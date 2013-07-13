@@ -32,12 +32,20 @@ class ParticipantUtil {
 public:   
   friend class participantBaton;
 
-  static void packageCredential(ParticipantBaton *baton);
-  static void digestBroadcast(ParticipantBaton *baton);
+  static void
+  packageCredential(ParticipantBaton *baton);
 
+  static void
+  digestBroadcast(ParticipantBaton *baton);
+
+  
 private:
   ParticipantUtil(){};
-  ~ParticipantUtil(){};  
+  ~ParticipantUtil(){};
+
+  static void
+  enterGroup(ParticipantBaton *baton, const Broadcast::Data& data);  
+  
 };
 
 } //namespace xblab

@@ -58,12 +58,13 @@ void
 XbClient::initializeBaton() {
   if (!this->hasParticipant()){
     this->baton_ = new ParticipantBaton();
+    this->baton_->wrapper = this;
   }  
 }
 
 
 Handle<Value>
-XbClient::requestCredential(){
+XbClient::emitRequestCredential(){
   HandleScope scope;
 
   try {
@@ -87,6 +88,33 @@ XbClient::requestCredential(){
   return scope.Close(Undefined());  
 }
 
+
+Handle<Value>
+XbClient::emitGroupEntry(){
+  HandleScope scope;
+
+  try {
+    char buf[30];
+    sprintf(buf, "Welcome to %s.", baton_->url.c_str());
+
+    Handle<Value> argv[2] = {
+      String::New("groupEntry"),
+      String::New(buf)
+    };
+
+    node::MakeCallback(pHandle_, "emit", 2, argv);
+  }
+
+  catch (util_exception& e) {
+    Handle<Value> argv[2] = {
+      String::New("error"),
+      String::New(e.what())
+    };
+    node::MakeCallback(this->pHandle_, "emit", 2, argv);
+  }
+
+  return scope.Close(Undefined());  
+}
 
 /* static member functions */
 
@@ -149,6 +177,8 @@ XbClient::SendCredential(const Arguments& args) {
   Local<Value> password = credentials->Get(String::New(XBPASSWORD));
 
   XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
+  instance->baton_->wrapper = instance; // seems to be necessary
+
   instance->baton_->participant.username = NodeUtil::v8ToString(username);
   instance->baton_->participant.password = NodeUtil::v8ToString(password);
 
@@ -158,10 +188,17 @@ XbClient::SendCredential(const Arguments& args) {
 }
 
 
-// C++ -> JS event emission wrapper
+// C++ -> JS event emission wrappers
 Handle<Value>
 XbClient::requestCredentialFactory(XbClient *xbClient) {
-  return xbClient->requestCredential();
+  return xbClient->emitRequestCredential();
+}
+
+
+Handle<Value>
+XbClient::groupEntryFactory(XbClient *xbClient) {
+  cout << xbClient->baton_->url;
+  return xbClient->emitGroupEntry();
 }
 
 
@@ -219,7 +256,7 @@ extern "C" {
 
     Local<FunctionTemplate> t = FunctionTemplate::New(xblab::XbClient::New);
     t->InstanceTemplate()->SetInternalFieldCount(1);
-    t->SetClassName(String::New("XbClient"));
+    t->SetClassName(String::New("Client"));
     t->InstanceTemplate()->SetAccessor(String::New("handle"),
       xblab::XbClient::GetHandle, xblab::XbClient::SetHandle);
 
@@ -228,7 +265,7 @@ extern "C" {
       t, "connect", xblab::XbClient::Connect);
     NODE_SET_PROTOTYPE_METHOD(
       t, "sendCredential", xblab::XbClient::SendCredential);
-    module->Set(String::NewSymbol("XbClient"), t->GetFunction());        
+    module->Set(String::NewSymbol("Client"), t->GetFunction());        
   }
 
   NODE_MODULE(xblab, init);

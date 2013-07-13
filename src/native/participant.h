@@ -15,6 +15,7 @@ struct Participant {
   std::string handle;
   std::string publicKey;
   std::string privateKey;
+  std::string sessionKey; // session public key from server 
   int seed;      
   int modulus;
   bool hasKeys;

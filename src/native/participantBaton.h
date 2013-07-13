@@ -29,7 +29,6 @@ public:
   void digestBroadcast();
   void packageCredential();
 
-
   Participant participant;
 
   uv_connect_t uvConnect;

@@ -29,6 +29,9 @@ public:
   requestCredentialFactory(XbClient*);
 
   static v8::Handle<v8::Value>
+  groupEntryFactory(XbClient*);
+
+  static v8::Handle<v8::Value>
   SendCredential(const v8::Arguments& args);
 
   static v8::Handle<v8::Value>
@@ -46,7 +49,10 @@ private:
   initializeBaton(/*uv_connect_cb cb*/);
 
   v8::Handle<v8::Value>
-  requestCredential();
+  emitRequestCredential();
+
+  v8::Handle<v8::Value>
+  emitGroupEntry();
 
   std::string group_;
   ParticipantBaton *baton_;

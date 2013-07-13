@@ -92,8 +92,13 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
         baton->needsJsCallback = true;
         return;
       }
+      case Broadcast::GROUPENTRY: {
+        // store key && emit "welcome" event
+        enterGroup(baton, data);
+        return;
+      }
+
       case Broadcast::GROUPLIST:
-      case Broadcast::GROUPENTRY:
       case Broadcast::BEGIN:
       case Broadcast::BROADCAST:
       case Broadcast::GROUPEXIT:
@@ -102,6 +107,17 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
     }
   }
   return;
+}
+
+
+void
+ParticipantUtil::enterGroup(
+  ParticipantBaton *baton, const Broadcast::Data& data){
+  const Broadcast::Session& session = data.session();
+  baton->participant.sessionKey = session.pub_key();
+  baton->participant.seed = session.seed();
+  baton->jsCallbackFactory = XbClient::groupEntryFactory;
+  baton->needsJsCallback = true;
 }
 
 } // namespace xblab
