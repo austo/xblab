@@ -77,6 +77,7 @@ Client::afterOnRead(uv_work_t *r){
   if (baton->needsJsCallback){
     // cout << "baton needsJsCallback...\n";
     // call stored XbClient member function
+    baton->needsJsCallback = false;
     baton->jsCallbackFactory(baton->wrapper);
   }
 }
@@ -104,7 +105,7 @@ void
 Client::afterSendCredential(uv_work_t *r) {
   ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
   baton->uvWriteCb = writeSendCredential;
-  
+
   uv_write(
     &baton->uvWrite,
     (uv_stream_t*)&baton->uvClient,

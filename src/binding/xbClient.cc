@@ -35,7 +35,8 @@ uv_loop_t *loop;
 
 XbClient::XbClient(string group) {
   this->group_ = group;
-  this->baton_ = new ParticipantBaton();  
+  this->baton_ = new ParticipantBaton();
+  this->baton_->url = group; 
 }
 
 
@@ -83,7 +84,6 @@ XbClient::requestCredential(){
     node::MakeCallback(this->pHandle_, "emit", 2, argv);
   }
 
-  // this->Ref();
   return scope.Close(Undefined());  
 }
 
