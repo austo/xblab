@@ -12,7 +12,7 @@ namespace xblab {
 
 class XbClient; // forward declaration
 
-// pointer to member callback
+// Pointer to static ObjectWrap JS callback factory method 
 typedef v8::Handle<v8::Value> (*JsCallbackFactory)(XbClient*);
 
 class ParticipantBaton : public DataBaton {

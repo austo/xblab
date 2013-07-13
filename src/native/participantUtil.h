@@ -9,7 +9,8 @@
 
 namespace xblab {
 
-// Message types enum - global to xblab namespace
+// TODO: move util_exception to separate header && remove references to
+// this file everywhere except participantBaton.cc
 
 class util_exception : public std::exception {
 public:
@@ -27,25 +28,22 @@ private:
   std::string message_;        
 };
 
+// Private class - only accessible from ParticipantBaton
 class ParticipantUtil {
-
-public:   
-  friend class participantBaton;
+  friend class ParticipantBaton;
 
   static void
   packageCredential(ParticipantBaton *baton);
 
   static void
   digestBroadcast(ParticipantBaton *baton);
-
   
-private:
   ParticipantUtil(){};
   ~ParticipantUtil(){};
 
   static void
   enterGroup(ParticipantBaton *baton, const Broadcast::Data& data);  
-  
+
 };
 
 } //namespace xblab

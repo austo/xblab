@@ -28,7 +28,7 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton){
 
   cred->set_username(baton->participant.username);
 
-  // Plaintext password will be compared with stored passhash on the server
+  // Plaintext user password will be compared to stored passhash
   cred->set_password(baton->participant.password);
   cred->set_pub_key(baton->participant.publicKey);
   cred->set_group(baton->url);
@@ -57,7 +57,6 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton){
   }
 
   plaintext << pt;
-
   Crypto::hybridEncrypt(plaintext, ciphertext);
 
   baton->xBuffer = ciphertext.str();
@@ -66,7 +65,6 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton){
 }
 
 
-// Mainly for consumption by the client, return Broadcast::Type
 void
 ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
   

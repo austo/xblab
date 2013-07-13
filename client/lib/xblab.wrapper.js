@@ -2,8 +2,6 @@
 
 // JS shim that lets our object inherit from node.EventEmitter
 var xblab = require('../build/Debug/xblab'),
-    // assert = require('assert'),
-    // util = require('util').
     events = require('events');   
 
 

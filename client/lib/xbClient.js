@@ -33,7 +33,6 @@ function xbClient (cfg, ws){
   self.xbClient.on('needCred', function (buf){
     console.log(buf);
 
-    // TODO: get credentials from the user
     self.wsClient.send(JSON.stringify(
       {status: 'connected', state: 'NEEDCRED'}
     ));
@@ -73,18 +72,22 @@ function xbClient (cfg, ws){
   self.wsClient.on('close', function (reasonCode, description) {
     if (cfg.debug){
       console.log('%s xblab presentation client at\n%s disconnected...\n\
-        Why am I still running?', new Date(), self.wsClient.remoteAddress);
+        Why am I still running?',
+        new Date(),
+        self.wsClient.remoteAddress);
     }
   });    
   
   self.wsClient.on('error', function (error) {
-    console.log(
+    console.error(
       'Connection error for xblab presentation client at %s.\n Details: %s',
-        self.wsClient.remoteAddress, error
+      self.wsClient.remoteAddress, error
     );
   });
 
-  // self.client.on('end', function () {
+
+  // TODO: implement!
+  // self.xbClient.on('end', function () {
   //   console.log('xblab relay client disconnected');        
   // });
 

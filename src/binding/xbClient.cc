@@ -13,12 +13,9 @@ using namespace std;
 using namespace v8;
 using namespace node;
 
-
 namespace xblab {
 
-
-extern void on_connect(uv_connect_t *req, int status);    
-
+extern void on_connect(uv_connect_t *req, int status);
 
 string xbPublicKeyFile;
 string xbServerAddress;
@@ -27,9 +24,7 @@ Persistent<Function> xbNodeBufCtor;
 
 Persistent<Object> XbClient::pHandle_;
 
-
 uv_loop_t *loop;
-
 
 /* instance member functions */
 
@@ -115,6 +110,7 @@ XbClient::emitGroupEntry(){
 
   return scope.Close(Undefined());  
 }
+
 
 /* static member functions */
 
@@ -260,7 +256,7 @@ extern "C" {
     t->InstanceTemplate()->SetAccessor(String::New("handle"),
       xblab::XbClient::GetHandle, xblab::XbClient::SetHandle);
 
-     // Only methods exposed to JS should go here, emitted events are "private"
+    // Only methods exposed to JS should go here, emitted events are "private"
     NODE_SET_PROTOTYPE_METHOD(
       t, "connect", xblab::XbClient::Connect);
     NODE_SET_PROTOTYPE_METHOD(

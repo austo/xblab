@@ -12,6 +12,8 @@ class XbClient : public node::ObjectWrap {
 
 public:
 
+  // TODO: handle "end" event - server disconnect
+
   static v8::Handle<v8::Value>
   New(const v8::Arguments& args);
 
