@@ -11,30 +11,20 @@ namespace xblab {
 
 ParticipantBaton::ParticipantBaton(uv_connect_t *req){
   uvServer = req->handle;
-  uvWrite.data = this;
   needsJsCallback = false;  
 }
 
 
 ParticipantBaton::ParticipantBaton(){
-  uvWrite.data = this;
   uvConnect.data = this;
   needsJsCallback = false;    
 }
 
 
 ParticipantBaton::ParticipantBaton(uv_connect_cb cb){
-  uvWrite.data = this;
   uvConnect.data = this;
   uvConnectCb = cb;
   needsJsCallback = false;  
-}
-
-
-// Read current contents of uvBuf into xBuffer
-void
-ParticipantBaton::stringifyBuffer(){
-  this->xBuffer = std::string(this->uvBuf.base, this->uvBuf.len);
 }
 
 

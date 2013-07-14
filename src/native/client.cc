@@ -86,7 +86,6 @@ Client::afterOnRead(uv_work_t *r){
   ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
   if (baton->needsJsCallback){
     // call stored XbClient member function
-    // TODO: free uvBuf?
     baton->needsJsCallback = false;
     baton->jsCallbackFactory(baton->wrapper);
   }

@@ -22,7 +22,6 @@ public:
   ParticipantBaton();
   ~ParticipantBaton(){}
 
-  void stringifyBuffer();
   void createCredential();
   bool hasKeys();
   void getKeys();
@@ -31,12 +30,7 @@ public:
 
   Participant participant;
 
-  uv_connect_t uvConnect;
-  uv_stream_t *uvServer;
-  uv_buf_t uvBuf;
-  uv_write_t uvWrite;
-  uv_write_cb uvWriteCb; // where we go from here
-  uv_read_cb uvReadCb;
+  uv_connect_t uvConnect;  
   uv_connect_cb uvConnectCb;
 
   XbClient *wrapper;

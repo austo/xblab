@@ -11,23 +11,14 @@ class ClientBaton : public DataBaton {
 public:
   ClientBaton(){
     uvClient.data = this;
-    uvWrite.data = this;
-    member = NULL;
+    member = NULL; // clientBaton does not own member
   }
-  ~ClientBaton(){ }
-
-  uv_tcp_t uvClient;
-  uv_stream_t *uvServer;
-  uv_buf_t uvBuf;
-  uv_write_t uvWrite;
-  uv_write_cb uvWriteCb; // where we go from here
-  uv_read_cb uvReadCb;
+  ~ClientBaton(){}  
 
   // TODO: add uv_work_cb and uv_after_work_cb?
    
   Member *member;
 
-  void stringifyBuffer();
   bool hasMember();
   void initializeMember();
 
