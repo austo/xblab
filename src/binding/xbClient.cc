@@ -16,6 +16,7 @@ using namespace node;
 namespace xblab {
 
 extern void on_connect(uv_connect_t *req, int status);
+extern void on_close(uv_handle_t* handle);
 
 string xbPublicKeyFile;
 string xbServerAddress;

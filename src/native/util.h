@@ -40,6 +40,9 @@ private:
   groupEntryBuf(ClientBaton* baton);
 
   static void
+  exceptionBuf(ClientBaton*, Broadcast::Type, std::string);
+
+  static void
   initializeMember(ClientBaton* baton); 
      
   static void

@@ -26,7 +26,7 @@ Manager::Manager(string url) {
       mitr->second.seed = Crypto::generateRandomInt();
     }
   }
-   catch(std::exception& e){
+  catch(std::exception& e){
     cout << "Exception caught: " << e.what() << std::endl;
     throw;
   }

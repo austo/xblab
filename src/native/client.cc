@@ -19,6 +19,11 @@ extern "C" {
   void on_connect(uv_connect_t *req, int status) {
     Client::onConnect(req, status);
   }
+
+  void on_close(uv_handle_t* handle) {
+    assert(handle != NULL);
+    fprintf(stderr, "connection closed by remote server\n");
+  }
 }
 
 // global uv buffer allocator
@@ -44,8 +49,14 @@ Client::onRead(uv_stream_t* server, ssize_t nread, uv_buf_t buf) {
         uv_err_name(uv_last_error(loop)));
     }
   }
-
+  
   ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(server->data);
+
+  if (nread == EOF){
+    uv_close((uv_handle_t*)&baton->uvClient, on_close);
+    return;
+  }
+
   baton->uvBuf = buf;
   baton->uvBuf.len = nread;
 
@@ -75,8 +86,12 @@ Client::afterOnRead(uv_work_t *r){
   ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
   if (baton->needsJsCallback){
     // call stored XbClient member function
+    // TODO: free uvBuf?
     baton->needsJsCallback = false;
     baton->jsCallbackFactory(baton->wrapper);
+  }
+  else {
+    cout << baton->err;
   }
 }
 

@@ -59,9 +59,16 @@ ClientBaton::getNeedCredential(){
   Util::needCredBuf(this);    
 }
 
+
 void
 ClientBaton::getGroupEntry(){
   Util::groupEntryBuf(this);
 }
+
+
+// void
+// ClientBaton::getNoOp(string what) {
+//   Util::noOpBuf(this, what);
+// }
 
 } // namespace xblab

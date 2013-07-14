@@ -70,7 +70,11 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
   
   Broadcast bc;
   if (!bc.ParseFromString(baton->xBuffer)){
-    throw util_exception("Failed to deserialize broadcast.");
+    string plaintext = Crypto::hybridDecrypt(
+      baton->participant.privateKey, baton->xBuffer);
+    if (!bc.ParseFromString(plaintext)) {
+      throw util_exception("Failed to deserialize broadcast.");
+    }
   }    
 
   string datastr;
@@ -82,7 +86,8 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
     const Broadcast::Data& data = bc.data();
 
     baton->returnNonce = string(data.nonce());
-
+    baton->nonce = Crypto::generateNonce();
+    
     switch(data.type()){
       case Broadcast::NEEDCRED: {
         baton->jsCallbackFactory = XbClient::requestCredentialFactory;
@@ -95,13 +100,20 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
         return;
       }
 
+      case Broadcast::ERROR: {
+        baton->err = data.error().what();
+        return;
+      }
+      case Broadcast::NO_OP: {
+        baton->err = data.no_op().what();
+        return;
+      }
+
       case Broadcast::GROUPLIST:
       case Broadcast::BEGIN:
       case Broadcast::BROADCAST:
       case Broadcast::GROUPEXIT:
-      case Broadcast::QUIT:
-      case Broadcast::ERROR:
-      case Broadcast::NO_OP: {
+      case Broadcast::QUIT: {
         throw util_exception("Broadcast type not implemented.");
       }
     }
@@ -119,5 +131,6 @@ ParticipantUtil::enterGroup(
   baton->jsCallbackFactory = XbClient::groupEntryFactory;
   baton->needsJsCallback = true;
 }
+
 
 } // namespace xblab

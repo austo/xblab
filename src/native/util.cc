@@ -93,6 +93,65 @@ Util::groupEntryBuf(ClientBaton* baton){
     throw util_exception("Failed to serialize broadcast.");
   }
 
+  Crypto::hybridEncrypt(baton->member->public_key, retval);
+
+  baton->xBuffer = retval;    
+  baton->uvBuf.base = &baton->xBuffer[0];
+  baton->uvBuf.len = baton->xBuffer.size();
+}
+
+
+void
+Util::exceptionBuf(
+  ClientBaton* baton, Broadcast::Type type, std::string what){ 
+
+  // TODO: write group entry buffer
+  baton->nonce = Crypto::generateNonce();
+  Broadcast bc;
+  Broadcast::Data *data = new Broadcast::Data();
+
+  switch (type){
+    case Broadcast::NO_OP: {
+      Broadcast::No_Op *no_op = new Broadcast::No_Op();
+      no_op->set_what(what);
+      data->set_allocated_no_op(no_op);
+      break;
+    }
+    case Broadcast::ERROR: {
+      Broadcast::Error *error = new Broadcast::Error();
+      error->set_what(what);
+      data->set_allocated_error(error);
+      break;
+    }
+    default:
+      throw util_exception(
+        "Util::exceptionBuf requires NO_OP or ERROR types.");
+  }
+
+  data->set_type(type);
+  data->set_nonce(baton->nonce);
+  data->set_return_nonce(baton->returnNonce);
+
+  string sigstr, datastr;
+  if (!data->SerializeToString(&datastr)) {
+    throw util_exception("Failed to serialize broadcast data.");
+  }
+  try{
+    sigstr = Crypto::sign(datastr);
+    bc.set_signature(sigstr);
+    bc.set_allocated_data(data);
+  }
+  catch(crypto_exception& e){
+    cout << "crypto exception: " << e.what() << endl;
+  }
+
+  string retval;
+  if (!bc.SerializeToString(&retval)){
+    throw util_exception("Failed to serialize broadcast.");
+  }
+
+  Crypto::hybridEncrypt(baton->member->public_key, retval);
+
   baton->xBuffer = retval;    
   baton->uvBuf.base = &baton->xBuffer[0];
   baton->uvBuf.len = baton->xBuffer.size();
@@ -176,17 +235,24 @@ Util::processCredential(ClientBaton *baton, string& datastr,
 
     try {
       if (*m == mitr->second){
+        /* 
+         * TODO: this may not be the best solution:
+         * Handles case when client has disconnected and reconnected.
+         * We may want to forbid this.
+         */
+        baton->member = &mitr->second;
         if (!mitr->second.present){
           mitr->second.assume(m);
           cout << "member " << mitr->second.username
              << " entered group " << mgr->group.name << endl; 
-          baton->member = &mitr->second;            
           baton->getGroupEntry();
         }
         else {
-          cout << "member " << mitr->second.username
+          stringstream ss;
+          ss << "member " << mitr->second.username
              << " already present in " << mgr->group.name << endl;
-             // TODO: No_Op
+          cout << ss.str();
+          exceptionBuf(baton, Broadcast::NO_OP, ss.str());
         }
         return; 
       }

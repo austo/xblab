@@ -23,6 +23,7 @@ public:
 
 extern "C" {
   void on_connect(uv_connect_t *req, int status);
+  void on_close(uv_handle_t* handle);
 }
 
 } // namespace xblab
