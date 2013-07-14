@@ -12,6 +12,8 @@ message Broadcast {
     BROADCAST = 4;
     GROUPEXIT = 5;
     QUIT = 6;
+    ERROR = 7;
+    NO_OP = 8;
   }
 
   message Session {
@@ -28,6 +30,14 @@ message Broadcast {
     required fixed32 modulo = 1;
   }
 
+  message Error {
+    required string what = 1;
+  }
+
+  message No_Op {
+    required string what = 1;
+  }
+
   message Data {
     //type and nonce are required for all messages
     required Type type = 1;
@@ -36,6 +46,8 @@ message Broadcast {
     optional Session session = 4;
     optional Prologue prologue = 5;
     optional Payload payload = 6;
+    optional Error error = 7;
+    optional No_Op no_op = 8;
   }
 
   required Data data = 2;
@@ -50,6 +62,8 @@ message Transmission {
     TRANSMIT = 2;
     EXIT = 3;
     QUIT = 4;
+    ERROR = 5;
+    NO_OP = 6;
   }
 
   message Credential {
@@ -64,6 +78,14 @@ message Transmission {
     required string content = 2;
   }
 
+  message Error {
+    required string what = 1;
+  }
+
+  message No_Op {
+    required string what = 1;
+  }
+
   message Data {
     //type and nonce are required for all messages
     required Type type = 1;
@@ -71,6 +93,8 @@ message Transmission {
     optional string return_nonce = 3;
     optional Credential credential = 4;
     optional Payload payload = 5;
+    optional Error error = 6;
+    optional No_Op no_op = 7;
   }
 
   required Data data = 2;

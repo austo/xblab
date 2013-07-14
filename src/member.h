@@ -47,8 +47,10 @@ struct Member {
   } 
 
   bool operator== (const Member& other) const {
+    #ifdef DEBUG
     std::cout << "this->username: " << username
           << "\nother.username: " << other.username << std::endl;
+    #endif
     return username == other.username &&
       Crypto::checkPasshash(password, other.password);        
   }

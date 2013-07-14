@@ -13,10 +13,10 @@ namespace xblab{
 Manager::Manager(string url) {
   try{
     Crypto::generateKey(this->priv_key_, this->pub_key);
-    group_ = Db::getGroup(url);
+    group = Db::getGroup(url);
     
     // We've got the room ID, now get our members
-    members = Db::getMembers(group_.id);
+    members = Db::getMembers(group.id);
 
     // Each member has a reference to the manager
     map<int, Member>::iterator mitr = members.begin();

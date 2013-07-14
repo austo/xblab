@@ -133,7 +133,9 @@ Util::initializeMember(ClientBaton* baton){
     case Transmission::ENTER:
     case Transmission::TRANSMIT:
     case Transmission::EXIT:
-    case Transmission::QUIT: {
+    case Transmission::QUIT:
+    case Transmission::ERROR:
+    case Transmission::NO_OP: {
       throw util_exception("Transmission not implemented.");
     }
   }
@@ -148,8 +150,9 @@ Util::processCredential(ClientBaton *baton, string& datastr,
   if (!Crypto::verify(pubkey, datastr, signature)) { 
     throw util_exception("User key not verified.");
   }
-
+#ifdef DEBUG
   cout << "Process credential: user signature verified.\n";
+#endif
   string un(cred.username());
   string pw(cred.password());
   baton->url = string(cred.group());
@@ -159,6 +162,8 @@ Util::processCredential(ClientBaton *baton, string& datastr,
   if (xbManagers.find(baton->url) == xbManagers.end()){
     mgr = new Manager(baton->url);
     xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
+    cout << "Manager created for group " << mgr->group.name
+      << " at /" << mgr->group.url << endl;
   }
   else {
     mgr = xbManagers.at(baton->url);
@@ -171,21 +176,29 @@ Util::processCredential(ClientBaton *baton, string& datastr,
 
     try {
       if (*m == mitr->second){
-        mitr->second.assume(m);
-        cout << "member " << mitr->second.username
-           << " assumed with pub_key:\n" 
-           << mitr->second.public_key << endl;
-        baton->member = &mitr->second;            
-        baton->getGroupEntry();
+        if (!mitr->second.present){
+          mitr->second.assume(m);
+          cout << "member " << mitr->second.username
+             << " entered group " << mgr->group.name << endl; 
+          baton->member = &mitr->second;            
+          baton->getGroupEntry();
+        }
+        else {
+          cout << "member " << mitr->second.username
+             << " already present in " << mgr->group.name << endl;
+             // TODO: No_Op
+        }
         return; 
       }
     }
     catch (exception& e){
       cout << e.what();
       baton->err = e.what();
+      // TODO: Error
     }
   }
   baton->err = "Unable to find member";
+  // TODO: Error  
 }
 
 } //namespace xblab

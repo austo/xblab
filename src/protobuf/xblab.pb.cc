@@ -19,10 +19,14 @@ void protobuf_ShutdownFile_xblab_2eproto() {
   delete Broadcast_Session::default_instance_;
   delete Broadcast_Payload::default_instance_;
   delete Broadcast_Prologue::default_instance_;
+  delete Broadcast_Error::default_instance_;
+  delete Broadcast_No_Op::default_instance_;
   delete Broadcast_Data::default_instance_;
   delete Transmission::default_instance_;
   delete Transmission_Credential::default_instance_;
   delete Transmission_Payload::default_instance_;
+  delete Transmission_Error::default_instance_;
+  delete Transmission_No_Op::default_instance_;
   delete Transmission_Data::default_instance_;
 }
 
@@ -42,19 +46,27 @@ void protobuf_AddDesc_xblab_2eproto() {
   Broadcast_Session::default_instance_ = new Broadcast_Session();
   Broadcast_Payload::default_instance_ = new Broadcast_Payload();
   Broadcast_Prologue::default_instance_ = new Broadcast_Prologue();
+  Broadcast_Error::default_instance_ = new Broadcast_Error();
+  Broadcast_No_Op::default_instance_ = new Broadcast_No_Op();
   Broadcast_Data::default_instance_ = new Broadcast_Data();
   Transmission::default_instance_ = new Transmission();
   Transmission_Credential::default_instance_ = new Transmission_Credential();
   Transmission_Payload::default_instance_ = new Transmission_Payload();
+  Transmission_Error::default_instance_ = new Transmission_Error();
+  Transmission_No_Op::default_instance_ = new Transmission_No_Op();
   Transmission_Data::default_instance_ = new Transmission_Data();
   Broadcast::default_instance_->InitAsDefaultInstance();
   Broadcast_Session::default_instance_->InitAsDefaultInstance();
   Broadcast_Payload::default_instance_->InitAsDefaultInstance();
   Broadcast_Prologue::default_instance_->InitAsDefaultInstance();
+  Broadcast_Error::default_instance_->InitAsDefaultInstance();
+  Broadcast_No_Op::default_instance_->InitAsDefaultInstance();
   Broadcast_Data::default_instance_->InitAsDefaultInstance();
   Transmission::default_instance_->InitAsDefaultInstance();
   Transmission_Credential::default_instance_->InitAsDefaultInstance();
   Transmission_Payload::default_instance_->InitAsDefaultInstance();
+  Transmission_Error::default_instance_->InitAsDefaultInstance();
+  Transmission_No_Op::default_instance_->InitAsDefaultInstance();
   Transmission_Data::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_xblab_2eproto);
 }
@@ -85,6 +97,8 @@ bool Broadcast_Type_IsValid(int value) {
     case 4:
     case 5:
     case 6:
+    case 7:
+    case 8:
       return true;
     default:
       return false;
@@ -99,6 +113,8 @@ const Broadcast_Type Broadcast::BEGIN;
 const Broadcast_Type Broadcast::BROADCAST;
 const Broadcast_Type Broadcast::GROUPEXIT;
 const Broadcast_Type Broadcast::QUIT;
+const Broadcast_Type Broadcast::ERROR;
+const Broadcast_Type Broadcast::NO_OP;
 const Broadcast_Type Broadcast::Type_MIN;
 const Broadcast_Type Broadcast::Type_MAX;
 const int Broadcast::Type_ARRAYSIZE;
@@ -684,12 +700,362 @@ void Broadcast_Prologue::Swap(Broadcast_Prologue* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
+const int Broadcast_Error::kWhatFieldNumber;
+#endif  // !_MSC_VER
+
+Broadcast_Error::Broadcast_Error()
+  : ::google::protobuf::MessageLite() {
+  SharedCtor();
+}
+
+void Broadcast_Error::InitAsDefaultInstance() {
+}
+
+Broadcast_Error::Broadcast_Error(const Broadcast_Error& from)
+  : ::google::protobuf::MessageLite() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Broadcast_Error::SharedCtor() {
+  _cached_size_ = 0;
+  what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Broadcast_Error::~Broadcast_Error() {
+  SharedDtor();
+}
+
+void Broadcast_Error::SharedDtor() {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    delete what_;
+  }
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  if (this != &default_instance()) {
+  #else
+  if (this != default_instance_) {
+  #endif
+  }
+}
+
+void Broadcast_Error::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const Broadcast_Error& Broadcast_Error::default_instance() {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  protobuf_AddDesc_xblab_2eproto();
+#else
+  if (default_instance_ == NULL) protobuf_AddDesc_xblab_2eproto();
+#endif
+  return *default_instance_;
+}
+
+Broadcast_Error* Broadcast_Error::default_instance_ = NULL;
+
+Broadcast_Error* Broadcast_Error::New() const {
+  return new Broadcast_Error;
+}
+
+void Broadcast_Error::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_what()) {
+      if (what_ != &::google::protobuf::internal::kEmptyString) {
+        what_->clear();
+      }
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+bool Broadcast_Error::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string what = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_what()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Broadcast_Error::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required string what = 1;
+  if (has_what()) {
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->what(), output);
+  }
+
+}
+
+int Broadcast_Error::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string what = 1;
+    if (has_what()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->what());
+    }
+
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Broadcast_Error::CheckTypeAndMergeFrom(
+    const ::google::protobuf::MessageLite& from) {
+  MergeFrom(*::google::protobuf::down_cast<const Broadcast_Error*>(&from));
+}
+
+void Broadcast_Error::MergeFrom(const Broadcast_Error& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_what()) {
+      set_what(from.what());
+    }
+  }
+}
+
+void Broadcast_Error::CopyFrom(const Broadcast_Error& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Broadcast_Error::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void Broadcast_Error::Swap(Broadcast_Error* other) {
+  if (other != this) {
+    std::swap(what_, other->what_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::std::string Broadcast_Error::GetTypeName() const {
+  return "xblab.Broadcast.Error";
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int Broadcast_No_Op::kWhatFieldNumber;
+#endif  // !_MSC_VER
+
+Broadcast_No_Op::Broadcast_No_Op()
+  : ::google::protobuf::MessageLite() {
+  SharedCtor();
+}
+
+void Broadcast_No_Op::InitAsDefaultInstance() {
+}
+
+Broadcast_No_Op::Broadcast_No_Op(const Broadcast_No_Op& from)
+  : ::google::protobuf::MessageLite() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Broadcast_No_Op::SharedCtor() {
+  _cached_size_ = 0;
+  what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Broadcast_No_Op::~Broadcast_No_Op() {
+  SharedDtor();
+}
+
+void Broadcast_No_Op::SharedDtor() {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    delete what_;
+  }
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  if (this != &default_instance()) {
+  #else
+  if (this != default_instance_) {
+  #endif
+  }
+}
+
+void Broadcast_No_Op::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const Broadcast_No_Op& Broadcast_No_Op::default_instance() {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  protobuf_AddDesc_xblab_2eproto();
+#else
+  if (default_instance_ == NULL) protobuf_AddDesc_xblab_2eproto();
+#endif
+  return *default_instance_;
+}
+
+Broadcast_No_Op* Broadcast_No_Op::default_instance_ = NULL;
+
+Broadcast_No_Op* Broadcast_No_Op::New() const {
+  return new Broadcast_No_Op;
+}
+
+void Broadcast_No_Op::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_what()) {
+      if (what_ != &::google::protobuf::internal::kEmptyString) {
+        what_->clear();
+      }
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+bool Broadcast_No_Op::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string what = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_what()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Broadcast_No_Op::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required string what = 1;
+  if (has_what()) {
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->what(), output);
+  }
+
+}
+
+int Broadcast_No_Op::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string what = 1;
+    if (has_what()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->what());
+    }
+
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Broadcast_No_Op::CheckTypeAndMergeFrom(
+    const ::google::protobuf::MessageLite& from) {
+  MergeFrom(*::google::protobuf::down_cast<const Broadcast_No_Op*>(&from));
+}
+
+void Broadcast_No_Op::MergeFrom(const Broadcast_No_Op& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_what()) {
+      set_what(from.what());
+    }
+  }
+}
+
+void Broadcast_No_Op::CopyFrom(const Broadcast_No_Op& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Broadcast_No_Op::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void Broadcast_No_Op::Swap(Broadcast_No_Op* other) {
+  if (other != this) {
+    std::swap(what_, other->what_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::std::string Broadcast_No_Op::GetTypeName() const {
+  return "xblab.Broadcast.No_Op";
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
 const int Broadcast_Data::kTypeFieldNumber;
 const int Broadcast_Data::kNonceFieldNumber;
 const int Broadcast_Data::kReturnNonceFieldNumber;
 const int Broadcast_Data::kSessionFieldNumber;
 const int Broadcast_Data::kPrologueFieldNumber;
 const int Broadcast_Data::kPayloadFieldNumber;
+const int Broadcast_Data::kErrorFieldNumber;
+const int Broadcast_Data::kNoOpFieldNumber;
 #endif  // !_MSC_VER
 
 Broadcast_Data::Broadcast_Data()
@@ -716,6 +1082,18 @@ void Broadcast_Data::InitAsDefaultInstance() {
 #else
   payload_ = const_cast< ::xblab::Broadcast_Payload*>(&::xblab::Broadcast_Payload::default_instance());
 #endif
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  error_ = const_cast< ::xblab::Broadcast_Error*>(
+      ::xblab::Broadcast_Error::internal_default_instance());
+#else
+  error_ = const_cast< ::xblab::Broadcast_Error*>(&::xblab::Broadcast_Error::default_instance());
+#endif
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  no_op_ = const_cast< ::xblab::Broadcast_No_Op*>(
+      ::xblab::Broadcast_No_Op::internal_default_instance());
+#else
+  no_op_ = const_cast< ::xblab::Broadcast_No_Op*>(&::xblab::Broadcast_No_Op::default_instance());
+#endif
 }
 
 Broadcast_Data::Broadcast_Data(const Broadcast_Data& from)
@@ -732,6 +1110,8 @@ void Broadcast_Data::SharedCtor() {
   session_ = NULL;
   prologue_ = NULL;
   payload_ = NULL;
+  error_ = NULL;
+  no_op_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -754,6 +1134,8 @@ void Broadcast_Data::SharedDtor() {
     delete session_;
     delete prologue_;
     delete payload_;
+    delete error_;
+    delete no_op_;
   }
 }
 
@@ -798,6 +1180,12 @@ void Broadcast_Data::Clear() {
     }
     if (has_payload()) {
       if (payload_ != NULL) payload_->::xblab::Broadcast_Payload::Clear();
+    }
+    if (has_error()) {
+      if (error_ != NULL) error_->::xblab::Broadcast_Error::Clear();
+    }
+    if (has_no_op()) {
+      if (no_op_ != NULL) no_op_->::xblab::Broadcast_No_Op::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -893,6 +1281,34 @@ bool Broadcast_Data::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(58)) goto parse_error;
+        break;
+      }
+
+      // optional .xblab.Broadcast.Error error = 7;
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_error:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_error()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(66)) goto parse_no_op;
+        break;
+      }
+
+      // optional .xblab.Broadcast.No_Op no_op = 8;
+      case 8: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_no_op:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_no_op()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -950,6 +1366,18 @@ void Broadcast_Data::SerializeWithCachedSizes(
       6, this->payload(), output);
   }
 
+  // optional .xblab.Broadcast.Error error = 7;
+  if (has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessage(
+      7, this->error(), output);
+  }
+
+  // optional .xblab.Broadcast.No_Op no_op = 8;
+  if (has_no_op()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessage(
+      8, this->no_op(), output);
+  }
+
 }
 
 int Broadcast_Data::ByteSize() const {
@@ -997,6 +1425,20 @@ int Broadcast_Data::ByteSize() const {
           this->payload());
     }
 
+    // optional .xblab.Broadcast.Error error = 7;
+    if (has_error()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->error());
+    }
+
+    // optional .xblab.Broadcast.No_Op no_op = 8;
+    if (has_no_op()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->no_op());
+    }
+
   }
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = total_size;
@@ -1030,6 +1472,12 @@ void Broadcast_Data::MergeFrom(const Broadcast_Data& from) {
     if (from.has_payload()) {
       mutable_payload()->::xblab::Broadcast_Payload::MergeFrom(from.payload());
     }
+    if (from.has_error()) {
+      mutable_error()->::xblab::Broadcast_Error::MergeFrom(from.error());
+    }
+    if (from.has_no_op()) {
+      mutable_no_op()->::xblab::Broadcast_No_Op::MergeFrom(from.no_op());
+    }
   }
 }
 
@@ -1051,6 +1499,12 @@ bool Broadcast_Data::IsInitialized() const {
   if (has_payload()) {
     if (!this->payload().IsInitialized()) return false;
   }
+  if (has_error()) {
+    if (!this->error().IsInitialized()) return false;
+  }
+  if (has_no_op()) {
+    if (!this->no_op().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -1062,6 +1516,8 @@ void Broadcast_Data::Swap(Broadcast_Data* other) {
     std::swap(session_, other->session_);
     std::swap(prologue_, other->prologue_);
     std::swap(payload_, other->payload_);
+    std::swap(error_, other->error_);
+    std::swap(no_op_, other->no_op_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     std::swap(_cached_size_, other->_cached_size_);
   }
@@ -1301,6 +1757,8 @@ bool Transmission_Type_IsValid(int value) {
     case 2:
     case 3:
     case 4:
+    case 5:
+    case 6:
       return true;
     default:
       return false;
@@ -1313,6 +1771,8 @@ const Transmission_Type Transmission::ENTER;
 const Transmission_Type Transmission::TRANSMIT;
 const Transmission_Type Transmission::EXIT;
 const Transmission_Type Transmission::QUIT;
+const Transmission_Type Transmission::ERROR;
+const Transmission_Type Transmission::NO_OP;
 const Transmission_Type Transmission::Type_MIN;
 const Transmission_Type Transmission::Type_MAX;
 const int Transmission::Type_ARRAYSIZE;
@@ -1822,11 +2282,361 @@ void Transmission_Payload::Swap(Transmission_Payload* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
+const int Transmission_Error::kWhatFieldNumber;
+#endif  // !_MSC_VER
+
+Transmission_Error::Transmission_Error()
+  : ::google::protobuf::MessageLite() {
+  SharedCtor();
+}
+
+void Transmission_Error::InitAsDefaultInstance() {
+}
+
+Transmission_Error::Transmission_Error(const Transmission_Error& from)
+  : ::google::protobuf::MessageLite() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Transmission_Error::SharedCtor() {
+  _cached_size_ = 0;
+  what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Transmission_Error::~Transmission_Error() {
+  SharedDtor();
+}
+
+void Transmission_Error::SharedDtor() {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    delete what_;
+  }
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  if (this != &default_instance()) {
+  #else
+  if (this != default_instance_) {
+  #endif
+  }
+}
+
+void Transmission_Error::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const Transmission_Error& Transmission_Error::default_instance() {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  protobuf_AddDesc_xblab_2eproto();
+#else
+  if (default_instance_ == NULL) protobuf_AddDesc_xblab_2eproto();
+#endif
+  return *default_instance_;
+}
+
+Transmission_Error* Transmission_Error::default_instance_ = NULL;
+
+Transmission_Error* Transmission_Error::New() const {
+  return new Transmission_Error;
+}
+
+void Transmission_Error::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_what()) {
+      if (what_ != &::google::protobuf::internal::kEmptyString) {
+        what_->clear();
+      }
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+bool Transmission_Error::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string what = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_what()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Transmission_Error::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required string what = 1;
+  if (has_what()) {
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->what(), output);
+  }
+
+}
+
+int Transmission_Error::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string what = 1;
+    if (has_what()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->what());
+    }
+
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Transmission_Error::CheckTypeAndMergeFrom(
+    const ::google::protobuf::MessageLite& from) {
+  MergeFrom(*::google::protobuf::down_cast<const Transmission_Error*>(&from));
+}
+
+void Transmission_Error::MergeFrom(const Transmission_Error& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_what()) {
+      set_what(from.what());
+    }
+  }
+}
+
+void Transmission_Error::CopyFrom(const Transmission_Error& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Transmission_Error::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void Transmission_Error::Swap(Transmission_Error* other) {
+  if (other != this) {
+    std::swap(what_, other->what_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::std::string Transmission_Error::GetTypeName() const {
+  return "xblab.Transmission.Error";
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int Transmission_No_Op::kWhatFieldNumber;
+#endif  // !_MSC_VER
+
+Transmission_No_Op::Transmission_No_Op()
+  : ::google::protobuf::MessageLite() {
+  SharedCtor();
+}
+
+void Transmission_No_Op::InitAsDefaultInstance() {
+}
+
+Transmission_No_Op::Transmission_No_Op(const Transmission_No_Op& from)
+  : ::google::protobuf::MessageLite() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void Transmission_No_Op::SharedCtor() {
+  _cached_size_ = 0;
+  what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+Transmission_No_Op::~Transmission_No_Op() {
+  SharedDtor();
+}
+
+void Transmission_No_Op::SharedDtor() {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    delete what_;
+  }
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  if (this != &default_instance()) {
+  #else
+  if (this != default_instance_) {
+  #endif
+  }
+}
+
+void Transmission_No_Op::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const Transmission_No_Op& Transmission_No_Op::default_instance() {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  protobuf_AddDesc_xblab_2eproto();
+#else
+  if (default_instance_ == NULL) protobuf_AddDesc_xblab_2eproto();
+#endif
+  return *default_instance_;
+}
+
+Transmission_No_Op* Transmission_No_Op::default_instance_ = NULL;
+
+Transmission_No_Op* Transmission_No_Op::New() const {
+  return new Transmission_No_Op;
+}
+
+void Transmission_No_Op::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_what()) {
+      if (what_ != &::google::protobuf::internal::kEmptyString) {
+        what_->clear();
+      }
+    }
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+bool Transmission_No_Op::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required string what = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_what()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormatLite::SkipField(input, tag));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void Transmission_No_Op::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required string what = 1;
+  if (has_what()) {
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      1, this->what(), output);
+  }
+
+}
+
+int Transmission_No_Op::ByteSize() const {
+  int total_size = 0;
+
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required string what = 1;
+    if (has_what()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->what());
+    }
+
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Transmission_No_Op::CheckTypeAndMergeFrom(
+    const ::google::protobuf::MessageLite& from) {
+  MergeFrom(*::google::protobuf::down_cast<const Transmission_No_Op*>(&from));
+}
+
+void Transmission_No_Op::MergeFrom(const Transmission_No_Op& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_what()) {
+      set_what(from.what());
+    }
+  }
+}
+
+void Transmission_No_Op::CopyFrom(const Transmission_No_Op& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Transmission_No_Op::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+
+  return true;
+}
+
+void Transmission_No_Op::Swap(Transmission_No_Op* other) {
+  if (other != this) {
+    std::swap(what_, other->what_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::std::string Transmission_No_Op::GetTypeName() const {
+  return "xblab.Transmission.No_Op";
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
 const int Transmission_Data::kTypeFieldNumber;
 const int Transmission_Data::kNonceFieldNumber;
 const int Transmission_Data::kReturnNonceFieldNumber;
 const int Transmission_Data::kCredentialFieldNumber;
 const int Transmission_Data::kPayloadFieldNumber;
+const int Transmission_Data::kErrorFieldNumber;
+const int Transmission_Data::kNoOpFieldNumber;
 #endif  // !_MSC_VER
 
 Transmission_Data::Transmission_Data()
@@ -1847,6 +2657,18 @@ void Transmission_Data::InitAsDefaultInstance() {
 #else
   payload_ = const_cast< ::xblab::Transmission_Payload*>(&::xblab::Transmission_Payload::default_instance());
 #endif
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  error_ = const_cast< ::xblab::Transmission_Error*>(
+      ::xblab::Transmission_Error::internal_default_instance());
+#else
+  error_ = const_cast< ::xblab::Transmission_Error*>(&::xblab::Transmission_Error::default_instance());
+#endif
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  no_op_ = const_cast< ::xblab::Transmission_No_Op*>(
+      ::xblab::Transmission_No_Op::internal_default_instance());
+#else
+  no_op_ = const_cast< ::xblab::Transmission_No_Op*>(&::xblab::Transmission_No_Op::default_instance());
+#endif
 }
 
 Transmission_Data::Transmission_Data(const Transmission_Data& from)
@@ -1862,6 +2684,8 @@ void Transmission_Data::SharedCtor() {
   return_nonce_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   credential_ = NULL;
   payload_ = NULL;
+  error_ = NULL;
+  no_op_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -1883,6 +2707,8 @@ void Transmission_Data::SharedDtor() {
   #endif
     delete credential_;
     delete payload_;
+    delete error_;
+    delete no_op_;
   }
 }
 
@@ -1924,6 +2750,12 @@ void Transmission_Data::Clear() {
     }
     if (has_payload()) {
       if (payload_ != NULL) payload_->::xblab::Transmission_Payload::Clear();
+    }
+    if (has_error()) {
+      if (error_ != NULL) error_->::xblab::Transmission_Error::Clear();
+    }
+    if (has_no_op()) {
+      if (no_op_ != NULL) no_op_->::xblab::Transmission_No_Op::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2005,6 +2837,34 @@ bool Transmission_Data::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(50)) goto parse_error;
+        break;
+      }
+
+      // optional .xblab.Transmission.Error error = 6;
+      case 6: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_error:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_error()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(58)) goto parse_no_op;
+        break;
+      }
+
+      // optional .xblab.Transmission.No_Op no_op = 7;
+      case 7: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_no_op:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_no_op()));
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -2056,6 +2916,18 @@ void Transmission_Data::SerializeWithCachedSizes(
       5, this->payload(), output);
   }
 
+  // optional .xblab.Transmission.Error error = 6;
+  if (has_error()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessage(
+      6, this->error(), output);
+  }
+
+  // optional .xblab.Transmission.No_Op no_op = 7;
+  if (has_no_op()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessage(
+      7, this->no_op(), output);
+  }
+
 }
 
 int Transmission_Data::ByteSize() const {
@@ -2096,6 +2968,20 @@ int Transmission_Data::ByteSize() const {
           this->payload());
     }
 
+    // optional .xblab.Transmission.Error error = 6;
+    if (has_error()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->error());
+    }
+
+    // optional .xblab.Transmission.No_Op no_op = 7;
+    if (has_no_op()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->no_op());
+    }
+
   }
   GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
   _cached_size_ = total_size;
@@ -2126,6 +3012,12 @@ void Transmission_Data::MergeFrom(const Transmission_Data& from) {
     if (from.has_payload()) {
       mutable_payload()->::xblab::Transmission_Payload::MergeFrom(from.payload());
     }
+    if (from.has_error()) {
+      mutable_error()->::xblab::Transmission_Error::MergeFrom(from.error());
+    }
+    if (from.has_no_op()) {
+      mutable_no_op()->::xblab::Transmission_No_Op::MergeFrom(from.no_op());
+    }
   }
 }
 
@@ -2144,6 +3036,12 @@ bool Transmission_Data::IsInitialized() const {
   if (has_payload()) {
     if (!this->payload().IsInitialized()) return false;
   }
+  if (has_error()) {
+    if (!this->error().IsInitialized()) return false;
+  }
+  if (has_no_op()) {
+    if (!this->no_op().IsInitialized()) return false;
+  }
   return true;
 }
 
@@ -2154,6 +3052,8 @@ void Transmission_Data::Swap(Transmission_Data* other) {
     std::swap(return_nonce_, other->return_nonce_);
     std::swap(credential_, other->credential_);
     std::swap(payload_, other->payload_);
+    std::swap(error_, other->error_);
+    std::swap(no_op_, other->no_op_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     std::swap(_cached_size_, other->_cached_size_);
   }

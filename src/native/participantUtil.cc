@@ -100,7 +100,10 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
       case Broadcast::BROADCAST:
       case Broadcast::GROUPEXIT:
       case Broadcast::QUIT:
+      case Broadcast::ERROR:
+      case Broadcast::NO_OP: {
         throw util_exception("Broadcast type not implemented.");
+      }
     }
   }
   return;

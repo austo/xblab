@@ -17,10 +17,11 @@ public:
   ~Manager(){};
 
   std::map<int, Member> members;
+  Group group;    
+
   std::string pub_key;
   
 private:
-  Group group_;    
   std::string priv_key_;
 };
 } //namespace xblab

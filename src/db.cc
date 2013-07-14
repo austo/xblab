@@ -10,9 +10,10 @@ using namespace pqxx;
 
 namespace xblab {
 
-extern string xbConnectionString; // access from uv_work_t
+extern string xbConnectionString;
 
-Group Db::getGroup(string url){ //Calling code responsible for string trimming 
+// Calling code responsible for string trimming 
+Group Db::getGroup(string url){
   return getGroup(xbConnectionString, url);
 }
 
@@ -54,7 +55,7 @@ map<int, Member> Db::getMembers(string conn, int group_id){
   stringstream ss;
   // No need to quote the string here as it's coming from previous call;
   ss << "select * from get_group_users(" << group_id << ");";
-  cout << ss.str() << endl;
+  // cout << ss.str() << endl;
   result members = txn.exec(ss.str());
 
   result::const_iterator row = members.begin();

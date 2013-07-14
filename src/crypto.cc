@@ -275,14 +275,17 @@ Crypto::hybridDecrypt(AutoSeeded_RNG& rng,
 
     string encryptingMasterKeyString;
     getline(in, encryptingMasterKeyString);
-
+#ifdef DEBUG
     cout << "encryptingMasterKeyString:\n" 
          << encryptingMasterKeyString << endl;
+#endif
 
     string macString;
     getline(in, macString);
 
+#ifdef DEBUG
     cout << "macString:\n" << macString << endl;
+#endif
 
     SecureVector<byte> encryptingMasterKey =
       b64Decode(encryptingMasterKeyString);
@@ -361,8 +364,10 @@ Crypto::hashPassword(string& pw){
 
 bool
 Crypto::checkPasshash(string pw, string ph){
+#ifdef DEBUG
   cout << "password: " << pw << endl << "passhash: " << ph << endl;
   cout << "passhash length: " << ph.size() << endl;
+#endif
 
   return ph.size() == BCRYPT_PH_SIZE && check_bcrypt(pw, ph);
 }

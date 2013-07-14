@@ -36,10 +36,14 @@ class Broadcast;
 class Broadcast_Session;
 class Broadcast_Payload;
 class Broadcast_Prologue;
+class Broadcast_Error;
+class Broadcast_No_Op;
 class Broadcast_Data;
 class Transmission;
 class Transmission_Credential;
 class Transmission_Payload;
+class Transmission_Error;
+class Transmission_No_Op;
 class Transmission_Data;
 
 enum Broadcast_Type {
@@ -49,11 +53,13 @@ enum Broadcast_Type {
   Broadcast_Type_BEGIN = 3,
   Broadcast_Type_BROADCAST = 4,
   Broadcast_Type_GROUPEXIT = 5,
-  Broadcast_Type_QUIT = 6
+  Broadcast_Type_QUIT = 6,
+  Broadcast_Type_ERROR = 7,
+  Broadcast_Type_NO_OP = 8
 };
 bool Broadcast_Type_IsValid(int value);
 const Broadcast_Type Broadcast_Type_Type_MIN = Broadcast_Type_NEEDCRED;
-const Broadcast_Type Broadcast_Type_Type_MAX = Broadcast_Type_QUIT;
+const Broadcast_Type Broadcast_Type_Type_MAX = Broadcast_Type_NO_OP;
 const int Broadcast_Type_Type_ARRAYSIZE = Broadcast_Type_Type_MAX + 1;
 
 enum Transmission_Type {
@@ -61,11 +67,13 @@ enum Transmission_Type {
   Transmission_Type_ENTER = 1,
   Transmission_Type_TRANSMIT = 2,
   Transmission_Type_EXIT = 3,
-  Transmission_Type_QUIT = 4
+  Transmission_Type_QUIT = 4,
+  Transmission_Type_ERROR = 5,
+  Transmission_Type_NO_OP = 6
 };
 bool Transmission_Type_IsValid(int value);
 const Transmission_Type Transmission_Type_Type_MIN = Transmission_Type_CRED;
-const Transmission_Type Transmission_Type_Type_MAX = Transmission_Type_QUIT;
+const Transmission_Type Transmission_Type_Type_MAX = Transmission_Type_NO_OP;
 const int Transmission_Type_Type_ARRAYSIZE = Transmission_Type_Type_MAX + 1;
 
 // ===================================================================
@@ -349,6 +357,182 @@ class Broadcast_Prologue : public ::google::protobuf::MessageLite {
 };
 // -------------------------------------------------------------------
 
+class Broadcast_Error : public ::google::protobuf::MessageLite {
+ public:
+  Broadcast_Error();
+  virtual ~Broadcast_Error();
+
+  Broadcast_Error(const Broadcast_Error& from);
+
+  inline Broadcast_Error& operator=(const Broadcast_Error& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const Broadcast_Error& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Broadcast_Error* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
+
+  void Swap(Broadcast_Error* other);
+
+  // implements Message ----------------------------------------------
+
+  Broadcast_Error* New() const;
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
+  void CopyFrom(const Broadcast_Error& from);
+  void MergeFrom(const Broadcast_Error& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::std::string GetTypeName() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string what = 1;
+  inline bool has_what() const;
+  inline void clear_what();
+  static const int kWhatFieldNumber = 1;
+  inline const ::std::string& what() const;
+  inline void set_what(const ::std::string& value);
+  inline void set_what(const char* value);
+  inline void set_what(const char* value, size_t size);
+  inline ::std::string* mutable_what();
+  inline ::std::string* release_what();
+  inline void set_allocated_what(::std::string* what);
+
+  // @@protoc_insertion_point(class_scope:xblab.Broadcast.Error)
+ private:
+  inline void set_has_what();
+  inline void clear_has_what();
+
+  ::std::string* what_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
+  friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
+  friend void protobuf_AssignDesc_xblab_2eproto();
+  friend void protobuf_ShutdownFile_xblab_2eproto();
+
+  void InitAsDefaultInstance();
+  static Broadcast_Error* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Broadcast_No_Op : public ::google::protobuf::MessageLite {
+ public:
+  Broadcast_No_Op();
+  virtual ~Broadcast_No_Op();
+
+  Broadcast_No_Op(const Broadcast_No_Op& from);
+
+  inline Broadcast_No_Op& operator=(const Broadcast_No_Op& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const Broadcast_No_Op& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Broadcast_No_Op* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
+
+  void Swap(Broadcast_No_Op* other);
+
+  // implements Message ----------------------------------------------
+
+  Broadcast_No_Op* New() const;
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
+  void CopyFrom(const Broadcast_No_Op& from);
+  void MergeFrom(const Broadcast_No_Op& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::std::string GetTypeName() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string what = 1;
+  inline bool has_what() const;
+  inline void clear_what();
+  static const int kWhatFieldNumber = 1;
+  inline const ::std::string& what() const;
+  inline void set_what(const ::std::string& value);
+  inline void set_what(const char* value);
+  inline void set_what(const char* value, size_t size);
+  inline ::std::string* mutable_what();
+  inline ::std::string* release_what();
+  inline void set_allocated_what(::std::string* what);
+
+  // @@protoc_insertion_point(class_scope:xblab.Broadcast.No_Op)
+ private:
+  inline void set_has_what();
+  inline void clear_has_what();
+
+  ::std::string* what_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
+  friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
+  friend void protobuf_AssignDesc_xblab_2eproto();
+  friend void protobuf_ShutdownFile_xblab_2eproto();
+
+  void InitAsDefaultInstance();
+  static Broadcast_No_Op* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class Broadcast_Data : public ::google::protobuf::MessageLite {
  public:
   Broadcast_Data();
@@ -460,6 +644,24 @@ class Broadcast_Data : public ::google::protobuf::MessageLite {
   inline ::xblab::Broadcast_Payload* release_payload();
   inline void set_allocated_payload(::xblab::Broadcast_Payload* payload);
 
+  // optional .xblab.Broadcast.Error error = 7;
+  inline bool has_error() const;
+  inline void clear_error();
+  static const int kErrorFieldNumber = 7;
+  inline const ::xblab::Broadcast_Error& error() const;
+  inline ::xblab::Broadcast_Error* mutable_error();
+  inline ::xblab::Broadcast_Error* release_error();
+  inline void set_allocated_error(::xblab::Broadcast_Error* error);
+
+  // optional .xblab.Broadcast.No_Op no_op = 8;
+  inline bool has_no_op() const;
+  inline void clear_no_op();
+  static const int kNoOpFieldNumber = 8;
+  inline const ::xblab::Broadcast_No_Op& no_op() const;
+  inline ::xblab::Broadcast_No_Op* mutable_no_op();
+  inline ::xblab::Broadcast_No_Op* release_no_op();
+  inline void set_allocated_no_op(::xblab::Broadcast_No_Op* no_op);
+
   // @@protoc_insertion_point(class_scope:xblab.Broadcast.Data)
  private:
   inline void set_has_type();
@@ -474,16 +676,22 @@ class Broadcast_Data : public ::google::protobuf::MessageLite {
   inline void clear_has_prologue();
   inline void set_has_payload();
   inline void clear_has_payload();
+  inline void set_has_error();
+  inline void clear_has_error();
+  inline void set_has_no_op();
+  inline void clear_has_no_op();
 
   ::std::string* nonce_;
   ::std::string* return_nonce_;
   ::xblab::Broadcast_Session* session_;
   ::xblab::Broadcast_Prologue* prologue_;
   ::xblab::Broadcast_Payload* payload_;
+  ::xblab::Broadcast_Error* error_;
+  ::xblab::Broadcast_No_Op* no_op_;
   int type_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
 
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   friend void  protobuf_AddDesc_xblab_2eproto_impl();
@@ -552,6 +760,8 @@ class Broadcast : public ::google::protobuf::MessageLite {
   typedef Broadcast_Session Session;
   typedef Broadcast_Payload Payload;
   typedef Broadcast_Prologue Prologue;
+  typedef Broadcast_Error Error;
+  typedef Broadcast_No_Op No_Op;
   typedef Broadcast_Data Data;
 
   typedef Broadcast_Type Type;
@@ -562,6 +772,8 @@ class Broadcast : public ::google::protobuf::MessageLite {
   static const Type BROADCAST = Broadcast_Type_BROADCAST;
   static const Type GROUPEXIT = Broadcast_Type_GROUPEXIT;
   static const Type QUIT = Broadcast_Type_QUIT;
+  static const Type ERROR = Broadcast_Type_ERROR;
+  static const Type NO_OP = Broadcast_Type_NO_OP;
   static inline bool Type_IsValid(int value) {
     return Broadcast_Type_IsValid(value);
   }
@@ -852,6 +1064,182 @@ class Transmission_Payload : public ::google::protobuf::MessageLite {
 };
 // -------------------------------------------------------------------
 
+class Transmission_Error : public ::google::protobuf::MessageLite {
+ public:
+  Transmission_Error();
+  virtual ~Transmission_Error();
+
+  Transmission_Error(const Transmission_Error& from);
+
+  inline Transmission_Error& operator=(const Transmission_Error& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const Transmission_Error& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Transmission_Error* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
+
+  void Swap(Transmission_Error* other);
+
+  // implements Message ----------------------------------------------
+
+  Transmission_Error* New() const;
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
+  void CopyFrom(const Transmission_Error& from);
+  void MergeFrom(const Transmission_Error& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::std::string GetTypeName() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string what = 1;
+  inline bool has_what() const;
+  inline void clear_what();
+  static const int kWhatFieldNumber = 1;
+  inline const ::std::string& what() const;
+  inline void set_what(const ::std::string& value);
+  inline void set_what(const char* value);
+  inline void set_what(const char* value, size_t size);
+  inline ::std::string* mutable_what();
+  inline ::std::string* release_what();
+  inline void set_allocated_what(::std::string* what);
+
+  // @@protoc_insertion_point(class_scope:xblab.Transmission.Error)
+ private:
+  inline void set_has_what();
+  inline void clear_has_what();
+
+  ::std::string* what_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
+  friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
+  friend void protobuf_AssignDesc_xblab_2eproto();
+  friend void protobuf_ShutdownFile_xblab_2eproto();
+
+  void InitAsDefaultInstance();
+  static Transmission_Error* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Transmission_No_Op : public ::google::protobuf::MessageLite {
+ public:
+  Transmission_No_Op();
+  virtual ~Transmission_No_Op();
+
+  Transmission_No_Op(const Transmission_No_Op& from);
+
+  inline Transmission_No_Op& operator=(const Transmission_No_Op& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const Transmission_No_Op& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Transmission_No_Op* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
+
+  void Swap(Transmission_No_Op* other);
+
+  // implements Message ----------------------------------------------
+
+  Transmission_No_Op* New() const;
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
+  void CopyFrom(const Transmission_No_Op& from);
+  void MergeFrom(const Transmission_No_Op& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::std::string GetTypeName() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string what = 1;
+  inline bool has_what() const;
+  inline void clear_what();
+  static const int kWhatFieldNumber = 1;
+  inline const ::std::string& what() const;
+  inline void set_what(const ::std::string& value);
+  inline void set_what(const char* value);
+  inline void set_what(const char* value, size_t size);
+  inline ::std::string* mutable_what();
+  inline ::std::string* release_what();
+  inline void set_allocated_what(::std::string* what);
+
+  // @@protoc_insertion_point(class_scope:xblab.Transmission.No_Op)
+ private:
+  inline void set_has_what();
+  inline void clear_has_what();
+
+  ::std::string* what_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
+  friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
+  friend void protobuf_AssignDesc_xblab_2eproto();
+  friend void protobuf_ShutdownFile_xblab_2eproto();
+
+  void InitAsDefaultInstance();
+  static Transmission_No_Op* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class Transmission_Data : public ::google::protobuf::MessageLite {
  public:
   Transmission_Data();
@@ -954,6 +1342,24 @@ class Transmission_Data : public ::google::protobuf::MessageLite {
   inline ::xblab::Transmission_Payload* release_payload();
   inline void set_allocated_payload(::xblab::Transmission_Payload* payload);
 
+  // optional .xblab.Transmission.Error error = 6;
+  inline bool has_error() const;
+  inline void clear_error();
+  static const int kErrorFieldNumber = 6;
+  inline const ::xblab::Transmission_Error& error() const;
+  inline ::xblab::Transmission_Error* mutable_error();
+  inline ::xblab::Transmission_Error* release_error();
+  inline void set_allocated_error(::xblab::Transmission_Error* error);
+
+  // optional .xblab.Transmission.No_Op no_op = 7;
+  inline bool has_no_op() const;
+  inline void clear_no_op();
+  static const int kNoOpFieldNumber = 7;
+  inline const ::xblab::Transmission_No_Op& no_op() const;
+  inline ::xblab::Transmission_No_Op* mutable_no_op();
+  inline ::xblab::Transmission_No_Op* release_no_op();
+  inline void set_allocated_no_op(::xblab::Transmission_No_Op* no_op);
+
   // @@protoc_insertion_point(class_scope:xblab.Transmission.Data)
  private:
   inline void set_has_type();
@@ -966,15 +1372,21 @@ class Transmission_Data : public ::google::protobuf::MessageLite {
   inline void clear_has_credential();
   inline void set_has_payload();
   inline void clear_has_payload();
+  inline void set_has_error();
+  inline void clear_has_error();
+  inline void set_has_no_op();
+  inline void clear_has_no_op();
 
   ::std::string* nonce_;
   ::std::string* return_nonce_;
   ::xblab::Transmission_Credential* credential_;
   ::xblab::Transmission_Payload* payload_;
+  ::xblab::Transmission_Error* error_;
+  ::xblab::Transmission_No_Op* no_op_;
   int type_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
 
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   friend void  protobuf_AddDesc_xblab_2eproto_impl();
@@ -1042,6 +1454,8 @@ class Transmission : public ::google::protobuf::MessageLite {
 
   typedef Transmission_Credential Credential;
   typedef Transmission_Payload Payload;
+  typedef Transmission_Error Error;
+  typedef Transmission_No_Op No_Op;
   typedef Transmission_Data Data;
 
   typedef Transmission_Type Type;
@@ -1050,6 +1464,8 @@ class Transmission : public ::google::protobuf::MessageLite {
   static const Type TRANSMIT = Transmission_Type_TRANSMIT;
   static const Type EXIT = Transmission_Type_EXIT;
   static const Type QUIT = Transmission_Type_QUIT;
+  static const Type ERROR = Transmission_Type_ERROR;
+  static const Type NO_OP = Transmission_Type_NO_OP;
   static inline bool Type_IsValid(int value) {
     return Transmission_Type_IsValid(value);
   }
@@ -1326,6 +1742,154 @@ inline ::google::protobuf::uint32 Broadcast_Prologue::modulo() const {
 inline void Broadcast_Prologue::set_modulo(::google::protobuf::uint32 value) {
   set_has_modulo();
   modulo_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// Broadcast_Error
+
+// required string what = 1;
+inline bool Broadcast_Error::has_what() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Broadcast_Error::set_has_what() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Broadcast_Error::clear_has_what() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Broadcast_Error::clear_what() {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    what_->clear();
+  }
+  clear_has_what();
+}
+inline const ::std::string& Broadcast_Error::what() const {
+  return *what_;
+}
+inline void Broadcast_Error::set_what(const ::std::string& value) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(value);
+}
+inline void Broadcast_Error::set_what(const char* value) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(value);
+}
+inline void Broadcast_Error::set_what(const char* value, size_t size) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Broadcast_Error::mutable_what() {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  return what_;
+}
+inline ::std::string* Broadcast_Error::release_what() {
+  clear_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = what_;
+    what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Broadcast_Error::set_allocated_what(::std::string* what) {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    delete what_;
+  }
+  if (what) {
+    set_has_what();
+    what_ = what;
+  } else {
+    clear_has_what();
+    what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
+// Broadcast_No_Op
+
+// required string what = 1;
+inline bool Broadcast_No_Op::has_what() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Broadcast_No_Op::set_has_what() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Broadcast_No_Op::clear_has_what() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Broadcast_No_Op::clear_what() {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    what_->clear();
+  }
+  clear_has_what();
+}
+inline const ::std::string& Broadcast_No_Op::what() const {
+  return *what_;
+}
+inline void Broadcast_No_Op::set_what(const ::std::string& value) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(value);
+}
+inline void Broadcast_No_Op::set_what(const char* value) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(value);
+}
+inline void Broadcast_No_Op::set_what(const char* value, size_t size) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Broadcast_No_Op::mutable_what() {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  return what_;
+}
+inline ::std::string* Broadcast_No_Op::release_what() {
+  clear_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = what_;
+    what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Broadcast_No_Op::set_allocated_what(::std::string* what) {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    delete what_;
+  }
+  if (what) {
+    set_has_what();
+    what_ = what;
+  } else {
+    clear_has_what();
+    what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
 }
 
 // -------------------------------------------------------------------
@@ -1618,6 +2182,90 @@ inline void Broadcast_Data::set_allocated_payload(::xblab::Broadcast_Payload* pa
     set_has_payload();
   } else {
     clear_has_payload();
+  }
+}
+
+// optional .xblab.Broadcast.Error error = 7;
+inline bool Broadcast_Data::has_error() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void Broadcast_Data::set_has_error() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void Broadcast_Data::clear_has_error() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void Broadcast_Data::clear_error() {
+  if (error_ != NULL) error_->::xblab::Broadcast_Error::Clear();
+  clear_has_error();
+}
+inline const ::xblab::Broadcast_Error& Broadcast_Data::error() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return error_ != NULL ? *error_ : *default_instance().error_;
+#else
+  return error_ != NULL ? *error_ : *default_instance_->error_;
+#endif
+}
+inline ::xblab::Broadcast_Error* Broadcast_Data::mutable_error() {
+  set_has_error();
+  if (error_ == NULL) error_ = new ::xblab::Broadcast_Error;
+  return error_;
+}
+inline ::xblab::Broadcast_Error* Broadcast_Data::release_error() {
+  clear_has_error();
+  ::xblab::Broadcast_Error* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline void Broadcast_Data::set_allocated_error(::xblab::Broadcast_Error* error) {
+  delete error_;
+  error_ = error;
+  if (error) {
+    set_has_error();
+  } else {
+    clear_has_error();
+  }
+}
+
+// optional .xblab.Broadcast.No_Op no_op = 8;
+inline bool Broadcast_Data::has_no_op() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void Broadcast_Data::set_has_no_op() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void Broadcast_Data::clear_has_no_op() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void Broadcast_Data::clear_no_op() {
+  if (no_op_ != NULL) no_op_->::xblab::Broadcast_No_Op::Clear();
+  clear_has_no_op();
+}
+inline const ::xblab::Broadcast_No_Op& Broadcast_Data::no_op() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return no_op_ != NULL ? *no_op_ : *default_instance().no_op_;
+#else
+  return no_op_ != NULL ? *no_op_ : *default_instance_->no_op_;
+#endif
+}
+inline ::xblab::Broadcast_No_Op* Broadcast_Data::mutable_no_op() {
+  set_has_no_op();
+  if (no_op_ == NULL) no_op_ = new ::xblab::Broadcast_No_Op;
+  return no_op_;
+}
+inline ::xblab::Broadcast_No_Op* Broadcast_Data::release_no_op() {
+  clear_has_no_op();
+  ::xblab::Broadcast_No_Op* temp = no_op_;
+  no_op_ = NULL;
+  return temp;
+}
+inline void Broadcast_Data::set_allocated_no_op(::xblab::Broadcast_No_Op* no_op) {
+  delete no_op_;
+  no_op_ = no_op;
+  if (no_op) {
+    set_has_no_op();
+  } else {
+    clear_has_no_op();
   }
 }
 
@@ -2119,6 +2767,154 @@ inline void Transmission_Payload::set_allocated_content(::std::string* content) 
 
 // -------------------------------------------------------------------
 
+// Transmission_Error
+
+// required string what = 1;
+inline bool Transmission_Error::has_what() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Transmission_Error::set_has_what() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Transmission_Error::clear_has_what() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Transmission_Error::clear_what() {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    what_->clear();
+  }
+  clear_has_what();
+}
+inline const ::std::string& Transmission_Error::what() const {
+  return *what_;
+}
+inline void Transmission_Error::set_what(const ::std::string& value) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(value);
+}
+inline void Transmission_Error::set_what(const char* value) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(value);
+}
+inline void Transmission_Error::set_what(const char* value, size_t size) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Transmission_Error::mutable_what() {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  return what_;
+}
+inline ::std::string* Transmission_Error::release_what() {
+  clear_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = what_;
+    what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Transmission_Error::set_allocated_what(::std::string* what) {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    delete what_;
+  }
+  if (what) {
+    set_has_what();
+    what_ = what;
+  } else {
+    clear_has_what();
+    what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
+// Transmission_No_Op
+
+// required string what = 1;
+inline bool Transmission_No_Op::has_what() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Transmission_No_Op::set_has_what() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Transmission_No_Op::clear_has_what() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Transmission_No_Op::clear_what() {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    what_->clear();
+  }
+  clear_has_what();
+}
+inline const ::std::string& Transmission_No_Op::what() const {
+  return *what_;
+}
+inline void Transmission_No_Op::set_what(const ::std::string& value) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(value);
+}
+inline void Transmission_No_Op::set_what(const char* value) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(value);
+}
+inline void Transmission_No_Op::set_what(const char* value, size_t size) {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  what_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Transmission_No_Op::mutable_what() {
+  set_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    what_ = new ::std::string;
+  }
+  return what_;
+}
+inline ::std::string* Transmission_No_Op::release_what() {
+  clear_has_what();
+  if (what_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = what_;
+    what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Transmission_No_Op::set_allocated_what(::std::string* what) {
+  if (what_ != &::google::protobuf::internal::kEmptyString) {
+    delete what_;
+  }
+  if (what) {
+    set_has_what();
+    what_ = what;
+  } else {
+    clear_has_what();
+    what_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
+
 // Transmission_Data
 
 // required .xblab.Transmission.Type type = 1;
@@ -2365,6 +3161,90 @@ inline void Transmission_Data::set_allocated_payload(::xblab::Transmission_Paylo
     set_has_payload();
   } else {
     clear_has_payload();
+  }
+}
+
+// optional .xblab.Transmission.Error error = 6;
+inline bool Transmission_Data::has_error() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void Transmission_Data::set_has_error() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void Transmission_Data::clear_has_error() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void Transmission_Data::clear_error() {
+  if (error_ != NULL) error_->::xblab::Transmission_Error::Clear();
+  clear_has_error();
+}
+inline const ::xblab::Transmission_Error& Transmission_Data::error() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return error_ != NULL ? *error_ : *default_instance().error_;
+#else
+  return error_ != NULL ? *error_ : *default_instance_->error_;
+#endif
+}
+inline ::xblab::Transmission_Error* Transmission_Data::mutable_error() {
+  set_has_error();
+  if (error_ == NULL) error_ = new ::xblab::Transmission_Error;
+  return error_;
+}
+inline ::xblab::Transmission_Error* Transmission_Data::release_error() {
+  clear_has_error();
+  ::xblab::Transmission_Error* temp = error_;
+  error_ = NULL;
+  return temp;
+}
+inline void Transmission_Data::set_allocated_error(::xblab::Transmission_Error* error) {
+  delete error_;
+  error_ = error;
+  if (error) {
+    set_has_error();
+  } else {
+    clear_has_error();
+  }
+}
+
+// optional .xblab.Transmission.No_Op no_op = 7;
+inline bool Transmission_Data::has_no_op() const {
+  return (_has_bits_[0] & 0x00000040u) != 0;
+}
+inline void Transmission_Data::set_has_no_op() {
+  _has_bits_[0] |= 0x00000040u;
+}
+inline void Transmission_Data::clear_has_no_op() {
+  _has_bits_[0] &= ~0x00000040u;
+}
+inline void Transmission_Data::clear_no_op() {
+  if (no_op_ != NULL) no_op_->::xblab::Transmission_No_Op::Clear();
+  clear_has_no_op();
+}
+inline const ::xblab::Transmission_No_Op& Transmission_Data::no_op() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return no_op_ != NULL ? *no_op_ : *default_instance().no_op_;
+#else
+  return no_op_ != NULL ? *no_op_ : *default_instance_->no_op_;
+#endif
+}
+inline ::xblab::Transmission_No_Op* Transmission_Data::mutable_no_op() {
+  set_has_no_op();
+  if (no_op_ == NULL) no_op_ = new ::xblab::Transmission_No_Op;
+  return no_op_;
+}
+inline ::xblab::Transmission_No_Op* Transmission_Data::release_no_op() {
+  clear_has_no_op();
+  ::xblab::Transmission_No_Op* temp = no_op_;
+  no_op_ = NULL;
+  return temp;
+}
+inline void Transmission_Data::set_allocated_no_op(::xblab::Transmission_No_Op* no_op) {
+  delete no_op_;
+  no_op_ = no_op;
+  if (no_op) {
+    set_has_no_op();
+  } else {
+    clear_has_no_op();
   }
 }
 
