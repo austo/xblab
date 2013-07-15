@@ -24,6 +24,7 @@ extern "C" {
   on_close(uv_handle_t* handle) {
     ParticipantBaton *baton =
       reinterpret_cast<ParticipantBaton *>(handle->data);
+    baton->wrapper->baton = NULL;
     delete baton;
   }
 }

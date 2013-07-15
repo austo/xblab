@@ -31,14 +31,14 @@ uv_loop_t *loop;
 
 XbClient::XbClient(string group) {
   this->group_ = group;
-  this->baton_ = new ParticipantBaton();
-  this->baton_->url = group; 
+  this->baton = new ParticipantBaton();
+  this->baton->url = group; 
 }
 
 
 XbClient::~XbClient() {
-  if (this->baton_ != NULL){
-    delete baton_;
+  if (this->baton != NULL){
+    delete baton;
   }
   this->pHandle_.Dispose();
 }
@@ -46,15 +46,15 @@ XbClient::~XbClient() {
 
 bool
 XbClient::hasParticipant() {
-  return this->baton_ != NULL;
+  return this->baton != NULL;
 }
 
 
 void
 XbClient::initializeBaton() {
   if (!this->hasParticipant()){
-    this->baton_ = new ParticipantBaton();
-    this->baton_->wrapper = this;
+    this->baton = new ParticipantBaton();
+    this->baton->wrapper = this;
   }  
 }
 
@@ -91,7 +91,7 @@ XbClient::emitGroupEntry(){
 
   try {
     char buf[30];
-    sprintf(buf, "Welcome to %s.", baton_->url.c_str());
+    sprintf(buf, "Welcome to %s.", baton->url.c_str());
 
     Handle<Value> argv[2] = {
       String::New("groupEntry"),
@@ -147,7 +147,7 @@ XbClient::New(const Arguments& args){
 Handle<Value>
 XbClient::GetHandle(Local<String> property, const AccessorInfo& info){
   XbClient* instance = ObjectWrap::Unwrap<XbClient>(info.Holder());
-  return String::New(instance->baton_->participant.handle.c_str());
+  return String::New(instance->baton->participant.handle.c_str());
 }
 
 
@@ -156,7 +156,7 @@ XbClient::SetHandle(Local<String> property,
   Local<Value> value, const AccessorInfo& info){
   XbClient* instance =
     ObjectWrap::Unwrap<XbClient>(info.Holder());
-  instance->baton_->participant.handle = NodeUtil::v8ToString(value);
+  instance->baton->participant.handle = NodeUtil::v8ToString(value);
 }
 
 
@@ -174,12 +174,12 @@ XbClient::SendCredential(const Arguments& args) {
   Local<Value> password = credentials->Get(String::New(XBPASSWORD));
 
   XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
-  instance->baton_->wrapper = instance; // seems to be necessary
+  instance->baton->wrapper = instance; // seems to be necessary
 
-  instance->baton_->participant.username = NodeUtil::v8ToString(username);
-  instance->baton_->participant.password = NodeUtil::v8ToString(password);
+  instance->baton->participant.username = NodeUtil::v8ToString(username);
+  instance->baton->participant.password = NodeUtil::v8ToString(password);
 
-  Client::onSendCredential(instance->baton_);
+  Client::onSendCredential(instance->baton);
   
   return scope.Close(Undefined());
 }
@@ -194,7 +194,7 @@ XbClient::requestCredentialFactory(XbClient *xbClient) {
 
 Handle<Value>
 XbClient::groupEntryFactory(XbClient *xbClient) {
-  cout << xbClient->baton_->url;
+  cout << xbClient->baton->url;
   return xbClient->emitGroupEntry();
 }
 
@@ -217,11 +217,11 @@ XbClient::Connect(const Arguments& args){
 
   instance->initializeBaton(); 
 
-  uv_tcp_init(loop, &instance->baton_->uvClient);
+  uv_tcp_init(loop, &instance->baton->uvClient);
 
   int status = uv_tcp_connect(
-    &instance->baton_->uvConnect,
-    &instance->baton_->uvClient,
+    &instance->baton->uvConnect,
+    &instance->baton->uvClient,
     xb_addr,
     on_connect
   );

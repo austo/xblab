@@ -38,7 +38,8 @@ public:
 
   static v8::Handle<v8::Value>
   Connect(const v8::Arguments& args);
-  
+
+  ParticipantBaton *baton;  
 
 private:
   XbClient(std::string group = "none");
