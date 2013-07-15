@@ -20,9 +20,11 @@ extern "C" {
     Client::onConnect(req, status);
   }
 
-  void on_close(uv_handle_t* handle) {
-    assert(handle != NULL);
-    fprintf(stderr, "connection closed by remote server\n");
+  void
+  on_close(uv_handle_t* handle) {
+    ParticipantBaton *baton =
+      reinterpret_cast<ParticipantBaton *>(handle->data);
+    delete baton;
   }
 }
 
@@ -53,7 +55,7 @@ Client::onRead(uv_stream_t* server, ssize_t nread, uv_buf_t buf) {
   ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(server->data);
 
   if (nread == EOF){
-    uv_close((uv_handle_t*)&baton->uvClient, on_close);
+    uv_close((uv_handle_t*)baton->uvServer, on_close);
     return;
   }
 

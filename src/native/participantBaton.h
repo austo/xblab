@@ -20,7 +20,7 @@ public:
   explicit ParticipantBaton(uv_connect_t *req);
   explicit ParticipantBaton(uv_connect_cb cb);
   ParticipantBaton();
-  ~ParticipantBaton(){}
+  ~ParticipantBaton();
 
   void createCredential();
   bool hasKeys();

@@ -36,8 +36,16 @@ extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 
 /* C linkage for libuv */
 extern "C" {
-  void on_connect(uv_stream_t *server, int status){
+
+  void
+  on_connect(uv_stream_t *server, int status) {
     Server::onConnect(server, status);
+  }
+
+  void
+  on_close(uv_handle_t* handle) {
+    ClientBaton *baton = reinterpret_cast<ClientBaton *>(handle->data);
+    delete baton;
   }
 }
 
@@ -110,6 +118,8 @@ Server::onConnect(uv_stream_t *server, int status) {
   }
 
   ClientBaton *baton = new ClientBaton();
+  uv_tcp_init(loop, &baton->uvClient);
+
   baton->uvServer = server;
   status = uv_queue_work(
     loop,
@@ -122,16 +132,16 @@ Server::onConnect(uv_stream_t *server, int status) {
 
 void
 Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
+  ClientBaton *baton = reinterpret_cast<ClientBaton *>(client->data);
+
   if (nread == -1) {
     if (uv_last_error(loop).code != UV_EOF){
       fprintf(stderr, "Read error %s\n", 
         uv_err_name(uv_last_error(loop)));
     }
-    uv_close((uv_handle_t*) client, NULL);
+    uv_close((uv_handle_t*) client, on_close);
     return;
   }
-
-  ClientBaton *baton = reinterpret_cast<ClientBaton *>(client->data);
 
   baton->uvBuf = buf;
   baton->uvBuf.len = nread;

@@ -51,14 +51,19 @@ main(int argc, char** argv) {
   int port = atoi(xblab::xbPort.c_str());
 
   xblab::loop = uv_default_loop();
-  uv_tcp_t server;
-  uv_tcp_init(xblab::loop, &server);
+  uv_tcp_t server_handle;
+  uv_tcp_init(xblab::loop, &server_handle);
 
   struct sockaddr_in bind_addr = uv_ip4_addr(
     xblab::xbNetworkInterface.c_str(), port);
-  uv_tcp_bind(&server, bind_addr);
+  if (uv_tcp_bind(&server_handle, bind_addr) != XBGOOD) {
+    fprintf(stderr, "Error binding server: %s\n",
+      uv_err_name(uv_last_error(xblab::loop)));
+  }
+
   int r = uv_listen(
-    (uv_stream_t*) &server, XBMAXCONCURRENT, xblab::on_connect);
+    (uv_stream_t*) &server_handle, XBMAXCONCURRENT, xblab::on_connect);
+
   if (r) {
     fprintf(stderr, "Listen error %s\n",
       uv_err_name(uv_last_error(xblab::loop)));

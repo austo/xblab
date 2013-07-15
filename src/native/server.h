@@ -24,6 +24,7 @@ public:
 // C linkage for libuv callback
 extern "C" {
   void on_connect(uv_stream_t *server, int status);
+  void on_close(uv_handle_t* handle);
 }
 
 } // namespace xblab

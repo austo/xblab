@@ -11,6 +11,12 @@ namespace xblab {
 extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 extern uv_loop_t *loop;
 
+ClientBaton::~ClientBaton() {
+  member->present = false;
+  fprintf(stdout, "%s has left the chat.\n", member->handle.c_str());  
+}
+
+
 void
 ClientBaton::needCredentialCb(uv_write_t *req, int status){
   if (status == -1) {

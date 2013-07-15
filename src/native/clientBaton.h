@@ -13,7 +13,7 @@ public:
     uvClient.data = this;
     member = NULL; // clientBaton does not own member
   }
-  ~ClientBaton(){}  
+  ~ClientBaton(); 
 
   // TODO: add uv_work_cb and uv_after_work_cb?
    

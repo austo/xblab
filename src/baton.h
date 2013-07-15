@@ -14,7 +14,10 @@ public:
     uvClient.data = this;
     uvWrite.data = this;
     err = "";
+    uvBuf.base = NULL;
+    uvBuf.len = 0;
   }
+
   virtual ~DataBaton(){ }
 
   uv_tcp_t uvClient;
@@ -38,6 +41,8 @@ public:
   void stringifyBuffer(){
     this->xBuffer = std::string(this->uvBuf.base, this->uvBuf.len);
     free(this->uvBuf.base);
+    this->uvBuf.base = NULL;
+    this->uvBuf.len = 0;
   }
 
 };

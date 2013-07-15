@@ -28,6 +28,11 @@ ParticipantBaton::ParticipantBaton(uv_connect_cb cb){
 }
 
 
+ParticipantBaton::~ParticipantBaton() {
+  fprintf(stdout, "%s has left the chat.\n", participant.username.c_str());  
+}
+
+
 bool
 ParticipantBaton::hasKeys() {
   return this->participant.hasKeys;
