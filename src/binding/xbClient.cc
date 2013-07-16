@@ -115,9 +115,9 @@ XbClient::emitEndConnection(){
   HandleScope scope;
 
   try {
-    char buf[50];
-    sprintf(buf, "Connection to %s at xblab server closed.",
-      baton->url.c_str());
+    char buf[60];
+    sprintf(buf, "%sConnection to %s at xblab server closed",
+      rightnow().c_str(), baton->url.c_str());
 
     Handle<Value> argv[XBEMITARGS] = {
       String::New("end"),
@@ -149,7 +149,7 @@ XbClient::New(const Arguments& args){
 
   XbClient* instance;
   if (!args[0]->IsObject()){
-    THROW("xblab.XbClient requires configuration object.");
+    THROW("xblab.XbClient requires configuration object");
   }
 
   Handle<Object> cfg = Handle<Object>::Cast(args[0]);
@@ -222,7 +222,8 @@ XbClient::requestCredentialFactory(XbClient *xbClient) {
 
 Handle<Value>
 XbClient::groupEntryFactory(XbClient *xbClient) {
-  cout << "entering group " << xbClient->baton->url << endl;
+  cout << rightnow() << "entering group "
+    << xbClient->baton->url << endl;
   return xbClient->emitGroupEntry();
 }
 

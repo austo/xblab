@@ -3,6 +3,7 @@
 
 #include "clientBaton.h"
 #include "util.h"
+#include "macros.h"
 
 using namespace std;
 
@@ -13,7 +14,8 @@ extern uv_loop_t *loop;
 
 ClientBaton::~ClientBaton() {
   member->present = false;
-  fprintf(stdout, "%s has left the chat.\n", member->handle.c_str());  
+  fprintf(stdout, "%s%s left group %s\n",
+    rightnow().c_str(), member->username.c_str(), url.c_str());  
 }
 
 

@@ -6,6 +6,7 @@
 #include "native/participantBaton.h"
 #include "native/participantUtil.h"
 #include "crypto.h"
+#include "macros.h"
 
 namespace xblab {
 
@@ -29,7 +30,8 @@ ParticipantBaton::ParticipantBaton(uv_connect_cb cb){
 
 
 ParticipantBaton::~ParticipantBaton() {
-  fprintf(stdout, "%s has left the chat.\n", participant.username.c_str());  
+  fprintf(stdout, "%s%s left group %s\n",
+    rightnow().c_str(), participant.username.c_str(), url.c_str());  
 }
 
 

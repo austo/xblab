@@ -7,6 +7,23 @@
 
 #include <assert.h>
 
+#include <string>
+#include <ctime>
+
+/* Putting this here is a hack */
+namespace xblab {
+
+  inline std::string rightnow(){
+    static time_t now;
+    static char buf[30];
+    time(&now);
+    struct tm *t_info = localtime(&now);
+    strftime(buf, 30, "%F %T - ", t_info);
+    return std::string(buf);
+  }
+
+}
+
 #define BITSIZE 2048
 #define NONCE_SIZE 8
 #define SIG_BUF_SIZE 4096
@@ -45,9 +62,9 @@
 #define GET_PROP(obj, setting) obj->Get(String::New(#setting)) 
 
 // HACK - there may be a much nicer way to do this
-#define THROW_FIELD_EX(prop) { stringstream ss;           \
-      ss << "Unable to set value of readonly field \'"    \
-      << xblab::NodeUtil::v8ToString(prop) << "\'";              \
+#define THROW_FIELD_EX(prop) { stringstream ss;                 \
+      ss << "Unable to set value of readonly field \'"          \
+      << xblab::NodeUtil::v8ToString(prop) << "\'";             \
       ThrowException(String::New(ss.str().c_str())); }
 
 // Get node::Buffer constructor from JS land
@@ -72,15 +89,15 @@
   }                                                           \
 }
 
-#define PRINT_YAJL_ERRBUF(errbuf) {           \
-  fprintf(stderr, "parse_error: ");           \
-  if (strlen(errbuf)) {                       \
-    fprintf(stderr, " %s", errbuf);           \
-  }                                           \
-  else {                                      \
-    fprintf(stderr, "unknown error");         \
-  }                                           \
-  fprintf(stderr, "\n");                      \
+#define PRINT_YAJL_ERRBUF(errbuf) {                           \
+  fprintf(stderr, "parse_error: ");                           \
+  if (strlen(errbuf)) {                                       \
+    fprintf(stderr, " %s", errbuf);                           \
+  }                                                           \
+  else {                                                      \
+    fprintf(stderr, "unknown error");                         \
+  }                                                           \
+  fprintf(stderr, "\n");                                      \
 }
 
 #endif

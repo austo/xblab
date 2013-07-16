@@ -42,7 +42,10 @@ public:
   static v8::Handle<v8::Value>
   Connect(const v8::Arguments& args);
 
-  ParticipantBaton *baton;  
+  ParticipantBaton *baton;
+
+  v8::Handle<v8::Value>
+  emitEndConnection(); 
 
 private:
   XbClient(std::string group = "none");
@@ -58,10 +61,7 @@ private:
   emitRequestCredential();
 
   v8::Handle<v8::Value>
-  emitGroupEntry();
-
-  v8::Handle<v8::Value>
-  emitEndConnection();
+  emitGroupEntry();  
 
   std::string group_;
   ParticipantBaton *baton_;

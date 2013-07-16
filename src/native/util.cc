@@ -43,7 +43,7 @@ Util::needCredBuf(ClientBaton* baton){
     bc.set_allocated_data(data); //bc now owns data - no need to free
   }
   catch(crypto_exception& e){
-    cout << "crypto exception: " << e.what() << endl;
+    cout << rightnow() << "crypto exception: " << e.what() << endl;
   }
 
   string retval;
@@ -85,7 +85,7 @@ Util::groupEntryBuf(ClientBaton* baton){
     bc.set_allocated_data(data);
   }
   catch(crypto_exception& e){
-    cout << "crypto exception: " << e.what() << endl;
+    cout << rightnow() << "crypto exception: " << e.what() << endl;
   }
 
   string retval;
@@ -142,7 +142,7 @@ Util::exceptionBuf(
     bc.set_allocated_data(data);
   }
   catch(crypto_exception& e){
-    cout << "crypto exception: " << e.what() << endl;
+    cout << rightnow() <<  "crypto exception: " << e.what() << endl;
   }
 
   string retval;
@@ -210,7 +210,7 @@ Util::processCredential(ClientBaton *baton, string& datastr,
     throw util_exception("User key not verified.");
   }
 #ifdef DEBUG
-  cout << "Process credential: user signature verified.\n";
+  cout << rightnow() << "Process credential: user signature verified.\n";
 #endif
   string un(cred.username());
   string pw(cred.password());
@@ -221,8 +221,8 @@ Util::processCredential(ClientBaton *baton, string& datastr,
   if (xbManagers.find(baton->url) == xbManagers.end()){
     mgr = new Manager(baton->url);
     xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
-    cout << "Manager created for group " << mgr->group.name
-      << " at /" << mgr->group.url << endl;
+    cout << rightnow() << "Manager created for group "
+      << mgr->group.url << " (\"" << mgr->group.name << "\")" << endl;
   }
   else {
     mgr = xbManagers.at(baton->url);
@@ -243,14 +243,14 @@ Util::processCredential(ClientBaton *baton, string& datastr,
         baton->member = &mitr->second;
         if (!mitr->second.present){
           mitr->second.assume(m);
-          cout << "member " << mitr->second.username
-             << " entered group " << mgr->group.name << endl; 
+          cout << rightnow() << mitr->second.username
+             << " entered group " << mgr->group.url << endl; 
           baton->getGroupEntry();
         }
         else {
           stringstream ss;
-          ss << "member " << mitr->second.username
-             << " already present in " << mgr->group.name << endl;
+          ss << rightnow() << mitr->second.username
+             << " already present in " << mgr->group.url << endl;
           cout << ss.str();
           exceptionBuf(baton, Broadcast::NO_OP, ss.str());
         }
@@ -266,6 +266,7 @@ Util::processCredential(ClientBaton *baton, string& datastr,
   baton->err = "Unable to find member";
   // TODO: Error  
 }
+
 
 } //namespace xblab
 
