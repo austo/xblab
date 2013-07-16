@@ -6,10 +6,10 @@
 #include <iostream>
 #include <string>
 
-#include "native/participantBaton.h"
-#include "macros.h"
-#include "native/client.h"
-#include "binding/xbClient.h"
+#include "client/participantBaton.h"
+#include "common/macros.h"
+#include "client/client.h"
+#include "client/binding/xbClient.h"
 
 using namespace std;
 
@@ -72,7 +72,7 @@ Client::onRead(uv_stream_t* server, ssize_t nread, uv_buf_t buf) {
 
 
 void
-Client::onReadWork(uv_work_t *r){
+Client::onReadWork(uv_work_t *r) {
   ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
   if (!baton->hasKeys()) {
     baton->getKeys();
@@ -84,7 +84,7 @@ Client::onReadWork(uv_work_t *r){
 
 
 void
-Client::afterOnRead(uv_work_t *r){
+Client::afterOnRead(uv_work_t *r) {
   ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
   if (baton->needsJsCallback){
     // call stored XbClient member function
@@ -131,7 +131,7 @@ Client::afterSendCredential(uv_work_t *r) {
 
 
 void
-Client::writeSendCredential(uv_write_t *req, int status){
+Client::writeSendCredential(uv_write_t *req, int status) {
   if (status == -1) {
     fprintf(stderr, "Write error %s\n",
       uv_err_name(uv_last_error(loop)));

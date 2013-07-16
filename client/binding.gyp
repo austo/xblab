@@ -2,11 +2,13 @@
     "targets": [
     {
       "target_name": "xblab",
-      "sources": [   "../src/native/client.cc",
-      "../src/native/participantBaton.cc",
-      "../src/native/participantUtil.cc",
-      "../src/binding/nodeUtil.cc", "../src/protobuf/xblab.pb.cc",
-      "../src/crypto.cc", "../src/binding/xbClient.cc" ],
+      "sources": [   "../src/client/client.cc",
+      "../src/client/participantBaton.cc",
+      "../src/client/participantUtil.cc",
+      "../src/client/binding/nodeUtil.cc",
+      "../src/protobuf/xblab.pb.cc",
+      "../src/common/crypto.cc",
+      "../src/client/binding/xbClient.cc" ],
       'defines': [ 'XBLAB_CLIENT' ],
       'conditions': [
           ['OS!="win"', {

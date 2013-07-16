@@ -1,8 +1,9 @@
-#include "db.h"
 #include <iostream>
 #include <sstream>
 #include <pqxx/pqxx>
-#include "macros.h"
+
+#include "db.h"
+#include "common/macros.h"
 
 using namespace std;
 using namespace pqxx;

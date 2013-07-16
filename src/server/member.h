@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "crypto.h"
+#include "common/crypto.h"
 
 namespace xblab {
 

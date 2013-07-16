@@ -3,26 +3,26 @@
 
 #include <string>
 
-#include "native/participantBaton.h"
-#include "native/participantUtil.h"
-#include "crypto.h"
-#include "macros.h"
+#include "client/participantBaton.h"
+#include "client/participantUtil.h"
+#include "common/crypto.h"
+#include "common/macros.h"
 
 namespace xblab {
 
-ParticipantBaton::ParticipantBaton(uv_connect_t *req){
+ParticipantBaton::ParticipantBaton(uv_connect_t *req) {
   uvServer = req->handle;
   needsJsCallback = false;  
 }
 
 
-ParticipantBaton::ParticipantBaton(){
+ParticipantBaton::ParticipantBaton() {
   uvConnect.data = this;
   needsJsCallback = false;    
 }
 
 
-ParticipantBaton::ParticipantBaton(uv_connect_cb cb){
+ParticipantBaton::ParticipantBaton(uv_connect_cb cb) {
   uvConnect.data = this;
   uvConnectCb = cb;
   needsJsCallback = false;  
@@ -51,14 +51,14 @@ ParticipantBaton::getKeys() {
 
 
 void
-ParticipantBaton::digestBroadcast(){
+ParticipantBaton::digestBroadcast() {
   this->stringifyBuffer();
   ParticipantUtil::digestBroadcast(this);
 }
 
 
 void 
-ParticipantBaton::packageCredential(){
+ParticipantBaton::packageCredential() {
   ParticipantUtil::packageCredential(this);
 }
 

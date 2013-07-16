@@ -7,10 +7,10 @@
 #include <map>
 #include <string>
 
-#include "macros.h"
+#include "common/macros.h"
 #include "server.h"
 #include "manager.h"
-#include "crypto.h"
+#include "common/crypto.h"
 
 namespace xblab {
 
@@ -41,11 +41,11 @@ main(int argc, char** argv) {
     return 1;
   }
 
-  if (xblab::Server::getConfig(argv[1]) != XBGOOD){
+  if (xblab::Server::getConfig(argv[1]) != XBGOOD) {
     return 1;
   }
 
-  if (xblab::Crypto::init() != XBGOOD){
+  if (xblab::Crypto::init() != XBGOOD) {
     return 1;
   }
 

@@ -13,7 +13,7 @@
 /* Putting this here is a hack */
 namespace xblab {
 
-  inline std::string rightnow(){
+  inline std::string rightnow() {
     static time_t now;
     static char buf[30];
     time(&now);
@@ -53,7 +53,7 @@ namespace xblab {
 
 #ifndef XBLAB_NATIVE
 
-#include "binding/nodeUtil.h"
+#include "client/binding/nodeUtil.h"
 
 #define XBGROUP "group"
 #define XBUSERNAME "username"

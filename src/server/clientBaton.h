@@ -2,7 +2,7 @@
 #define CLIENT_BATON_H
 
 #include <uv.h>
-#include "baton.h"
+#include "common/baton.h"
 #include "member.h"
 
 namespace xblab {

@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-#include "util_exception.h"
+#include "common/util_exception.h"
 #include "protobuf/xblab.pb.h"
 #include "clientBaton.h"
 

@@ -10,7 +10,7 @@
 #include <yajl/yajl_tree.h>
 
 #include "clientBaton.h"
-#include "macros.h"
+#include "common/macros.h"
 #include "server.h"
 #include "manager.h"
 

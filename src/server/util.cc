@@ -3,9 +3,9 @@
 #include <vector>
 #include <map>
 
-#include "macros.h"
+#include "common/macros.h"
 #include "util.h"
-#include "crypto.h"
+#include "common/crypto.h"
 #include "manager.h"
 #include "member.h"
 #include "db.h"
@@ -25,7 +25,7 @@ extern string xbKeyPassword;
 extern map<string, Manager*> xbManagers;
 
 void
-Util::needCredBuf(ClientBaton* baton){ 
+Util::needCredBuf(ClientBaton* baton) { 
   baton->nonce = Crypto::generateNonce();
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
@@ -42,12 +42,12 @@ Util::needCredBuf(ClientBaton* baton){
     bc.set_signature(sig);
     bc.set_allocated_data(data); //bc now owns data - no need to free
   }
-  catch(crypto_exception& e){
+  catch(crypto_exception& e) {
     cout << rightnow() << "crypto exception: " << e.what() << endl;
   }
 
   string retval;
-  if (!bc.SerializeToString(&retval)){
+  if (!bc.SerializeToString(&retval)) {
     throw util_exception("Failed to serialize broadcast.");
   }
 
@@ -58,7 +58,7 @@ Util::needCredBuf(ClientBaton* baton){
 
 
 void
-Util::groupEntryBuf(ClientBaton* baton){ 
+Util::groupEntryBuf(ClientBaton* baton) { 
 
   // TODO: write group entry buffer
   baton->nonce = Crypto::generateNonce();
@@ -79,17 +79,17 @@ Util::groupEntryBuf(ClientBaton* baton){
   if (!data->SerializeToString(&datastr)) {
     throw util_exception("Failed to serialize broadcast data.");
   }
-  try{
+  try {
     sig = Crypto::sign(datastr);
     bc.set_signature(sig);
     bc.set_allocated_data(data);
   }
-  catch(crypto_exception& e){
+  catch(crypto_exception& e) {
     cout << rightnow() << "crypto exception: " << e.what() << endl;
   }
 
   string retval;
-  if (!bc.SerializeToString(&retval)){
+  if (!bc.SerializeToString(&retval)) {
     throw util_exception("Failed to serialize broadcast.");
   }
 
@@ -110,7 +110,7 @@ Util::exceptionBuf(
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
 
-  switch (type){
+  switch (type) {
     case Broadcast::NO_OP: {
       Broadcast::No_Op *no_op = new Broadcast::No_Op();
       no_op->set_what(what);
@@ -136,17 +136,17 @@ Util::exceptionBuf(
   if (!data->SerializeToString(&datastr)) {
     throw util_exception("Failed to serialize broadcast data.");
   }
-  try{
+  try {
     sigstr = Crypto::sign(datastr);
     bc.set_signature(sigstr);
     bc.set_allocated_data(data);
   }
-  catch(crypto_exception& e){
+  catch(crypto_exception& e) {
     cout << rightnow() <<  "crypto exception: " << e.what() << endl;
   }
 
   string retval;
-  if (!bc.SerializeToString(&retval)){
+  if (!bc.SerializeToString(&retval)) {
     throw util_exception("Failed to serialize broadcast.");
   }
 
@@ -159,31 +159,31 @@ Util::exceptionBuf(
 
 
 void
-Util::initializeMember(ClientBaton* baton){
+Util::initializeMember(ClientBaton* baton) {
   string buf = Crypto::hybridDecrypt(baton->xBuffer);
 
   //TODO: switch on transmission type
   Transmission trans;
-  if (!trans.ParseFromString(buf)){
+  if (!trans.ParseFromString(buf)) {
     throw util_exception("Failed to deserialize transmission.");
   }    
 
   string datastr;
-  if (!trans.data().SerializeToString(&datastr)){
+  if (!trans.data().SerializeToString(&datastr)) {
     throw util_exception("Failed to reserialize transmission data.");
   }
 
   const Transmission::Data& data = trans.data();
   string retNonce(data.return_nonce());
 
-  if (baton->nonce != retNonce){
+  if (baton->nonce != retNonce) {
     throw util_exception("Last nonce does not match transmission nonce.");
   }
   // save incoming nonce for rebroadcast
   baton->returnNonce = string(data.nonce());
 
   // TODO: refactor into general "process transmission" method
-  switch (data.type()){
+  switch (data.type()) {
     case Transmission::CRED: {
       const Transmission::Credential& cred = data.credential();
       processCredential(baton, datastr, trans.signature(), cred); 
@@ -218,7 +218,7 @@ Util::processCredential(ClientBaton *baton, string& datastr,
 
   Manager *mgr;
 
-  if (xbManagers.find(baton->url) == xbManagers.end()){
+  if (xbManagers.find(baton->url) == xbManagers.end()) {
     mgr = new Manager(baton->url);
     xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
     cout << rightnow() << "Manager created for group "
@@ -231,17 +231,17 @@ Util::processCredential(ClientBaton *baton, string& datastr,
   Member *m = new Member(un, pw, pubkey, true);
 
   map<int, Member>::iterator mitr = mgr->members.begin();
-  for (; mitr != mgr->members.end(); ++mitr){
+  for (; mitr != mgr->members.end(); ++mitr) {
 
     try {
-      if (*m == mitr->second){
+      if (*m == mitr->second) {
         /* 
          * TODO: this may not be the best solution:
          * Handles case when client has disconnected and reconnected.
          * We may want to forbid this.
          */
         baton->member = &mitr->second;
-        if (!mitr->second.present){
+        if (!mitr->second.present) {
           mitr->second.assume(m);
           cout << rightnow() << mitr->second.username
              << " entered group " << mgr->group.url << endl; 
@@ -257,7 +257,7 @@ Util::processCredential(ClientBaton *baton, string& datastr,
         return; 
       }
     }
-    catch (exception& e){
+    catch (exception& e) {
       cout << e.what();
       baton->err = e.what();
       // TODO: Error

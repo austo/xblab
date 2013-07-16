@@ -4,8 +4,8 @@
 #include <uv.h>
 #include <v8.h>
 
-#include "baton.h"
-#include "native/participant.h"
+#include "common/baton.h"
+#include "client/participant.h"
 
 
 namespace xblab {

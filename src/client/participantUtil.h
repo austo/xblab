@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "native/util_exception.h"
+#include "common/util_exception.h"
 #include "protobuf/xblab.pb.h"
-#include "native/participantBaton.h"
+#include "client/participantBaton.h"
 
 
 namespace xblab {

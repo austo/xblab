@@ -3,7 +3,7 @@
 
 #include "clientBaton.h"
 #include "util.h"
-#include "macros.h"
+#include "common/macros.h"
 
 using namespace std;
 
@@ -20,7 +20,7 @@ ClientBaton::~ClientBaton() {
 
 
 void
-ClientBaton::needCredentialCb(uv_write_t *req, int status){
+ClientBaton::needCredentialCb(uv_write_t *req, int status) {
   if (status == -1) {
     fprintf(stderr, "Write error %s\n",
       uv_err_name(uv_last_error(loop)));
@@ -35,19 +35,19 @@ ClientBaton::needCredentialCb(uv_write_t *req, int status){
 }
 
 void
-ClientBaton::setNeedCredentialCb(){
+ClientBaton::setNeedCredentialCb() {
   this->uvWriteCb = needCredentialCb;
 }
 
 
 bool
-ClientBaton::hasMember(){
+ClientBaton::hasMember() {
   return this->member != NULL;
 }
 
 
 void
-ClientBaton::initializeMember(){
+ClientBaton::initializeMember() {
   Util::initializeMember(this);
   // TODO: set uvWriteCb here if all went well
   // Welcome to the group
@@ -56,13 +56,13 @@ ClientBaton::initializeMember(){
 
 /* Message buffer methods */
 void
-ClientBaton::getNeedCredential(){
+ClientBaton::getNeedCredential() {
   Util::needCredBuf(this);    
 }
 
 
 void
-ClientBaton::getGroupEntry(){
+ClientBaton::getGroupEntry() {
   Util::groupEntryBuf(this);
 }
 

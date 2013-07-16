@@ -2,7 +2,7 @@
 
 #include <node_buffer.h>
 
-#include "binding/nodeUtil.h"
+#include "client/binding/nodeUtil.h"
 
 
 using namespace v8;

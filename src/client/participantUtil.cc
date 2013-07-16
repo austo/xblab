@@ -2,10 +2,10 @@
 #include <sstream>
 #include <vector>
 
-#include "macros.h"
-#include "crypto.h"
-#include "native/participantUtil.h"
-#include "binding/xbClient.h"
+#include "common/macros.h"
+#include "common/crypto.h"
+#include "client/participantUtil.h"
+#include "client/binding/xbClient.h"
 
 using namespace std;
 
@@ -15,7 +15,7 @@ namespace xblab {
 extern string xbPublicKeyFile;
 
 void
-ParticipantUtil::packageCredential(ParticipantBaton *baton){
+ParticipantUtil::packageCredential(ParticipantBaton *baton) {
   baton->nonce = Crypto::generateNonce();
   
   Transmission trans;
@@ -66,7 +66,7 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton){
 
 
 void
-ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
+ParticipantUtil::digestBroadcast(ParticipantBaton *baton) {
   
   Broadcast bc;
   if (!bc.ParseFromString(baton->xBuffer)){
@@ -78,7 +78,7 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
   }    
 
   string datastr;
-  if (!bc.data().SerializeToString(&datastr)){
+  if (!bc.data().SerializeToString(&datastr)) {
     throw util_exception("Failed to reserialize broadcast data.");
   }
 
@@ -124,7 +124,7 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton){
 
 void
 ParticipantUtil::enterGroup(
-  ParticipantBaton *baton, const Broadcast::Data& data){
+  ParticipantBaton *baton, const Broadcast::Data& data) {
   const Broadcast::Session& session = data.session();
   baton->participant.sessionKey = session.pub_key();
   baton->participant.seed = session.seed();

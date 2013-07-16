@@ -2,12 +2,12 @@
 #include <sstream>
 #include <fstream>
 
-#include "binding/xbClient.h"
-#include "binding/nodeUtil.h"
-#include "native/client.h"
-#include "native/util_exception.h"
-#include "macros.h"
-#include "crypto.h"
+#include "client/binding/xbClient.h"
+#include "client/binding/nodeUtil.h"
+#include "client/client.h"
+#include "common/util_exception.h"
+#include "common/macros.h"
+#include "common/crypto.h"
 
 using namespace std;
 using namespace v8;
@@ -52,7 +52,7 @@ XbClient::hasParticipant() {
 
 void
 XbClient::initializeBaton() {
-  if (!this->hasParticipant()){
+  if (!this->hasParticipant()) {
     this->baton = new ParticipantBaton();
     this->baton->wrapper = this;
   }  
@@ -60,7 +60,7 @@ XbClient::initializeBaton() {
 
 
 Handle<Value>
-XbClient::emitRequestCredential(){
+XbClient::emitRequestCredential() {
   HandleScope scope;
 
   try {
@@ -85,7 +85,7 @@ XbClient::emitRequestCredential(){
 
 
 Handle<Value>
-XbClient::emitGroupEntry(){
+XbClient::emitGroupEntry() {
   HandleScope scope;
 
   try {
@@ -111,7 +111,7 @@ XbClient::emitGroupEntry(){
 
 
 Handle<Value>
-XbClient::emitEndConnection(){
+XbClient::emitEndConnection() {
   HandleScope scope;
 
   try {
@@ -144,7 +144,7 @@ XbClient::emitEndConnection(){
 /* static member functions */
 
 Handle<Value>
-XbClient::New(const Arguments& args){
+XbClient::New(const Arguments& args) {
   HandleScope scope; 
 
   XbClient* instance;
@@ -173,7 +173,7 @@ XbClient::New(const Arguments& args){
 
 
 Handle<Value>
-XbClient::GetHandle(Local<String> property, const AccessorInfo& info){
+XbClient::GetHandle(Local<String> property, const AccessorInfo& info) {
   XbClient* instance = ObjectWrap::Unwrap<XbClient>(info.Holder());
   return String::New(instance->baton->participant.handle.c_str());
 }
@@ -181,7 +181,7 @@ XbClient::GetHandle(Local<String> property, const AccessorInfo& info){
 
 void
 XbClient::SetHandle(Local<String> property,
-  Local<Value> value, const AccessorInfo& info){
+  Local<Value> value, const AccessorInfo& info) {
   XbClient* instance =
     ObjectWrap::Unwrap<XbClient>(info.Holder());
   instance->baton->participant.handle = NodeUtil::v8ToString(value);
@@ -236,9 +236,9 @@ XbClient::endConnectionFactory(XbClient *xbClient) {
 
 
 Handle<Value>
-XbClient::Connect(const Arguments& args){
+XbClient::Connect(const Arguments& args) {
   HandleScope scope;
-  if (!args[0]->IsFunction()){
+  if (!args[0]->IsFunction()) {
     THROW("xblab.getConnectionBuffer requires callback argument");
   }
 
@@ -263,10 +263,10 @@ XbClient::Connect(const Arguments& args){
   );
 
   Handle<Value> argv[1];
-  if (status == XBGOOD){
+  if (status == XBGOOD) {
     argv[0] = Undefined();
   }
-  else{
+  else {
       argv[0] = String::New("Unable to connect to xblab server.");
   }
   cb->Call(Context::GetCurrent()->Global(), 1, argv);
@@ -283,7 +283,7 @@ extern "C" {
     xblab::xbNodeBufCtor = JS_NODE_BUF_CTOR;
     xblab::loop = uv_default_loop();
 
-    if (xblab::Crypto::init() != XBGOOD){
+    if (xblab::Crypto::init() != XBGOOD) {
       THROW("XbClient: failed to initialize Crypto.");
     }
 

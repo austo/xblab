@@ -3,7 +3,7 @@
 
 #include "manager.h"
 #include "db.h"
-#include "crypto.h"
+#include "common/crypto.h"
 
 
 using namespace std;

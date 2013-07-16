@@ -4,7 +4,7 @@
 #include <string>
 #include <node.h>
 
-#include "native/participantBaton.h"
+#include "client/participantBaton.h"
 
 namespace xblab {
 
