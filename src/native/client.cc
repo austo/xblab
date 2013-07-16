@@ -24,8 +24,10 @@ extern "C" {
   on_close(uv_handle_t* handle) {
     ParticipantBaton *baton =
       reinterpret_cast<ParticipantBaton *>(handle->data);
-    baton->wrapper->baton = NULL;
-    delete baton;
+    // TODO: JS callback factory -> emit "end" event (no delete)
+    XbClient::endConnectionFactory(baton->wrapper);
+    // baton->wrapper->baton = NULL;
+    // delete baton;
   }
 }
 

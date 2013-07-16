@@ -65,20 +65,19 @@ XbClient::emitRequestCredential(){
 
   try {
 
-    Handle<Value> argv[2] = {
+    Handle<Value> argv[XBEMITARGS] = {
       String::New("needCred"),
       String::New("Need credentials, buster!")
     };
-
-    node::MakeCallback(this->pHandle_, "emit", 2, argv);
+    XBEMITCALLBACK(pHandle_, argv);
   }
 
   catch (util_exception& e) {
-    Handle<Value> argv[2] = {
+    Handle<Value> argv[XBEMITARGS] = {
       String::New("error"),
       String::New(e.what())
     };
-    node::MakeCallback(this->pHandle_, "emit", 2, argv);
+    XBEMITCALLBACK(pHandle_, argv);
   }
 
   return scope.Close(Undefined());  
@@ -93,12 +92,11 @@ XbClient::emitGroupEntry(){
     char buf[30];
     sprintf(buf, "Welcome to %s.", baton->url.c_str());
 
-    Handle<Value> argv[2] = {
+    Handle<Value> argv[XBEMITARGS] = {
       String::New("groupEntry"),
       String::New(buf)
     };
-
-    node::MakeCallback(pHandle_, "emit", 2, argv);
+    XBEMITCALLBACK(pHandle_, argv);
   }
 
   catch (util_exception& e) {
@@ -106,12 +104,42 @@ XbClient::emitGroupEntry(){
       String::New("error"),
       String::New(e.what())
     };
-    node::MakeCallback(this->pHandle_, "emit", 2, argv);
+    XBEMITCALLBACK(pHandle_, argv);
+  }
+  return scope.Close(Undefined());  
+}
+
+
+Handle<Value>
+XbClient::emitEndConnection(){
+  HandleScope scope;
+
+  try {
+    char buf[50];
+    sprintf(buf, "Connection to %s at xblab server closed.",
+      baton->url.c_str());
+
+    Handle<Value> argv[XBEMITARGS] = {
+      String::New("end"),
+      String::New(buf)
+    };
+
+    delete baton;
+    baton = NULL;
+
+    XBEMITCALLBACK(pHandle_, argv);
+  }
+
+  catch (util_exception& e) {
+    Handle<Value> argv[XBEMITARGS] = {
+      String::New("error"),
+      String::New(e.what())
+    };
+    XBEMITCALLBACK(pHandle_, argv);
   }
 
   return scope.Close(Undefined());  
 }
-
 
 /* static member functions */
 
@@ -194,8 +222,15 @@ XbClient::requestCredentialFactory(XbClient *xbClient) {
 
 Handle<Value>
 XbClient::groupEntryFactory(XbClient *xbClient) {
-  cout << xbClient->baton->url;
+  cout << "entering group " << xbClient->baton->url << endl;
   return xbClient->emitGroupEntry();
+}
+
+
+Handle<Value>
+XbClient::endConnectionFactory(XbClient *xbClient) {
+  // cout << xbClient->baton->url;
+  return xbClient->emitEndConnection();
 }
 
 

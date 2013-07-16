@@ -29,7 +29,10 @@
 
 #define XBGOOD 0
 #define XBMAXCONCURRENT 128
+#define XBEMITARGS 2
+#define XBEMIT "emit"
 
+#define XBEMITCALLBACK(h, a) node::MakeCallback(h, "emit", 2, a)
 
 #ifndef XBLAB_NATIVE
 

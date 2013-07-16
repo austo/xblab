@@ -34,6 +34,9 @@ public:
   groupEntryFactory(XbClient*);
 
   static v8::Handle<v8::Value>
+  endConnectionFactory(XbClient*);
+
+  static v8::Handle<v8::Value>
   SendCredential(const v8::Arguments& args);
 
   static v8::Handle<v8::Value>
@@ -56,6 +59,9 @@ private:
 
   v8::Handle<v8::Value>
   emitGroupEntry();
+
+  v8::Handle<v8::Value>
+  emitEndConnection();
 
   std::string group_;
   ParticipantBaton *baton_;

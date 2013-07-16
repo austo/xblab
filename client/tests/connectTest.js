@@ -27,3 +27,7 @@ client.on('needCred', function (buf){
 client.on('groupEntry', function (buf){
   console.log(buf);
 });
+
+client.on('end', function (buf){
+  console.log(buf);
+});
