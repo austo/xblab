@@ -9,7 +9,7 @@
 
 #include <yajl/yajl_tree.h>
 
-#include "clientBaton.h"
+#include "memberBaton.h"
 #include "common/macros.h"
 #include "server.h"
 #include "manager.h"
@@ -44,7 +44,7 @@ extern "C" {
 
   void
   on_close(uv_handle_t* handle) {
-    ClientBaton *baton = reinterpret_cast<ClientBaton *>(handle->data);
+    MemberBaton *baton = reinterpret_cast<MemberBaton *>(handle->data);
     delete baton;
   }
 }
@@ -117,7 +117,7 @@ Server::onConnect(uv_stream_t *server, int status) {
     return;
   }
 
-  ClientBaton *baton = new ClientBaton();
+  MemberBaton *baton = new MemberBaton();
   uv_tcp_init(loop, &baton->uvClient);
 
   baton->uvServer = server;
@@ -132,7 +132,7 @@ Server::onConnect(uv_stream_t *server, int status) {
 
 void
 Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
-  ClientBaton *baton = reinterpret_cast<ClientBaton *>(client->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(client->data);
 
   if (nread == -1) {
     if (uv_last_error(loop).code != UV_EOF){
@@ -158,14 +158,14 @@ Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
 /* private */
 void
 Server::onConnectWork(uv_work_t *r){
-  ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
   baton->getNeedCredential();    
 }
 
 
 void
 Server::afterOnConnect (uv_work_t *r) {
-  ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
   uv_tcp_init(loop, &baton->uvClient);
 
   if (uv_accept(baton->uvServer,
@@ -189,7 +189,7 @@ Server::afterOnConnect (uv_work_t *r) {
 // Wherever it appears, onReadWork has to be a kind of routing function
 void
 Server::onReadWork(uv_work_t *r){
-  ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
   baton->stringifyBuffer();
   baton->err = "";
   if (!baton->hasMember()){
@@ -206,7 +206,7 @@ Server::onReadWork(uv_work_t *r){
 
 void
 Server::afterOnRead (uv_work_t *r) {
-  ClientBaton *baton = reinterpret_cast<ClientBaton *>(r->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
 
   uv_write(
     &baton->uvWrite,

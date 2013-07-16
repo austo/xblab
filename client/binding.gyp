@@ -3,8 +3,8 @@
     {
       "target_name": "xblab",
       "sources": [   "../src/client/client.cc",
-      "../src/client/participantBaton.cc",
-      "../src/client/participantUtil.cc",
+      "../src/client/memberBaton.cc",
+      "../src/client/batonUtil.cc",
       "../src/client/binding/nodeUtil.cc",
       "../src/protobuf/xblab.pb.cc",
       "../src/common/crypto.cc",

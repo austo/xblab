@@ -1,12 +1,12 @@
-#ifndef NATIVE_UTIL_H
-#define NATIVE_UTIL_H
+#ifndef BATON_UTIL_H
+#define BATON_UTIL_H
 
 #include <string>
 #include <map>
 
 #include "common/util_exception.h"
 #include "protobuf/xblab.pb.h"
-#include "clientBaton.h"
+#include "memberBaton.h"
 
 
 namespace xblab {
@@ -25,28 +25,28 @@ enum MessageType {
 };
 
 
-class Util {
+class BatonUtil {
 public:        
-  friend class ClientBaton;   
+  friend class MemberBaton;   
 
 private:
-  Util(){ /* worker for baton */ };
-  ~Util(){};
+  BatonUtil(){ /* worker for baton */ };
+  ~BatonUtil(){};
 
   static void
-  needCredBuf(ClientBaton* baton);
+  needCredBuf(MemberBaton* baton);
 
   static void
-  groupEntryBuf(ClientBaton* baton);
+  groupEntryBuf(MemberBaton* baton);
 
   static void
-  exceptionBuf(ClientBaton*, Broadcast::Type, std::string);
+  exceptionBuf(MemberBaton*, Broadcast::Type, std::string);
 
   static void
-  initializeMember(ClientBaton* baton); 
+  initializeMember(MemberBaton* baton); 
      
   static void
-  processCredential(ClientBaton*, std::string&,
+  processCredential(MemberBaton*, std::string&,
     std::string, const Transmission::Credential&);
 };
 

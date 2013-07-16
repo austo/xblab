@@ -4,7 +4,7 @@
 #include <map>
 
 #include "common/macros.h"
-#include "util.h"
+#include "batonUtil.h"
 #include "common/crypto.h"
 #include "manager.h"
 #include "member.h"
@@ -25,7 +25,7 @@ extern string xbKeyPassword;
 extern map<string, Manager*> xbManagers;
 
 void
-Util::needCredBuf(ClientBaton* baton) { 
+BatonUtil::needCredBuf(MemberBaton* baton) { 
   baton->nonce = Crypto::generateNonce();
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
@@ -58,7 +58,7 @@ Util::needCredBuf(ClientBaton* baton) {
 
 
 void
-Util::groupEntryBuf(ClientBaton* baton) { 
+BatonUtil::groupEntryBuf(MemberBaton* baton) { 
 
   // TODO: write group entry buffer
   baton->nonce = Crypto::generateNonce();
@@ -102,8 +102,8 @@ Util::groupEntryBuf(ClientBaton* baton) {
 
 
 void
-Util::exceptionBuf(
-  ClientBaton* baton, Broadcast::Type type, std::string what){ 
+BatonUtil::exceptionBuf(
+  MemberBaton* baton, Broadcast::Type type, std::string what){ 
 
   // TODO: write group entry buffer
   baton->nonce = Crypto::generateNonce();
@@ -125,7 +125,7 @@ Util::exceptionBuf(
     }
     default:
       throw util_exception(
-        "Util::exceptionBuf requires NO_OP or ERROR types.");
+        "BatonUtil::exceptionBuf requires NO_OP or ERROR types.");
   }
 
   data->set_type(type);
@@ -159,7 +159,7 @@ Util::exceptionBuf(
 
 
 void
-Util::initializeMember(ClientBaton* baton) {
+BatonUtil::initializeMember(MemberBaton* baton) {
   string buf = Crypto::hybridDecrypt(baton->xBuffer);
 
   //TODO: switch on transmission type
@@ -202,7 +202,7 @@ Util::initializeMember(ClientBaton* baton) {
 
 
 void
-Util::processCredential(ClientBaton *baton, string& datastr,
+BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   string signature, const Transmission::Credential& cred) {
   string pubkey(cred.pub_key());
 

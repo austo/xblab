@@ -1,12 +1,12 @@
-#ifndef PARTICIPANT_H
-#define PARTICIPANT_H
+#ifndef MEMBER_H
+#define MEMBER_H
 
 #include <string>
 
 namespace xblab {
 
-struct Participant {
-  Participant(){
+struct Member {
+  Member(){
     hasKeys = false;
   };  
 

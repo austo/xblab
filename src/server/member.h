@@ -12,7 +12,8 @@ namespace xblab {
 
 class Manager; // Forward declaration
 
-struct Member {
+class Member {
+public:
   Member(){
     username = "invalid";
   };

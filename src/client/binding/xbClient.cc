@@ -31,7 +31,7 @@ uv_loop_t *loop;
 
 XbClient::XbClient(string group) {
   this->group_ = group;
-  this->baton = new ParticipantBaton();
+  this->baton = new MemberBaton();
   this->baton->url = group; 
 }
 
@@ -45,15 +45,15 @@ XbClient::~XbClient() {
 
 
 bool
-XbClient::hasParticipant() {
+XbClient::hasMember() {
   return this->baton != NULL;
 }
 
 
 void
 XbClient::initializeBaton() {
-  if (!this->hasParticipant()) {
-    this->baton = new ParticipantBaton();
+  if (!this->hasMember()) {
+    this->baton = new MemberBaton();
     this->baton->wrapper = this;
   }  
 }
@@ -175,7 +175,7 @@ XbClient::New(const Arguments& args) {
 Handle<Value>
 XbClient::GetHandle(Local<String> property, const AccessorInfo& info) {
   XbClient* instance = ObjectWrap::Unwrap<XbClient>(info.Holder());
-  return String::New(instance->baton->participant.handle.c_str());
+  return String::New(instance->baton->member.handle.c_str());
 }
 
 
@@ -184,7 +184,7 @@ XbClient::SetHandle(Local<String> property,
   Local<Value> value, const AccessorInfo& info) {
   XbClient* instance =
     ObjectWrap::Unwrap<XbClient>(info.Holder());
-  instance->baton->participant.handle = NodeUtil::v8ToString(value);
+  instance->baton->member.handle = NodeUtil::v8ToString(value);
 }
 
 
@@ -204,8 +204,8 @@ XbClient::SendCredential(const Arguments& args) {
   XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
   instance->baton->wrapper = instance; // seems to be necessary
 
-  instance->baton->participant.username = NodeUtil::v8ToString(username);
-  instance->baton->participant.password = NodeUtil::v8ToString(password);
+  instance->baton->member.username = NodeUtil::v8ToString(username);
+  instance->baton->member.password = NodeUtil::v8ToString(password);
 
   Client::onSendCredential(instance->baton);
   

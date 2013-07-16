@@ -1,8 +1,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "clientBaton.h"
-#include "util.h"
+#include "memberBaton.h"
+#include "batonUtil.h"
 #include "common/macros.h"
 
 using namespace std;
@@ -12,7 +12,7 @@ namespace xblab {
 extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 extern uv_loop_t *loop;
 
-ClientBaton::~ClientBaton() {
+MemberBaton::~MemberBaton() {
   member->present = false;
   fprintf(stdout, "%s%s left group %s\n",
     rightnow().c_str(), member->username.c_str(), url.c_str());  
@@ -20,13 +20,13 @@ ClientBaton::~ClientBaton() {
 
 
 void
-ClientBaton::needCredentialCb(uv_write_t *req, int status) {
+MemberBaton::needCredentialCb(uv_write_t *req, int status) {
   if (status == -1) {
     fprintf(stderr, "Write error %s\n",
       uv_err_name(uv_last_error(loop)));
     return;
   }
-  ClientBaton *baton = reinterpret_cast<ClientBaton *>(req->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(req->data);
   uv_read_start(
     (uv_stream_t*) &baton->uvClient,
     allocBuf,
@@ -35,20 +35,20 @@ ClientBaton::needCredentialCb(uv_write_t *req, int status) {
 }
 
 void
-ClientBaton::setNeedCredentialCb() {
+MemberBaton::setNeedCredentialCb() {
   this->uvWriteCb = needCredentialCb;
 }
 
 
 bool
-ClientBaton::hasMember() {
+MemberBaton::hasMember() {
   return this->member != NULL;
 }
 
 
 void
-ClientBaton::initializeMember() {
-  Util::initializeMember(this);
+MemberBaton::initializeMember() {
+  BatonUtil::initializeMember(this);
   // TODO: set uvWriteCb here if all went well
   // Welcome to the group
 }
@@ -56,20 +56,20 @@ ClientBaton::initializeMember() {
 
 /* Message buffer methods */
 void
-ClientBaton::getNeedCredential() {
-  Util::needCredBuf(this);    
+MemberBaton::getNeedCredential() {
+  BatonUtil::needCredBuf(this);    
 }
 
 
 void
-ClientBaton::getGroupEntry() {
-  Util::groupEntryBuf(this);
+MemberBaton::getGroupEntry() {
+  BatonUtil::groupEntryBuf(this);
 }
 
 
 // void
-// ClientBaton::getNoOp(string what) {
-//   Util::noOpBuf(this, what);
+// MemberBaton::getNoOp(string what) {
+//   BatonUtil::noOpBuf(this, what);
 // }
 
 } // namespace xblab

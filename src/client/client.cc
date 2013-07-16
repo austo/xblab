@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#include "client/participantBaton.h"
+#include "client/memberBaton.h"
 #include "common/macros.h"
 #include "client/client.h"
 #include "client/binding/xbClient.h"
@@ -22,8 +22,8 @@ extern "C" {
 
   void
   on_close(uv_handle_t* handle) {
-    ParticipantBaton *baton =
-      reinterpret_cast<ParticipantBaton *>(handle->data);
+    MemberBaton *baton =
+      reinterpret_cast<MemberBaton *>(handle->data);
     baton->wrapper->emitEndConnection();
   }
 }
@@ -52,7 +52,7 @@ Client::onRead(uv_stream_t* server, ssize_t nread, uv_buf_t buf) {
     }
   }
   
-  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(server->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(server->data);
 
   if (nread == EOF){
     uv_close((uv_handle_t*)baton->uvServer, on_close);
@@ -73,7 +73,7 @@ Client::onRead(uv_stream_t* server, ssize_t nread, uv_buf_t buf) {
 
 void
 Client::onReadWork(uv_work_t *r) {
-  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
   if (!baton->hasKeys()) {
     baton->getKeys();
   }
@@ -85,7 +85,7 @@ Client::onReadWork(uv_work_t *r) {
 
 void
 Client::afterOnRead(uv_work_t *r) {
-  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
   if (baton->needsJsCallback){
     // call stored XbClient member function
     baton->needsJsCallback = false;
@@ -98,7 +98,7 @@ Client::afterOnRead(uv_work_t *r) {
 
 
 void
-Client::onSendCredential(ParticipantBaton *baton) {
+Client::onSendCredential(MemberBaton *baton) {
   int status = uv_queue_work(
     loop,
     &baton->uvWork,
@@ -110,14 +110,14 @@ Client::onSendCredential(ParticipantBaton *baton) {
 
 void
 Client::sendCredentialWork(uv_work_t *r) {
-  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
   baton->packageCredential();
 }
 
 
 void
 Client::afterSendCredential(uv_work_t *r) {
-  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(r->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
   baton->uvWriteCb = writeSendCredential;
 
   uv_write(
@@ -137,7 +137,7 @@ Client::writeSendCredential(uv_write_t *req, int status) {
       uv_err_name(uv_last_error(loop)));
     return;
   }
-  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(req->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(req->data);
   uv_read_start(
     (uv_stream_t*) &baton->uvClient,
     allocBuf,
@@ -154,7 +154,7 @@ Client::onConnect(uv_connect_t *req, int status) {
     return;
   }
 
-  ParticipantBaton *baton = reinterpret_cast<ParticipantBaton *>(req->data);
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(req->data);
   baton->uvServer = req->handle;
   baton->uvReadCb = onRead;
 

@@ -4,7 +4,7 @@
 
 #include "common/macros.h"
 #include "common/crypto.h"
-#include "client/participantUtil.h"
+#include "client/batonUtil.h"
 #include "client/binding/xbClient.h"
 
 using namespace std;
@@ -15,7 +15,7 @@ namespace xblab {
 extern string xbPublicKeyFile;
 
 void
-ParticipantUtil::packageCredential(ParticipantBaton *baton) {
+BatonUtil::packageCredential(MemberBaton *baton) {
   baton->nonce = Crypto::generateNonce();
   
   Transmission trans;
@@ -26,11 +26,11 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton) {
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
 
-  cred->set_username(baton->participant.username);
+  cred->set_username(baton->member.username);
 
   // Plaintext user password will be compared to stored passhash
-  cred->set_password(baton->participant.password);
-  cred->set_pub_key(baton->participant.publicKey);
+  cred->set_password(baton->member.password);
+  cred->set_pub_key(baton->member.publicKey);
   cred->set_group(baton->url);
 
   data->set_allocated_credential(cred);
@@ -41,7 +41,7 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton) {
     throw util_exception("Failed to serialize broadcast data.");
   }
   try{
-    sigstr = Crypto::sign(baton->participant.privateKey, datastr);
+    sigstr = Crypto::sign(baton->member.privateKey, datastr);
     trans.set_signature(sigstr);
     trans.set_allocated_data(data);
   }
@@ -66,12 +66,12 @@ ParticipantUtil::packageCredential(ParticipantBaton *baton) {
 
 
 void
-ParticipantUtil::digestBroadcast(ParticipantBaton *baton) {
+BatonUtil::digestBroadcast(MemberBaton *baton) {
   
   Broadcast bc;
   if (!bc.ParseFromString(baton->xBuffer)){
     string plaintext = Crypto::hybridDecrypt(
-      baton->participant.privateKey, baton->xBuffer);
+      baton->member.privateKey, baton->xBuffer);
     if (!bc.ParseFromString(plaintext)) {
       throw util_exception("Failed to deserialize broadcast.");
     }
@@ -123,11 +123,11 @@ ParticipantUtil::digestBroadcast(ParticipantBaton *baton) {
 
 
 void
-ParticipantUtil::enterGroup(
-  ParticipantBaton *baton, const Broadcast::Data& data) {
+BatonUtil::enterGroup(
+  MemberBaton *baton, const Broadcast::Data& data) {
   const Broadcast::Session& session = data.session();
-  baton->participant.sessionKey = session.pub_key();
-  baton->participant.seed = session.seed();
+  baton->member.sessionKey = session.pub_key();
+  baton->member.seed = session.seed();
   baton->jsCallbackFactory = XbClient::groupEntryFactory;
   baton->needsJsCallback = true;
 }

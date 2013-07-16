@@ -1,5 +1,5 @@
-#ifndef CLIENT_BATON_H
-#define CLIENT_BATON_H
+#ifndef MEMBER_BATON_H
+#define MEMBER_BATON_H
 
 #include <uv.h>
 #include "common/baton.h"
@@ -7,13 +7,13 @@
 
 namespace xblab {
 
-class ClientBaton : public DataBaton {
+class MemberBaton : public DataBaton {
 public:
-  ClientBaton(){
+  MemberBaton(){
     uvClient.data = this;
-    member = NULL; // clientBaton does not own member
+    member = NULL; // memberBaton does not own member
   }
-  ~ClientBaton(); 
+  ~MemberBaton(); 
 
   // TODO: add uv_work_cb and uv_after_work_cb?
    

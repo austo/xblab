@@ -1,11 +1,11 @@
-#ifndef PARTICIPANT_BATON_H
-#define PARTICIPANT_BATON_H
+#ifndef MEMBER_BATON_H
+#define MEMBER_BATON_H
 
 #include <uv.h>
 #include <v8.h>
 
 #include "common/baton.h"
-#include "client/participant.h"
+#include "client/member.h"
 
 
 namespace xblab {
@@ -15,12 +15,12 @@ class XbClient; // forward declaration
 // Pointer to static ObjectWrap JS callback factory method 
 typedef v8::Handle<v8::Value> (*JsCallbackFactory)(XbClient*);
 
-class ParticipantBaton : public DataBaton {
+class MemberBaton : public DataBaton {
 public:
-  explicit ParticipantBaton(uv_connect_t *req);
-  explicit ParticipantBaton(uv_connect_cb cb);
-  ParticipantBaton();
-  ~ParticipantBaton();
+  explicit MemberBaton(uv_connect_t *req);
+  explicit MemberBaton(uv_connect_cb cb);
+  MemberBaton();
+  ~MemberBaton();
 
   void createCredential();
   bool hasKeys();
@@ -28,7 +28,7 @@ public:
   void digestBroadcast();
   void packageCredential();
 
-  Participant participant;
+  Member member;
 
   uv_connect_t uvConnect;  
   uv_connect_cb uvConnectCb;

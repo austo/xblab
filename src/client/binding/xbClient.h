@@ -4,7 +4,7 @@
 #include <string>
 #include <node.h>
 
-#include "client/participantBaton.h"
+#include "client/memberBaton.h"
 
 namespace xblab {
 
@@ -42,7 +42,7 @@ public:
   static v8::Handle<v8::Value>
   Connect(const v8::Arguments& args);
 
-  ParticipantBaton *baton;
+  MemberBaton *baton;
 
   v8::Handle<v8::Value>
   emitEndConnection(); 
@@ -52,7 +52,7 @@ private:
   ~XbClient();
 
   bool
-  hasParticipant();
+  hasMember();
 
   void
   initializeBaton(/*uv_connect_cb cb*/);
@@ -64,7 +64,6 @@ private:
   emitGroupEntry();  
 
   std::string group_;
-  ParticipantBaton *baton_;
   static v8::Persistent<v8::Object> pHandle_;
 
 };
