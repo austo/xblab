@@ -219,10 +219,13 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   Manager *mgr;
 
   if (xbManagers.find(baton->url) == xbManagers.end()) {
+    // uv_sem_t start
     mgr = new Manager(baton->url);
     xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
     cout << rightnow() << "Manager created for group "
       << mgr->group.url << " (\"" << mgr->group.name << "\")" << endl;
+    // uv_sem_t end
+
   }
   else {
     mgr = xbManagers.at(baton->url);
