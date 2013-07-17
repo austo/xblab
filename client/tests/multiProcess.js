@@ -4,11 +4,11 @@ var fork = require('child_process').fork,
 
 for (u in users) {
   (function(user) {
-    console.log('username: %s, password: %s', users[u].username,
-      users[u].password);
+    console.log('username: %s, password: %s', users[user].username,
+      users[user].password);
 
     var proc = fork('./tests/worker.js',
-      [users[u].username, users[u].password, group]);    
+      [users[user].username, users[user].password, group]);    
 
   })(u); 
 }
