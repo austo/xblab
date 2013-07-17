@@ -255,7 +255,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
           exceptionBuf(baton, Broadcast::NO_OP, ss.str());
         }
         return; 
-      }
+      }      
     }
     catch (exception& e) {
       cout << e.what();
@@ -263,8 +263,12 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
       // TODO: Error
     }
   }
-  baton->err = "Unable to find member";
-  // TODO: Error  
+  stringstream ss;
+  ss << rightnow() << m->username << " is not a member of "
+    << mgr->group.url << endl;
+  delete m;
+  exceptionBuf(baton, Broadcast::ERROR, ss.str());
+  return;
 }
 
 
