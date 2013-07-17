@@ -8,7 +8,6 @@ function sendCallback(err) {
   if (err) console.error("send() error: " + err);
 }
 
-
 // TODO: cleanup and expose more to clients
 function xbClient (cfg, ws){
   var self = this;
@@ -18,7 +17,8 @@ function xbClient (cfg, ws){
 
   self.xbClient = new xblab.Client(cfg);
 
-  // referenced object, don't pollute 
+  // Shared by any connection this user
+  // happens to make. Don't pollute group field.
   delete cfg.group;
 
   self.xbClient.connect(function(err){
@@ -29,14 +29,6 @@ function xbClient (cfg, ws){
       console.log('xblab relay client connected');
     }
   });
-
-  self.xbClient.on('needCred', function (buf){
-    console.log(buf);
-
-    self.wsClient.send(JSON.stringify(
-      {status: 'connected', state: 'NEEDCRED'}
-    ));
-  });  
 
   self.wsClient.on('message', function (message) {
     if (message.type === 'utf8') {
@@ -59,8 +51,8 @@ function xbClient (cfg, ws){
         }
       }  
     }
-    // We're using JSON between local server and page,
-    // so this should never happen
+    // We're using JSON between local server
+    // and page, so this should never happen.
     else if (message.type === 'binary') {
       if (cfg.debug){
         console.error("Received binary message of %s bytes.",
@@ -86,19 +78,24 @@ function xbClient (cfg, ws){
   });
 
 
-  // TODO: implement!
-  // self.xbClient.on('end', function () {
-  //   console.log('xblab relay client disconnected');        
-  // });
+  // xbClient events
+  self.xbClient.on(xblab.events.needCred, function (buf) {
+    console.log(buf);
 
-  self.xbClient.on('groupEntry', function (buf){
+    self.wsClient.send(JSON.stringify(
+      { status: 'connected', state: 'NEEDCRED' }
+    ));
+  });
+
+  self.xbClient.on(xblab.events.groupEntry, function (buf) {
     console.log(buf);
   });
 
-  self.xbClient.on('error', function(err){
+  self.xbClient.on(xblab.events.error, function(err) {
     console.error(err);
-  })
+  });
+
+  self.xbClient.on(xblab.events.end, function (buf) {
+    console.log(buf);
+  });
 };
-
-
-//                

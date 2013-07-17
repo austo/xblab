@@ -14,15 +14,19 @@ class Manager {
 
 public:
   Manager(std::string url);    
-  ~Manager(){};
+  ~Manager();
 
   std::map<int, Member> members;
   Group group;    
 
-  std::string pub_key;
+  std::string publicKey;
   
 private:
-  std::string priv_key_;
+  std::string privateKey_;
+  int nMembers_;
+  int currentRound_;
+  int *roundModulii_;
+
 };
 } //namespace xblab
 

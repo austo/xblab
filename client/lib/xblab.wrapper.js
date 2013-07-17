@@ -17,6 +17,13 @@ for (var f in xblab){
   }
 }
 
+exports.events = {
+	needCred: 'needCred',
+	groupEntry: 'groupEntry',
+	error: 'error',
+	end: 'end'
+};
+
 // extend prototype
 function inherits(target, source) {
   for (var k in source.prototype)

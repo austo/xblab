@@ -10,7 +10,7 @@ client.connect(function(err){
   }
 });
 
-client.on('needCred', function (buf){
+client.on('needCred', function (buf) {
   console.log(buf);
   client.sendCredential({
   // test values
@@ -24,10 +24,14 @@ client.on('needCred', function (buf){
   });
 });
 
-client.on('groupEntry', function (buf){
+client.on('groupEntry', function (buf) {
   console.log(buf);
 });
 
-client.on('end', function (buf){
+client.on('end', function (buf) {
   console.log(buf);
+});
+
+client.on('error', function(err) {
+  console.error(err);
 });

@@ -70,7 +70,7 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
   data->set_type(Broadcast::GROUPENTRY);
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
-  sess->set_pub_key(baton->member->manager->pub_key);
+  sess->set_pub_key(baton->member->manager->publicKey);
   sess->set_seed(baton->member->seed);
 
   data->set_allocated_session(sess);
@@ -93,7 +93,7 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
     throw util_exception("Failed to serialize broadcast.");
   }
 
-  Crypto::hybridEncrypt(baton->member->public_key, retval);
+  Crypto::hybridEncrypt(baton->member->publicKey, retval);
 
   baton->xBuffer = retval;    
   baton->uvBuf.base = &baton->xBuffer[0];
@@ -150,7 +150,7 @@ BatonUtil::exceptionBuf(
     throw util_exception("Failed to serialize broadcast.");
   }
 
-  Crypto::hybridEncrypt(baton->member->public_key, retval);
+  Crypto::hybridEncrypt(baton->member->publicKey, retval);
 
   baton->xBuffer = retval;    
   baton->uvBuf.base = &baton->xBuffer[0];

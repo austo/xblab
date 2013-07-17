@@ -33,16 +33,16 @@ public:
     bool present) : 
     username(username),
     password(password),
-    public_key(pubkey),
+    publicKey(pubkey),
     present(present) { }
 
   void assume(const Member& other){
-    public_key = other.public_key;
+    publicKey = other.publicKey;
     present = other.present;
   }
 
   void assume(Member* other){
-    public_key = other->public_key;
+    publicKey = other->publicKey;
     present = other->present;
     delete other;
   } 
@@ -59,12 +59,13 @@ public:
   std::string username;
   std::string password;
   std::string handle;
-  std::string public_key;
-  std::string round_nonce;
+  std::string publicKey;
+  std::string roundNonce;
+  std::vector<std::string> roundModulii;
   int seed;      
-  int round_modulus;
+  int roundModulus;
   bool present;
-  Manager *manager;  
+  Manager *manager;
 
 };
 } //namespace xblab
