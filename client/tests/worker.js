@@ -1,21 +1,25 @@
 var cfg = require('../xblab.config'),
   xblab = require('../lib/xblab.wrapper');
-cfg.group = 'xchat';
+
+var un = process.argv[2],
+  pw = process.argv[3];
+cfg.group = process.argv[4];
+
+console.log("username: %s, password: %s", un, pw);
 
 var client = new xblab.Client(cfg);
 
 client.connect(function(err){
   if (err) {
-    console.log(err);
+    console.log('Error: ' + err);
   }
 });
 
 client.on('needCred', function (buf) {
   console.log(buf);
   client.sendCredential({
-  // test values
-    username: 'moraustin@gmail.com',
-    password: 'aardvark'
+    username: un,
+    password: pw
   },
   function(err){
     if (err) {
@@ -33,5 +37,5 @@ client.on('end', function (buf) {
 });
 
 client.on('error', function(err) {
-  console.error(err);
+  console.error('Error: ' + err);
 });
