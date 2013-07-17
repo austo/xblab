@@ -1,0 +1,14 @@
+{
+    "austo": {
+    	"username": "moraustin@gmail.com",
+    	"password": "aardvark"
+	},
+	"craig": {
+		"username": "craig@craigorella.com",
+		"password": "element"
+	},
+	"bobby": {
+		"username": "bob@robert.com",
+		"password": "password"
+	}
+}
