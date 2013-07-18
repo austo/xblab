@@ -15,6 +15,7 @@
 namespace xblab {
 
 uv_loop_t *loop;
+uv_mutex_t xbMutex;
 
 std::string xbConnectionString;
 std::string xbPublicKeyFile;

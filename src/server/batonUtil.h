@@ -48,6 +48,7 @@ private:
   static void
   processCredential(MemberBaton*, std::string&,
     std::string, const Transmission::Credential&);
+  
 };
 
 } // namespace xblab

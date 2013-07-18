@@ -61,7 +61,6 @@ public:
   std::string handle;
   std::string publicKey;
   std::string roundNonce;
-  std::vector<std::string> roundModulii;
   int seed;      
   int roundModulus;
   bool present;

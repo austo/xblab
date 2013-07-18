@@ -5,7 +5,7 @@ var un = process.argv[2],
   pw = process.argv[3];
 cfg.group = process.argv[4];
 
-console.log("username: %s, password: %s", un, pw);
+// console.log("username: %s, password: %s", un, pw);
 
 var client = new xblab.Client(cfg);
 

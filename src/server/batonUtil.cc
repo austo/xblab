@@ -3,6 +3,12 @@
 #include <vector>
 #include <map>
 
+#include <unistd.h>
+
+#include <uv.h>
+
+#include <assert.h>
+
 #include "common/macros.h"
 #include "batonUtil.h"
 #include "common/crypto.h"
@@ -23,6 +29,8 @@ extern string xbPrivateKeyFile;
 extern string xbKeyPassword;
 
 extern map<string, Manager*> xbManagers;
+
+extern uv_mutex_t xbMutex;
 
 void
 BatonUtil::needCredBuf(MemberBaton* baton) { 
@@ -219,13 +227,22 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   Manager *mgr;
 
   if (xbManagers.find(baton->url) == xbManagers.end()) {
-    // uv_sem_t start
-    mgr = new Manager(baton->url);
-    xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
-    cout << rightnow() << "Manager created for group "
-      << mgr->group.url << " (\"" << mgr->group.name << "\")" << endl;
-    // uv_sem_t end
 
+    if (uv_mutex_init(&xbMutex) != XBGOOD) {
+      usleep(100);
+    }
+    else {
+      uv_mutex_lock(&xbMutex);
+      if (xbManagers.find(baton->url) == xbManagers.end()) {
+        mgr = new Manager(baton->url);
+        xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
+      }
+      else {
+        mgr = xbManagers.at(baton->url);
+      }
+      uv_mutex_unlock(&xbMutex);
+    }    
+    uv_mutex_destroy(&xbMutex);
   }
   else {
     mgr = xbManagers.at(baton->url);

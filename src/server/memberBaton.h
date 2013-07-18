@@ -18,7 +18,7 @@ public:
   // TODO: add uv_work_cb and uv_after_work_cb?
    
   Member *member;
-
+  
   bool hasMember();
   void initializeMember();
 

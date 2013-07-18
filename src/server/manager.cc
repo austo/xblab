@@ -31,6 +31,8 @@ Manager::Manager(string url) {
     nMembers_ = members.size();
     roundModulii_ = (int *)malloc(sizeof(int) * nMembers_);
     currentRound_ = 0;
+    cout << rightnow() << "Manager created for group "
+        << group.url << " (\"" << group.name << "\")" << endl;
   }
   catch(std::exception& e){
     cout << "Exception caught: " << e.what() << std::endl;
