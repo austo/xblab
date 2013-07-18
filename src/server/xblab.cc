@@ -56,6 +56,16 @@ main(int argc, char** argv) {
   uv_tcp_t server_handle;
   uv_tcp_init(xblab::loop, &server_handle);
 
+  /* 
+   * TODO: We have one global mutex, xblab::xbMutex.
+   * May get out of hand if/when we need to manage
+   * multiple critical regions.
+   */
+  if (uv_mutex_init(&xblab::xbMutex) != XBGOOD) {
+    fprintf(stderr, "Error initializing mutex\n");
+    return 1;
+  }
+
   struct sockaddr_in bind_addr = uv_ip4_addr(
     xblab::xbNetworkInterface.c_str(), port);
   if (uv_tcp_bind(&server_handle, bind_addr) != XBGOOD) {

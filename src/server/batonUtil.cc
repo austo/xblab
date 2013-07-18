@@ -227,22 +227,17 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   Manager *mgr;
 
   if (xbManagers.find(baton->url) == xbManagers.end()) {
-
-    if (uv_mutex_init(&xbMutex) != XBGOOD) {
-      usleep(100);
+    // We want a "singleton" manager per group,
+    // so check for group manager again inside the lock
+    uv_mutex_lock(&xbMutex);
+    if (xbManagers.find(baton->url) == xbManagers.end()) {
+      mgr = new Manager(baton->url);
+      xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
     }
     else {
-      uv_mutex_lock(&xbMutex);
-      if (xbManagers.find(baton->url) == xbManagers.end()) {
-        mgr = new Manager(baton->url);
-        xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
-      }
-      else {
-        mgr = xbManagers.at(baton->url);
-      }
-      uv_mutex_unlock(&xbMutex);
-    }    
-    uv_mutex_destroy(&xbMutex);
+      mgr = xbManagers.at(baton->url);
+    }
+    uv_mutex_unlock(&xbMutex);    
   }
   else {
     mgr = xbManagers.at(baton->url);
