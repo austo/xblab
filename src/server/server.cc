@@ -207,14 +207,19 @@ Server::onReadWork(uv_work_t *r){
 void
 Server::afterOnRead (uv_work_t *r) {
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
-
-  uv_write(
-    &baton->uvWrite,
-    (uv_stream_t*)&baton->uvClient,
-    &baton->uvBuf,
-    1,
-    baton->uvWriteCb
-  );
+  if (baton->err != ""){
+    // TODO: send error and close
+    uv_close((uv_handle_t*) &baton->uvClient, on_close);
+  }
+  else {
+    uv_write(
+      &baton->uvWrite,
+      (uv_stream_t*)&baton->uvClient,
+      &baton->uvBuf,
+      1,
+      baton->uvWriteCb
+    );
+  }
 }
 
 

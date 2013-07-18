@@ -16,7 +16,8 @@ public:
   ~MemberBaton(); 
 
   // TODO: add uv_work_cb and uv_after_work_cb?
-   
+  
+  // Note to self: make sure to check this on error
   Member *member;
   
   bool hasMember();

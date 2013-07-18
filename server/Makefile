@@ -33,7 +33,7 @@ manager.o:	$(XB_SRC_S)/manager.cc $(XB_SRC_S)/manager.h $(XB_SRC_C)/crypto.h \
 			$(XB_SRC_S)/group.h $(XB_SRC_S)/member.h $(XB_SRC_S)/db.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_S)/manager.cc
 
-db.o:		$(XB_SRC_S)/db.cc $(XB_SRC_S)/db.h $(XB_SRC_C)/macros.h $(XB_SRC_S)/group.h $(XB_SRC_S)/manager.h
+db.o:		$(XB_SRC_S)/db.cc $(XB_SRC_S)/db.h $(XB_SRC_S)/db_exception.h $(XB_SRC_C)/macros.h $(XB_SRC_S)/group.h $(XB_SRC_S)/manager.h
 	$(CC) -c -g $(CFLAGS) $(XB_SRC_S)/db.cc
 
 batonUtil.o:	$(XB_SRC_S)/batonUtil.cc $(XB_SRC_C)/util_exception.h $(XB_SRC_S)/manager.h $(XB_SRC_S)/batonUtil.h \

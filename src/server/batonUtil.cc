@@ -15,6 +15,7 @@
 #include "manager.h"
 #include "member.h"
 #include "db.h"
+#include "db_exception.h"
 
 #define DL_EX_PREFIX "Util: "
 
@@ -68,7 +69,6 @@ BatonUtil::needCredBuf(MemberBaton* baton) {
 void
 BatonUtil::groupEntryBuf(MemberBaton* baton) { 
 
-  // TODO: write group entry buffer
   baton->nonce = Crypto::generateNonce();
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
@@ -112,9 +112,17 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
 void
 BatonUtil::exceptionBuf(
   MemberBaton* baton, Broadcast::Type type, std::string what){ 
+  exceptionBuf(baton, type, what, baton->member->publicKey);
+}
 
-  // TODO: write group entry buffer
+
+void
+BatonUtil::exceptionBuf(
+  MemberBaton* baton, Broadcast::Type type,
+  std::string what, std::string pubkey){ 
+
   baton->nonce = Crypto::generateNonce();
+
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
 
@@ -158,7 +166,7 @@ BatonUtil::exceptionBuf(
     throw util_exception("Failed to serialize broadcast.");
   }
 
-  Crypto::hybridEncrypt(baton->member->publicKey, retval);
+  Crypto::hybridEncrypt(pubkey, retval);
 
   baton->xBuffer = retval;    
   baton->uvBuf.base = &baton->xBuffer[0];
@@ -228,11 +236,18 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
 
   if (xbManagers.find(baton->url) == xbManagers.end()) {
     // We want a "singleton" manager per group,
-    // so check for group manager again inside the lock
+    // so check for group manager again inside the lock.
     uv_mutex_lock(&xbMutex);
     if (xbManagers.find(baton->url) == xbManagers.end()) {
-      mgr = new Manager(baton->url);
-      xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
+      try {
+        mgr = new Manager(baton->url);
+        xbManagers.insert(pair<string, Manager*>(baton->url, mgr));
+      }
+      catch (db_exception& e) { // can't find group, close connection
+        cout << rightnow() << e.what() << endl;
+        baton->err = string(e.what());
+        mgr = NULL;
+      }
     }
     else {
       mgr = xbManagers.at(baton->url);
@@ -241,6 +256,11 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   }
   else {
     mgr = xbManagers.at(baton->url);
+  }
+
+  if (mgr == NULL) {
+    exceptionBuf(baton, Broadcast::ERROR, baton->err, pubkey);
+    return;
   }
 
   Member *m = new Member(un, pw, pubkey, true);
@@ -273,9 +293,10 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
       }      
     }
     catch (exception& e) {
-      cout << e.what();
+      cout << rightnow() << e.what();
       baton->err = e.what();
-      // TODO: Error
+      delete m;
+      exceptionBuf(baton, Broadcast::ERROR, e.what());
     }
   }
   stringstream ss;
@@ -288,4 +309,3 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
 
 
 } //namespace xblab
-

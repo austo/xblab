@@ -133,4 +133,12 @@ BatonUtil::enterGroup(
 }
 
 
+// void
+// BatonUtil::handleError(
+//   MemberBaton *baton) {
+//   baton->jsCallbackFactory = XbClient::errorFactory;
+//   baton->needsJsCallback = true;
+// }
+
+
 } // namespace xblab

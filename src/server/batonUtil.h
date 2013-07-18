@@ -43,6 +43,9 @@ private:
   exceptionBuf(MemberBaton*, Broadcast::Type, std::string);
 
   static void
+  exceptionBuf(MemberBaton*, Broadcast::Type, std::string, std::string);
+
+  static void
   initializeMember(MemberBaton* baton); 
      
   static void

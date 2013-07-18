@@ -13,9 +13,14 @@ extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 extern uv_loop_t *loop;
 
 MemberBaton::~MemberBaton() {
-  member->present = false;
-  fprintf(stdout, "%s%s left group %s\n",
-    rightnow().c_str(), member->username.c_str(), url.c_str());  
+  if (member != NULL) {
+    member->present = false;
+    fprintf(stdout, "%s%s left group %s\n",
+      rightnow().c_str(), member->username.c_str(), url.c_str());  
+  }
+  else {
+    fprintf(stdout, "%s: MemberBaton being deleted.\n", err.c_str());
+  }  
 }
 
 

@@ -3,6 +3,7 @@
 #include <pqxx/pqxx>
 
 #include "db.h"
+#include "db_exception.h"
 #include "common/macros.h"
 
 using namespace std;

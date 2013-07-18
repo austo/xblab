@@ -36,6 +36,9 @@ public:
   static v8::Handle<v8::Value>
   endConnectionFactory(XbClient*);
 
+  // static v8::Handle<v8::Value>
+  // errorFactory(XbClient*);
+
   static v8::Handle<v8::Value>
   SendCredential(const v8::Arguments& args);
 
@@ -61,7 +64,10 @@ private:
   emitRequestCredential();
 
   v8::Handle<v8::Value>
-  emitGroupEntry();  
+  emitGroupEntry();
+
+  // v8::Handle<v8::Value>
+  // emitError();  
 
   std::string group_;
   static v8::Persistent<v8::Object> pHandle_;
