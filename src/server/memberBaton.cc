@@ -22,8 +22,8 @@ MemberBaton::~MemberBaton() {
       rightnow().c_str(), member->username.c_str(), url.c_str());  
   }
   else {
-    pcrecpp::RE("\\.$").Replace("", &err);    
-    fprintf(stdout, "%s: MemberBaton being deleted.\n", err.c_str());
+    pcrecpp::RE("\\.$").Replace(": ", &err);    
+    fprintf(stdout, "%sMemberBaton being deleted.\n", err.c_str());
   }  
 }
 
