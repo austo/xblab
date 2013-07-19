@@ -79,7 +79,7 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
   sess->set_pub_key(baton->member->manager->publicKey);
-  sess->set_seed(baton->member->seed);
+  sess->set_seed(baton->member->manager->seed);
 
   data->set_allocated_session(sess);
 

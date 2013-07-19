@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <regex.h>
+#include <pcrecpp.h>
 
 #include "memberBaton.h"
 #include "batonUtil.h"
@@ -22,16 +22,8 @@ MemberBaton::~MemberBaton() {
       rightnow().c_str(), member->username.c_str(), url.c_str());  
   }
   else {
-    // TODO: inline
-    regex_t regex;
-    int res;
-    res = regcomp(&regex, ".$", 0);
-    res = regexec(&regex, err.c_str(), 0, NULL, 0);
-    if (res == XBGOOD) {
-      err.erase(err.size() - 1, 1);
-    }
+    pcrecpp::RE("\\.$").Replace("", &err);    
     fprintf(stdout, "%s: MemberBaton being deleted.\n", err.c_str());
-    regfree(&regex);
   }  
 }
 

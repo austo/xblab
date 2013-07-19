@@ -5,7 +5,7 @@ XB_SRC_P=$(XB_SRC)/protobuf
 CC = g++
 CFLAGS = -I/usr/local/include -I/usr/local/include/botan-1.10 \
 	-I/usr/local/include/pqxx -I${XB_SRC} -Wall -Wextra -Wno-unused-parameter -D XBLAB_NATIVE=1
-LDFLAGS = -L/usr/local/lib -lm -luv -lbotan-1.10 -lyajl -lprotobuf-lite -lpqxx -lpq
+LDFLAGS = -L/usr/local/lib -lm -luv -lbotan-1.10 -lyajl -lprotobuf-lite -lpcrecpp -lpqxx -lpq
 
 
 ifeq ($(shell uname),Darwin)

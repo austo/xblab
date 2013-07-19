@@ -19,13 +19,12 @@ Manager::Manager(string url) {
   
   // We've got the room ID, now get our members
   members = Db::getMembers(group.id);
+  seed = Crypto::generateRandomInt();
 
   // Each member has a reference to the manager
   map<int, Member>::iterator mitr = members.begin();
   for (; mitr != members.end(); ++mitr){
     mitr->second.manager = this;
-    // set seed
-    mitr->second.seed = Crypto::generateRandomInt();
   }
 
   nMembers_ = members.size();

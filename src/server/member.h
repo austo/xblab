@@ -61,7 +61,6 @@ public:
   std::string handle;
   std::string publicKey;
   std::string roundNonce;
-  int seed;      
   int roundModulus;
   bool present;
   Manager *manager;

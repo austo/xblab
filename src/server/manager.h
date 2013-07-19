@@ -20,6 +20,8 @@ public:
   Group group;    
 
   std::string publicKey;
+  int seed;
+
   
 private:
   std::string privateKey_;

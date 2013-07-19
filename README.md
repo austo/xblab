@@ -1,13 +1,16 @@
 xblab
 =====
-## An encrypted chat server inspired by David Chaum's "Dining Cryptographers" ##
+### An encrypted chat server inspired by David Chaum's "Dining Cryptographers" ###
 
-xblab is basically a Node.js project implemented wherever possible in C++.
-While the wisdom of such an endeavor is open to debate, it may have some value to other Node.js addon authors.
+xblab started as a Node.js addon and has inched steadily closer to being a standalone server and Node binding+library on the client. It relies heavily on libuv. While I realize no one needs another chat application, some of the functionality may have other uses for projects using Node and libuv.
 
 ### Dependencies ###
 
 xblab relies on the following libraries, which are *not* included in this repo:
+
+*   Event Loop and System
+
+    [libuv](https://github.com/joyent/libuv) handles task scheduling, thread interaction, and networking.
 
 *   Cryptography
 
@@ -19,10 +22,12 @@ xblab relies on the following libraries, which are *not* included in this repo:
 
 *   Database
 
-    xblab stores user and group data in [PostgreSQL](http://www.postgresql.org/), but that's not really a requirement. The Db class uses [pqxx](http://pqxx.org/development/libpqxx/), which depends on [libpq](http://www.postgresql.org/docs/9.2/static/libpq.html). You can swap in your own data layer by implementing db.h.
+    The Db class uses [pqxx](http://pqxx.org/development/libpqxx/), which depends on [libpq](http://www.postgresql.org/docs/9.2/static/libpq.html). You can swap in your own data layer by implementing db.h.
 
-*   Build
+*   Misc
 
-    Builds are managed using [node-gyp](https://github.com/TooTallNate/node-gyp).
+    Client builds are managed using [node-gyp](https://github.com/TooTallNate/node-gyp).
+    Server configuration files are parsed using [YAJL](https://github.com/lloyd/yajl).
+    Outside of JavaScript, regular expressions are handled via [PCRE](http://www.gammon.com.au/pcre/index.html).
 
 If you've found this repo and have suggestions or would like information about getting it up and running on your system, please open an issue or send a pull request.
