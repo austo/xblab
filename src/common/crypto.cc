@@ -347,6 +347,16 @@ Crypto::generateRandomInt(){
 }
 
 
+vector<int>
+Crypto::generateRandomInts(size_t n){
+  SecureVector<byte> buf(sizeof(int) * n);
+  AutoSeeded_RNG rng;
+  rng.randomize(buf, buf.size());
+  vector<int> retval(&buf[0], &buf[0] + (sizeof(int) * n));
+  return retval;
+}
+
+
 void
 Crypto::generateKey(string& pr, string& pu){    
   AutoSeeded_RNG rng;

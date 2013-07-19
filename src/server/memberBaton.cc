@@ -43,6 +43,7 @@ MemberBaton::needCredentialCb(uv_write_t *req, int status) {
   );
 }
 
+
 void
 MemberBaton::setNeedCredentialCb() {
   this->uvWriteCb = needCredentialCb;

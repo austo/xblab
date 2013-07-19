@@ -2,6 +2,7 @@
 #define CRYPTO_H
 
 #include <string>
+#include <vector>
 #include <sstream>
 #include <exception>
 
@@ -35,6 +36,7 @@ public:
   static void generateKey(std::string& pr, std::string& pu);
   static std::string generateNonce();  
   static int generateRandomInt();
+  static std::vector<int> generateRandomInts(size_t n);
 
   static std::string sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
 

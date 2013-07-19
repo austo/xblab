@@ -15,7 +15,7 @@ class Manager; // Forward declaration
 class Member {
 public:
   Member(){
-    username = "invalid";
+    username = "invalid";    
   };
 
   Member(
@@ -24,7 +24,11 @@ public:
     std::string handle) :
     username(username),
     password(password),
-    handle(handle) { }
+    handle(handle) {
+      // TODO: make sure this is the only time
+      //  we need to generate schedule
+      schedule = Crypto::generateRandomInts(100);
+    }
 
   Member(
     std::string username,
@@ -53,7 +57,7 @@ public:
           << "\nother.username: " << other.username << std::endl;
     #endif
     return username == other.username &&
-      Crypto::checkPasshash(password, other.password);        
+      Crypto::checkPasshash(password, other.password);          
   }
 
   std::string username;
@@ -62,6 +66,7 @@ public:
   std::string publicKey;
   std::string roundNonce;
   int roundModulus;
+  std::vector<int> schedule;
   bool present;
   Manager *manager;
 
