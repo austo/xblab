@@ -22,6 +22,7 @@ MemberBaton::~MemberBaton() {
       rightnow().c_str(), member->username.c_str(), url.c_str());  
   }
   else {
+    // TODO: inline
     regex_t regex;
     int res;
     res = regcomp(&regex, ".$", 0);
@@ -30,6 +31,7 @@ MemberBaton::~MemberBaton() {
       err.erase(err.size() - 1, 1);
     }
     fprintf(stdout, "%s: MemberBaton being deleted.\n", err.c_str());
+    regfree(&regex);
   }  
 }
 
