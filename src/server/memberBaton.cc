@@ -1,6 +1,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <regex.h>
+
 #include "memberBaton.h"
 #include "batonUtil.h"
 #include "common/macros.h"
@@ -12,6 +14,7 @@ namespace xblab {
 extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 extern uv_loop_t *loop;
 
+
 MemberBaton::~MemberBaton() {
   if (member != NULL) {
     member->present = false;
@@ -19,6 +22,13 @@ MemberBaton::~MemberBaton() {
       rightnow().c_str(), member->username.c_str(), url.c_str());  
   }
   else {
+    regex_t regex;
+    int res;
+    res = regcomp(&regex, ".$", 0);
+    res = regexec(&regex, err.c_str(), 0, NULL, 0);
+    if (res == XBGOOD) {
+      err.erase(err.size() - 1, 1);
+    }
     fprintf(stdout, "%s: MemberBaton being deleted.\n", err.c_str());
   }  
 }
