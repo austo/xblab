@@ -13,6 +13,7 @@
 
 namespace xblab {
 
+
 class crypto_exception : public std::exception {
 public:
   crypto_exception(){
@@ -29,37 +30,82 @@ private:
   std::string message_;        
 };
 
+
 class Crypto {
 
 public:
   
-  static void generateKey(std::string& pr, std::string& pu);
-  static std::string generateNonce();  
-  static int generateRandomInt();
-  static std::vector<int> generateRandomInts(size_t n);
+  static void
+  generateKey(std::string& pr, std::string& pu);
 
-  static std::string sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
+  static std::string
+  generateNonce();
 
-  static bool verify(std::string message, std::string signature);
-  static bool verify(std::string publicKey, std::string message, std::string signature);
-  static bool verify(Botan::RSA_PublicKey* rsakey, std::string message, std::string signature);
+  static std::string
+  sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
 
-  static void hybridEncrypt(std::stringstream& in, std::stringstream& out);
-  static std::string hybridEncrypt(std::string& publicKey, std::string& plaintext);
+  static std::string
+  sign(std::string& privateKey, std::string& message);
 
-  static std::string hybridDecrypt(std::string& privateKey, std::string& ciphertext);
+  static bool
+  verify(std::string message, std::string signature);
 
-  static std::string sign(std::string& privateKey, std::string& message);
-  static std::string hashPassword(std::string& pw);
-  static bool checkPasshash(std::string pw, std::string ph);
-  static int init();
+  static bool
+  verify(std::string publicKey, std::string message, std::string signature);
+
+  static bool
+  verify(Botan::RSA_PublicKey* rsakey,
+    std::string message, std::string signature);
+
+  static void
+  hybridEncrypt(std::stringstream& in, std::stringstream& out);
+
+  static std::string
+  hybridEncrypt(std::string& publicKey, std::string& plaintext);
+
+  static std::string
+  hybridDecrypt(std::string& privateKey, std::string& ciphertext);
+
+  static std::string
+  hashPassword(std::string& pw);
+
+  static bool
+  checkPasshash(std::string pw, std::string ph);
+
+  static int
+  init();
+
+
+  /* Templates */
+
+  template <class T>
+  static T
+  generateRandomInt(){
+    unsigned char buf[sizeof(T)];
+    Botan::AutoSeeded_RNG rng;
+    rng.randomize(buf, sizeof(T));
+    T random = T(*((T *)buf));
+    return random;
+  }
+
+  template <class T>
+  static std::vector<T>
+  generateRandomInts(size_t n){
+    std::vector<T> retval(n, 0);
+    Botan::AutoSeeded_RNG rng;
+    rng.randomize((unsigned char *)&retval[0], n * sizeof(T));
+    return retval;
+  }
 
 
   #ifndef XBLAB_CLIENT
 
-  // TODO: remove unnecessary overloads
-  static std::string sign(std::string& message);
-  static std::string hybridDecrypt(std::string& ciphertext);
+  // TODO: are these necessary?
+  static std::string
+  sign(std::string& message);
+
+  static std::string
+  hybridDecrypt(std::string& ciphertext);
 
   #endif
 
@@ -68,12 +114,22 @@ private:
   ~Crypto(){};
 
   // Convenience wrappers for Botan Pipe functions
-  static std::string b64Encode(const Botan::SecureVector<unsigned char>&);
-  static Botan::SecureVector<unsigned char> b64Decode(const std::string& in);
-  static Botan::SymmetricKey deriveSymmetricKey(const std::string&, const Botan::SymmetricKey&, unsigned int);
-  static void hybridEncrypt(Botan::RSA_PublicKey* rsakey, std::stringstream& in, std::stringstream& out);
+  static std::string
+  b64Encode(const Botan::SecureVector<unsigned char>&);
 
-  static void hybridDecrypt(Botan::AutoSeeded_RNG&,
+  static Botan::SecureVector<unsigned char>
+  b64Decode(const std::string& in);
+
+  static Botan::SymmetricKey
+  deriveSymmetricKey(const std::string&,
+    const Botan::SymmetricKey&, unsigned int);
+
+  static void
+  hybridEncrypt(Botan::RSA_PublicKey* rsakey,
+    std::stringstream& in, std::stringstream& out);
+
+  static void
+  hybridDecrypt(Botan::AutoSeeded_RNG&,
     Botan::RSA_PrivateKey*&, std::stringstream&, std::stringstream&);
 };
 

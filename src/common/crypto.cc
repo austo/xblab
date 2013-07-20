@@ -337,25 +337,6 @@ Crypto::generateNonce(){
   return pipe.read_all_as_string();
 }
 
-int
-Crypto::generateRandomInt(){
-  SecureVector<byte> buf(sizeof(int));
-  AutoSeeded_RNG rng;
-  rng.randomize(buf, buf.size());
-  int random = int((int)buf[0]);
-  return random;
-}
-
-
-vector<int>
-Crypto::generateRandomInts(size_t n){
-  SecureVector<byte> buf(sizeof(int) * n);
-  AutoSeeded_RNG rng;
-  rng.randomize(buf, buf.size());
-  vector<int> retval(&buf[0], &buf[0] + (sizeof(int) * n));
-  return retval;
-}
-
 
 void
 Crypto::generateKey(string& pr, string& pu){    

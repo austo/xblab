@@ -1,7 +1,9 @@
 #ifndef MANAGER_NATIVE_H
 #define MANAGER_NATIVE_H
 
+#include <iostream>
 #include <string>
+#include <vector>
 #include <map>
 
 #include "group.h"
@@ -20,7 +22,7 @@ public:
   Group group;    
 
   std::string publicKey;
-  int seed;
+  unsigned seed;
 
   
 private:
@@ -28,6 +30,11 @@ private:
   int nMembers_;
   int currentRound_;
   int *roundModulii_;
+
+  template <class T>
+  void
+  cleanMemberSchedules(std::vector< std::vector<T>* >& schedules); 
+
 
 };
 } //namespace xblab

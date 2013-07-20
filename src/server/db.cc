@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+
 #include <pqxx/pqxx>
 
 #include "db.h"
@@ -57,7 +58,6 @@ map<int, Member> Db::getMembers(string conn, int group_id){
   stringstream ss;
   // No need to quote the string here as it's coming from previous call;
   ss << "select * from get_group_users(" << group_id << ");";
-  // cout << ss.str() << endl;
   result members = txn.exec(ss.str());
 
   result::const_iterator row = members.begin();

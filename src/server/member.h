@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "common/crypto.h"
+#include "common/macros.h"
 
 namespace xblab {
 
@@ -25,9 +26,9 @@ public:
     username(username),
     password(password),
     handle(handle) {
-      // TODO: make sure this is the only time
-      //  we need to generate schedule
-      schedule = Crypto::generateRandomInts(100);
+       
+      schedule =
+        Crypto::generateRandomInts<unsigned short>(XBSCHEDULESIZE);
     }
 
   Member(
@@ -66,7 +67,7 @@ public:
   std::string publicKey;
   std::string roundNonce;
   int roundModulus;
-  std::vector<int> schedule;
+  std::vector<unsigned short> schedule;
   bool present;
   Manager *manager;
 

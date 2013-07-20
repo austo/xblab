@@ -46,6 +46,7 @@ namespace xblab {
 
 #define XBGOOD 0
 #define XBMAXCONCURRENT 128
+#define XBSCHEDULESIZE 100
 #define XBEMITARGS 2
 #define XBEMIT "emit"
 
