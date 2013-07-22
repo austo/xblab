@@ -143,22 +143,27 @@ class Broadcast_Session : public ::google::protobuf::MessageLite {
   inline ::std::string* release_pub_key();
   inline void set_allocated_pub_key(::std::string* pub_key);
 
-  // required fixed32 seed = 2;
-  inline bool has_seed() const;
-  inline void clear_seed();
-  static const int kSeedFieldNumber = 2;
-  inline ::google::protobuf::uint32 seed() const;
-  inline void set_seed(::google::protobuf::uint32 value);
+  // required string schedule = 2;
+  inline bool has_schedule() const;
+  inline void clear_schedule();
+  static const int kScheduleFieldNumber = 2;
+  inline const ::std::string& schedule() const;
+  inline void set_schedule(const ::std::string& value);
+  inline void set_schedule(const char* value);
+  inline void set_schedule(const char* value, size_t size);
+  inline ::std::string* mutable_schedule();
+  inline ::std::string* release_schedule();
+  inline void set_allocated_schedule(::std::string* schedule);
 
   // @@protoc_insertion_point(class_scope:xblab.Broadcast.Session)
  private:
   inline void set_has_pub_key();
   inline void clear_has_pub_key();
-  inline void set_has_seed();
-  inline void clear_has_seed();
+  inline void set_has_schedule();
+  inline void clear_has_schedule();
 
   ::std::string* pub_key_;
-  ::google::protobuf::uint32 seed_;
+  ::std::string* schedule_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
@@ -1600,26 +1605,74 @@ inline void Broadcast_Session::set_allocated_pub_key(::std::string* pub_key) {
   }
 }
 
-// required fixed32 seed = 2;
-inline bool Broadcast_Session::has_seed() const {
+// required string schedule = 2;
+inline bool Broadcast_Session::has_schedule() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void Broadcast_Session::set_has_seed() {
+inline void Broadcast_Session::set_has_schedule() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void Broadcast_Session::clear_has_seed() {
+inline void Broadcast_Session::clear_has_schedule() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void Broadcast_Session::clear_seed() {
-  seed_ = 0u;
-  clear_has_seed();
+inline void Broadcast_Session::clear_schedule() {
+  if (schedule_ != &::google::protobuf::internal::kEmptyString) {
+    schedule_->clear();
+  }
+  clear_has_schedule();
 }
-inline ::google::protobuf::uint32 Broadcast_Session::seed() const {
-  return seed_;
+inline const ::std::string& Broadcast_Session::schedule() const {
+  return *schedule_;
 }
-inline void Broadcast_Session::set_seed(::google::protobuf::uint32 value) {
-  set_has_seed();
-  seed_ = value;
+inline void Broadcast_Session::set_schedule(const ::std::string& value) {
+  set_has_schedule();
+  if (schedule_ == &::google::protobuf::internal::kEmptyString) {
+    schedule_ = new ::std::string;
+  }
+  schedule_->assign(value);
+}
+inline void Broadcast_Session::set_schedule(const char* value) {
+  set_has_schedule();
+  if (schedule_ == &::google::protobuf::internal::kEmptyString) {
+    schedule_ = new ::std::string;
+  }
+  schedule_->assign(value);
+}
+inline void Broadcast_Session::set_schedule(const char* value, size_t size) {
+  set_has_schedule();
+  if (schedule_ == &::google::protobuf::internal::kEmptyString) {
+    schedule_ = new ::std::string;
+  }
+  schedule_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Broadcast_Session::mutable_schedule() {
+  set_has_schedule();
+  if (schedule_ == &::google::protobuf::internal::kEmptyString) {
+    schedule_ = new ::std::string;
+  }
+  return schedule_;
+}
+inline ::std::string* Broadcast_Session::release_schedule() {
+  clear_has_schedule();
+  if (schedule_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = schedule_;
+    schedule_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Broadcast_Session::set_allocated_schedule(::std::string* schedule) {
+  if (schedule_ != &::google::protobuf::internal::kEmptyString) {
+    delete schedule_;
+  }
+  if (schedule) {
+    set_has_schedule();
+    schedule_ = schedule;
+  } else {
+    clear_has_schedule();
+    schedule_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
 }
 
 // -------------------------------------------------------------------

@@ -6,6 +6,7 @@
 #include "memberBaton.h"
 #include "batonUtil.h"
 #include "common/macros.h"
+#include "common/common.h"
 
 using namespace std;
 

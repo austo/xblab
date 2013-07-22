@@ -1,8 +1,8 @@
 #include <iostream>
 #include <sstream>
-#include <vector>
 
 #include "common/macros.h"
+#include "common/common.h"
 #include "common/crypto.h"
 #include "client/batonUtil.h"
 #include "client/binding/xbClient.h"
@@ -10,7 +10,6 @@
 using namespace std;
 
 namespace xblab {
-
 
 extern string xbPublicKeyFile;
 
@@ -127,7 +126,10 @@ BatonUtil::enterGroup(
   MemberBaton *baton, const Broadcast::Data& data) {
   const Broadcast::Session& session = data.session();
   baton->member.sessionKey = session.pub_key();
-  baton->member.seed = session.seed();
+
+  string sched(session.schedule());
+  baton->member.schedule = vectorize_string<sched_t>(sched);
+
   baton->jsCallbackFactory = XbClient::groupEntryFactory;
   baton->needsJsCallback = true;
 }

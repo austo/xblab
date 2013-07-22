@@ -18,7 +18,7 @@ message Broadcast {
 
   message Session {
     required string pub_key = 1;
-    required fixed32 seed = 2;
+    required string schedule = 2;
   }
 
   message Payload {

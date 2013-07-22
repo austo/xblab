@@ -7,6 +7,7 @@
 #include "client/client.h"
 #include "common/util_exception.h"
 #include "common/macros.h"
+#include "common/common.h"
 #include "common/crypto.h"
 
 using namespace std;

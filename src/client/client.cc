@@ -8,6 +8,7 @@
 
 #include "client/memberBaton.h"
 #include "common/macros.h"
+#include "common/common.h"
 #include "client/client.h"
 #include "client/binding/xbClient.h"
 

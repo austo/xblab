@@ -2,6 +2,9 @@
 #define MEMBER_H
 
 #include <string>
+#include <vector>
+
+#include "common/common.h"
 
 namespace xblab {
 
@@ -16,7 +19,7 @@ struct Member {
   std::string publicKey;
   std::string privateKey;
   std::string sessionKey; // session public key from server 
-  int seed;      
+  std::vector<sched_t> schedule;   
   int modulus;
   bool hasKeys;
 

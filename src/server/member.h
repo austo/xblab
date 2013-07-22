@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "common/crypto.h"
+#include "common/common.h"
 #include "common/macros.h"
 
 /* Used by Manager to track users once they have joined a chat */
@@ -30,7 +31,7 @@ public:
     password(password),
     handle(handle) {
       schedule =
-        Crypto::generateRandomInts<unsigned short>(XBSCHEDULESIZE);
+        Crypto::generateRandomInts<sched_t>(XBSCHEDULESIZE);
   }
 
 
@@ -77,7 +78,7 @@ public:
   std::string publicKey;
   std::string roundNonce;
   int roundModulus;
-  std::vector<unsigned short> schedule;
+  std::vector<sched_t> schedule;
   bool present;
   Manager *manager;
 

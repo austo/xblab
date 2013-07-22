@@ -10,6 +10,7 @@
 #include <assert.h>
 
 #include "common/macros.h"
+#include "common/common.h"
 #include "batonUtil.h"
 #include "common/crypto.h"
 #include "manager.h"
@@ -79,7 +80,10 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
   sess->set_pub_key(baton->member->manager->publicKey);
-  sess->set_seed(baton->member->manager->seed);
+
+  string sched = string(
+    (char *)&baton->member->schedule[0], baton->member->schedule.size());
+  sess->set_schedule(sched);
 
   data->set_allocated_session(sess);
 

@@ -5,24 +5,24 @@
 
 // #define NDEBUG
 
-#include <assert.h>
+// #include <assert.h>
 
-#include <string>
-#include <ctime>
+// #include <string>
+// #include <ctime>
 
-/* Putting this here is a hack */
-namespace xblab {
+// /* Putting this here is a hack */
+// namespace xblab {
 
-  inline std::string rightnow() {
-    static time_t now;
-    static char buf[30];
-    time(&now);
-    struct tm *t_info = localtime(&now);
-    strftime(buf, 30, "%F %T - ", t_info);
-    return std::string(buf);
-  }
+//   inline std::string rightnow() {
+//     static time_t now;
+//     static char buf[30];
+//     time(&now);
+//     struct tm *t_info = localtime(&now);
+//     strftime(buf, 30, "%F %T - ", t_info);
+//     return std::string(buf);
+//   }
 
-}
+// }
 
 #define BITSIZE 2048
 #define NONCE_SIZE 8

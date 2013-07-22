@@ -11,6 +11,7 @@
 
 #include "memberBaton.h"
 #include "common/macros.h"
+#include "common/common.h"
 #include "server.h"
 #include "manager.h"
 

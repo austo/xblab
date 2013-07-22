@@ -6,6 +6,7 @@
 #include "client/memberBaton.h"
 #include "client/batonUtil.h"
 #include "common/crypto.h"
+#include "common/common.h"
 #include "common/macros.h"
 
 namespace xblab {

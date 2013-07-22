@@ -10,6 +10,7 @@
 #include <botan/bcrypt.h>
 
 #include "macros.h"
+#include "common.h"
 #include "crypto.h"
 
 

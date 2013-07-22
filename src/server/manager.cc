@@ -6,6 +6,7 @@
 #include "db_exception.h"
 #include "common/crypto.h"
 #include "common/macros.h"
+#include "common/common.h"
 
 
 using namespace std;
@@ -57,7 +58,7 @@ Manager::Manager(string url) {
   members = Db::getMembers(group.id);
   seed = Crypto::generateRandomInt<unsigned>();
 
-  vector< vector<unsigned short>* > schedules;
+  vector< vector<sched_t>* > schedules;
   // Each member has a reference to the manager
   map<int, Member>::iterator mitr = members.begin();
   for (; mitr != members.end(); ++mitr){

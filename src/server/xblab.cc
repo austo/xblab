@@ -8,6 +8,7 @@
 #include <string>
 
 #include "common/macros.h"
+#include "common/common.h"
 #include "server.h"
 #include "manager.h"
 #include "common/crypto.h"
