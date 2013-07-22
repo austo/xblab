@@ -122,6 +122,7 @@ const int Broadcast::Type_ARRAYSIZE;
 #ifndef _MSC_VER
 const int Broadcast_Session::kPubKeyFieldNumber;
 const int Broadcast_Session::kScheduleFieldNumber;
+const int Broadcast_Session::kScheduleSizeFieldNumber;
 #endif  // !_MSC_VER
 
 Broadcast_Session::Broadcast_Session()
@@ -142,6 +143,7 @@ void Broadcast_Session::SharedCtor() {
   _cached_size_ = 0;
   pub_key_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   schedule_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  schedule_size_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -196,6 +198,7 @@ void Broadcast_Session::Clear() {
         schedule_->clear();
       }
     }
+    schedule_size_ = 0u;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -219,13 +222,29 @@ bool Broadcast_Session::MergePartialFromCodedStream(
         break;
       }
 
-      // required string schedule = 2;
+      // required bytes schedule = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_schedule:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+          DO_(::google::protobuf::internal::WireFormatLite::ReadBytes(
                 input, this->mutable_schedule()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(29)) goto parse_schedule_size;
+        break;
+      }
+
+      // optional fixed32 schedule_size = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_schedule_size:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_FIXED32>(
+                 input, &schedule_size_)));
+          set_has_schedule_size();
         } else {
           goto handle_uninterpreted;
         }
@@ -256,10 +275,15 @@ void Broadcast_Session::SerializeWithCachedSizes(
       1, this->pub_key(), output);
   }
 
-  // required string schedule = 2;
+  // required bytes schedule = 2;
   if (has_schedule()) {
-    ::google::protobuf::internal::WireFormatLite::WriteString(
+    ::google::protobuf::internal::WireFormatLite::WriteBytes(
       2, this->schedule(), output);
+  }
+
+  // optional fixed32 schedule_size = 3;
+  if (has_schedule_size()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFixed32(3, this->schedule_size(), output);
   }
 
 }
@@ -275,11 +299,16 @@ int Broadcast_Session::ByteSize() const {
           this->pub_key());
     }
 
-    // required string schedule = 2;
+    // required bytes schedule = 2;
     if (has_schedule()) {
       total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::StringSize(
+        ::google::protobuf::internal::WireFormatLite::BytesSize(
           this->schedule());
+    }
+
+    // optional fixed32 schedule_size = 3;
+    if (has_schedule_size()) {
+      total_size += 1 + 4;
     }
 
   }
@@ -303,6 +332,9 @@ void Broadcast_Session::MergeFrom(const Broadcast_Session& from) {
     if (from.has_schedule()) {
       set_schedule(from.schedule());
     }
+    if (from.has_schedule_size()) {
+      set_schedule_size(from.schedule_size());
+    }
   }
 }
 
@@ -322,6 +354,7 @@ void Broadcast_Session::Swap(Broadcast_Session* other) {
   if (other != this) {
     std::swap(pub_key_, other->pub_key_);
     std::swap(schedule_, other->schedule_);
+    std::swap(schedule_size_, other->schedule_size_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     std::swap(_cached_size_, other->_cached_size_);
   }

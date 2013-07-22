@@ -82,7 +82,8 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
   sess->set_pub_key(baton->member->manager->publicKey);
 
   string sched = string(
-    (char *)&baton->member->schedule[0], baton->member->schedule.size());
+    (char *)&baton->member->schedule[0],
+    (baton->member->schedule.size() * sizeof(sched_t)));
   sess->set_schedule(sched);
 
   data->set_allocated_session(sess);

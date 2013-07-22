@@ -27,7 +27,7 @@ Manager::cleanMemberSchedules(
     curr = (*firstSched)[i];
 
   #ifdef DEBUG
-    std::cout << "\n(0) " << curr << "\n";
+    std::cout << "\n(0) " << curr << ", ";
   #endif
 
     for (s = 1; s < schedules.size(); s++) {

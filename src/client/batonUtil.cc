@@ -130,6 +130,13 @@ BatonUtil::enterGroup(
   string sched(session.schedule());
   baton->member.schedule = vectorize_string<sched_t>(sched);
 
+#ifdef DEBUG
+  for (int i = 0, n = baton->member.schedule.size(); i < n; ++i) {
+    cout << baton->member.schedule[i] << ", ";
+  }
+  cout << endl;
+#endif
+
   baton->jsCallbackFactory = XbClient::groupEntryFactory;
   baton->needsJsCallback = true;
 }

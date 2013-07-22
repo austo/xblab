@@ -9,7 +9,7 @@
       "../src/protobuf/xblab.pb.cc",
       "../src/common/crypto.cc",
       "../src/client/binding/xbClient.cc" ],
-      'defines': [ 'XBLAB_CLIENT' ],
+      'defines': [ 'XBLAB_CLIENT', 'DEBUG' ],
       'conditions': [
           ['OS!="win"', {
             'cflags': [ '-Wall', '-fexceptions', '-g' ],
