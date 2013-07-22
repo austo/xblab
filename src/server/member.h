@@ -4,16 +4,19 @@
 #include <iostream>
 #include <string>
 #include <vector>
+
 #include "common/crypto.h"
 #include "common/macros.h"
 
+/* Used by Manager to track users once they have joined a chat */
+
 namespace xblab {
 
-// Used by Manager for tracking users once they have joined a chat
+class Manager; // fwd decl
 
-class Manager; // Forward declaration
 
 class Member {
+
 public:
   Member(){
     username = "invalid";    
@@ -26,10 +29,10 @@ public:
     username(username),
     password(password),
     handle(handle) {
-       
       schedule =
         Crypto::generateRandomInts<unsigned short>(XBSCHEDULESIZE);
-    }
+  }
+
 
   Member(
     std::string username,
@@ -41,18 +44,24 @@ public:
     publicKey(pubkey),
     present(present) { }
 
-  void assume(const Member& other){
+
+  void
+  assume(const Member& other) {
     publicKey = other.publicKey;
     present = other.present;
   }
 
-  void assume(Member* other){
+
+  void
+  assume(Member* other) {
     publicKey = other->publicKey;
     present = other->present;
     delete other;
-  } 
+  }
 
-  bool operator== (const Member& other) const {
+
+  bool
+  operator== (const Member& other) const {
     #ifdef DEBUG
     std::cout << "this->username: " << username
           << "\nother.username: " << other.username << std::endl;
@@ -60,6 +69,7 @@ public:
     return username == other.username &&
       Crypto::checkPasshash(password, other.password);          
   }
+
 
   std::string username;
   std::string password;
@@ -72,7 +82,7 @@ public:
   Manager *manager;
 
 };
+
+
 } //namespace xblab
-
-
 #endif

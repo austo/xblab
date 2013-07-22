@@ -27,7 +27,7 @@ public:
     return this->message_.c_str();
   }
 private:
-  std::string message_;        
+  std::string message_;
 };
 
 

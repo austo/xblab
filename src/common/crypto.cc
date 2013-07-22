@@ -28,7 +28,6 @@ extern string xbKeyPassword;
 string
 Crypto::sign(string& message){
   AutoSeeded_RNG rng;
-  // cout << pr << pw << endl;
   auto_ptr<PKCS8_PrivateKey> key(
     PKCS8::load_key(xbPrivateKeyFile, rng, xbKeyPassword));
   RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
@@ -68,11 +67,8 @@ string
 Crypto::sign(string& privateKey, string& message){
   AutoSeeded_RNG rng;
   DataSource_Memory ds(privateKey);
-  // cout << "got DataSource_Memory\n";
   auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(ds, rng));
-  // cout << "loaded key\n";
   RSA_PrivateKey* rsakey = dynamic_cast<RSA_PrivateKey*>(key.get());
-  // cout << "got key\n";
 
   if(!rsakey){
     cout << "BAD KEY!!" << endl;
@@ -353,6 +349,7 @@ Crypto::hashPassword(string& pw){
   return generate_bcrypt(pw, rng, BCRYPT_WORK_FACTOR);
 }
 
+
 bool
 Crypto::checkPasshash(string pw, string ph){
 #ifdef DEBUG
@@ -387,6 +384,7 @@ Crypto::deriveSymmetricKey(const std::string& param,
   std::auto_ptr<KDF> kdf(get_kdf(KDF2SHA1));
   return kdf->derive_key(outputlength, masterkey.bits_of(), param);
 }
+
 
 int
 Crypto::init(){
