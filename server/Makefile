@@ -25,7 +25,7 @@ OBJS = $(SRCS:.cc=.o)
 
 TARGET = xblab
 
-.PHONY:	all clean debug deps
+.PHONY:	all clean debug
 
 all:	$(TARGET)
 
