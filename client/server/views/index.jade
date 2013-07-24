@@ -12,12 +12,8 @@ html
   body
     div#wrapper
       h1 xblab
-      div#messages
-      //- div.nic
-      //-     |Your Name
-      //-     input#name(name="name", type="text")
+      div#messages      
       textarea#message
-      //- input#connect(type="submit", value="Connect")
       input#send(type="submit", value="Send")
     div#login
       table
@@ -30,7 +26,8 @@ html
           td
             |Password:
           td
-            input#password(type='password')              
+            input#password(type='password')
+    div#jqAlert                
     script.
       $(function(){
         $('#login').hide();

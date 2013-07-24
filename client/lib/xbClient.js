@@ -89,6 +89,11 @@ function xbClient (cfg, ws){
 
   self.xbClient.on(xblab.events.groupEntry, function (buf) {
     console.log(buf);
+
+    // 'status' and 'state' are kind of silly properties
+    self.wsClient.send(JSON.stringify(
+      { status: buf, state: 'GROUPENTRY' }
+    ));
   });
 
   self.xbClient.on(xblab.events.error, function(err) {

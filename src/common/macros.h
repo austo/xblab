@@ -1,29 +1,6 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-// nodeUtil.h included ifndef XBLAB_NATIVE
-
-// #define NDEBUG
-
-// #include <assert.h>
-
-// #include <string>
-// #include <ctime>
-
-// /* Putting this here is a hack */
-// namespace xblab {
-
-//   inline std::string rightnow() {
-//     static time_t now;
-//     static char buf[30];
-//     time(&now);
-//     struct tm *t_info = localtime(&now);
-//     strftime(buf, 30, "%F %T - ", t_info);
-//     return std::string(buf);
-//   }
-
-// }
-
 #define BITSIZE 2048
 #define NONCE_SIZE 8
 #define SIG_BUF_SIZE 4096
@@ -51,6 +28,8 @@
 #define XBEMIT "emit"
 
 #define XBEMITCALLBACK(h, a) node::MakeCallback(h, "emit", 2, a)
+
+#define ALLOC(T) ((T*)calloc(1, sizeof(T)))
 
 #ifndef XBLAB_NATIVE
 

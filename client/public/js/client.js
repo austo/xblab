@@ -37,20 +37,39 @@
         var res = JSON.parse(data.data);
 
         // TODO: May need another broadcast type - wait for others to arrive
-        if (res.state && res.state === 'NEEDCRED'){
-          $('#login').dialog('open');
-        }
-        else{
-          var name = res.name || 'anonymous';
-          var msg = $('<div class="msg"></div>')
-            .append('<span class="name">' + name + '</span>: ')
-            .append('<span class="text">' + res.msg + '</span>');
+        if (res.state)
+          switch(res.state) {
+            case xblab.needCred:
+              $('#login').dialog('open');
+              break;
+            case xblab.groupEntry:
+              break;
+            default: {              
+              var name = res.name || 'anonymous';
+              var msg = $('<div class="msg"></div>')
+                .append('<span class="name">' + name + '</span>: ')
+                .append('<span class="text">' + res.msg + '</span>');
 
-          $('#messages')
-            .append(msg)
-            .animate({scrollTop: $('#messages').prop('scrollHeight')}, 0);
-        }
+              $('#messages')
+                .append(msg)
+                .animate({scrollTop: $('#messages').prop('scrollHeight')}, 0);
+            }
+          }        
       }
+    },
+
+    jqAlert: function(alertMessage, alertTitle) {
+        $('#uxNoSelectionAlert').html(alertMessage);
+        $('#uxNoSelectionAlert').dialog({
+            title: alertTitle,
+            buttons: {
+                "Okay": function() {
+                    returnNoAcctDivToInitialState();
+                    $(this).dialog('close');
+                }
+            },
+            autoOpen: true
+        });
     },
 
     login: function(){
