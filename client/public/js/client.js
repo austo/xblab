@@ -43,6 +43,9 @@
               $('#login').dialog('open');
               break;
             case xblab.groupEntry:
+              if (res.payload) {
+                ns.Chat.jqAlert(res.payload);
+              }
               break;
             default: {              
               var name = res.name || 'anonymous';
@@ -58,18 +61,17 @@
       }
     },
 
-    jqAlert: function(alertMessage, alertTitle) {
-        $('#uxNoSelectionAlert').html(alertMessage);
-        $('#uxNoSelectionAlert').dialog({
-            title: alertTitle,
-            buttons: {
-                "Okay": function() {
-                    returnNoAcctDivToInitialState();
-                    $(this).dialog('close');
-                }
-            },
-            autoOpen: true
-        });
+    jqAlert: function(msg, title) {
+      $('#jqAlert').html(msg);
+      $('#jqAlert').dialog({
+        title: title,
+        buttons: {
+          'Okay': function() {
+              $(this).dialog('close');
+          }
+        },
+        autoOpen: true
+      });
     },
 
     login: function(){

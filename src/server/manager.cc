@@ -67,7 +67,7 @@ Manager::Manager(string url) {
   }
 
   nMembers_ = members.size();
-  roundModulii_ = (int *)malloc(sizeof(int) * nMembers_);
+  roundModulii_ = NALLOC(nMembers_, int);
   cleanMemberSchedules(schedules);
   currentRound_ = 0;
   cout << rightnow() << "Manager created for group "

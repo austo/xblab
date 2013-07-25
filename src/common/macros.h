@@ -29,7 +29,8 @@
 
 #define XBEMITCALLBACK(h, a) node::MakeCallback(h, "emit", 2, a)
 
-#define ALLOC(T) ((T*)calloc(1, sizeof(T)))
+#define ALLOC(T) ((T*)malloc(sizeof(T)))
+#define NALLOC(n,T) ((T*)calloc(n, sizeof(T)))
 
 #ifndef XBLAB_NATIVE
 

@@ -83,7 +83,7 @@ function xbClient (cfg, ws){
     console.log(buf);
 
     self.wsClient.send(JSON.stringify(
-      { status: 'connected', state: 'NEEDCRED' }
+      { state: 'NEEDCRED', payload: 'connected' }
     ));
   });
 
@@ -92,7 +92,7 @@ function xbClient (cfg, ws){
 
     // 'status' and 'state' are kind of silly properties
     self.wsClient.send(JSON.stringify(
-      { status: buf, state: 'GROUPENTRY' }
+      { state: 'GROUPENTRY', payload: buf }
     ));
   });
 
