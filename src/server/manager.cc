@@ -61,7 +61,7 @@ Manager::Manager(string url) {
   vector< vector<sched_t>* > schedules;
   // Each member has a reference to the manager
   map<int, Member>::iterator mitr = members.begin();
-  for (; mitr != members.end(); ++mitr){
+  for (; mitr != members.end(); ++mitr) {
     mitr->second.manager = this;
     schedules.push_back(&mitr->second.schedule);
   }

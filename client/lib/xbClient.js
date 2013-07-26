@@ -1,6 +1,7 @@
 var util = require('util'),
   xblab = require('./xblab.wrapper'),
-  path = require('path');
+  path = require('path'),
+  constants = require('../public/js/constants');
 
 exports.Client = xbClient;
 
@@ -83,7 +84,7 @@ function xbClient (cfg, ws){
     console.log(buf);
 
     self.wsClient.send(JSON.stringify(
-      { state: 'NEEDCRED', payload: 'connected' }
+      { state: constants.needCred, payload: 'connected' }
     ));
   });
 
@@ -92,7 +93,7 @@ function xbClient (cfg, ws){
 
     // 'status' and 'state' are kind of silly properties
     self.wsClient.send(JSON.stringify(
-      { state: 'GROUPENTRY', payload: buf }
+      { state: constants.groupEntry, payload: buf }
     ));
   });
 

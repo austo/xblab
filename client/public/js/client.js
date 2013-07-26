@@ -1,5 +1,11 @@
 (function(ns) {
 
+  ns.msgDiv = function(name, text) {
+    return $('<div class="msg"></div>')
+      .append('<span class="name">' + name + '</span>: ')
+      .append('<span class="text">' + text + '</span>');
+  };
+
   ns.Chat = {
     socket: null,
     // would need to be port 80 if using nginx
@@ -49,12 +55,8 @@
               break;
             default: {              
               var name = res.name || 'anonymous';
-              var msg = $('<div class="msg"></div>')
-                .append('<span class="name">' + name + '</span>: ')
-                .append('<span class="text">' + res.msg + '</span>');
-
               $('#messages')
-                .append(msg)
+                .append(ns.msgDiv(name, res.msg))
                 .animate({scrollTop: $('#messages').prop('scrollHeight')}, 0);
             }
           }        
