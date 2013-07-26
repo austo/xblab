@@ -64,10 +64,11 @@ function xbClient (cfg, ws){
 
   self.wsClient.on('close', function (reasonCode, description) {
     if (cfg.debug){
-      console.log('%s xblab presentation client at\n%s disconnected...\n\
-        Why am I still running?',
-        new Date(),
-        self.wsClient.remoteAddress);
+      console.log(new Date().toLocaleString() +
+        '- xblab presentation client at ' +
+        self.wsClient.remoteAddress + ' disconnected...');
+      console.log('exiting.');
+      process.exit();
     }
   });    
   
