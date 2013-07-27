@@ -23,6 +23,13 @@ public:
     username = "invalid";    
   };
 
+
+/* NOTE: since groups are defined ahead of time, it *should*
+ * be okay to calculate schedules on member initialization, then finish
+ * cleaning them in the manager constructor. However,
+ * this could get out of hand if we start allowing arbitrary
+ * members into the group at arbitrary times.
+ */
   Member(
     std::string username,
     std::string password,

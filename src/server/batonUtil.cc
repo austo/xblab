@@ -225,6 +225,9 @@ BatonUtil::initializeMember(MemberBaton* baton) {
 void
 BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   string signature, const Transmission::Credential& cred) {
+
+  typedef map<int, Member>::iterator memb_iter;
+
   string pubkey(cred.pub_key());
 
   if (!Crypto::verify(pubkey, datastr, signature)) { 
@@ -270,7 +273,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
 
   Member *m = new Member(un, pw, pubkey, true);
 
-  map<int, Member>::iterator mitr = mgr->members.begin();
+  memb_iter mitr = mgr->members.begin();
   for (; mitr != mgr->members.end(); ++mitr) {
 
     try {
