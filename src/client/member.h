@@ -11,6 +11,7 @@ namespace xblab {
 struct Member {
   Member(){
     hasKeys = false;
+    hasMessage = false;
   };  
 
   std::string username;
@@ -19,9 +20,11 @@ struct Member {
   std::string publicKey;
   std::string privateKey;
   std::string sessionKey; // session public key from server 
-  std::vector<sched_t> schedule;   
+  std::vector<sched_t> schedule;
+  std::string message;
   int modulus;
   bool hasKeys;
+  bool hasMessage; // must be set to false on msg hand-off
 
 };
 } //namespace xblab

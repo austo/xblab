@@ -65,6 +65,16 @@ BatonUtil::packageCredential(MemberBaton *baton) {
 
 
 void
+BatonUtil::packageTransmission(MemberBaton *baton) {
+  // TODO: refactor common code
+  // TODO: scheduling
+  // caller has indicated we have a payload (user message),
+  // strategy for differentiating between that and normal garbage
+  // transmission.
+}
+
+
+void
 BatonUtil::digestBroadcast(MemberBaton *baton) {
   
   Broadcast bc;

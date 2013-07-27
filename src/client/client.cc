@@ -148,6 +148,24 @@ Client::writeSendCredential(uv_write_t *req, int status) {
 
 
 void
+Client::onTransmit(MemberBaton *baton) {
+  int status = uv_queue_work(
+    loop,
+    &baton->uvWork,
+    transmitWork,
+    (uv_after_work_cb)afterSendCredential);
+  assert(status == XBGOOD);   
+}
+
+
+void
+Client::transmitWork(uv_work_t *r) {
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
+  baton->packageTransmission();
+}
+
+
+void
 Client::onConnect(uv_connect_t *req, int status) {
   if (status == -1) {
     fprintf(stderr, "Error connecting to xblab server: %s\n",

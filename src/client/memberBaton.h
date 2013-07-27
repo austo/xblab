@@ -27,6 +27,7 @@ public:
   void getKeys();
   void digestBroadcast();
   void packageCredential();
+  void packageTransmission();
 
   Member member;
 

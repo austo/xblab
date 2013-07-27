@@ -43,6 +43,9 @@ public:
   SendCredential(const v8::Arguments& args);
 
   static v8::Handle<v8::Value>
+  Transmit(const v8::Arguments& args);
+
+  static v8::Handle<v8::Value>
   Connect(const v8::Arguments& args);
 
   MemberBaton *baton;

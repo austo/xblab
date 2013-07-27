@@ -214,6 +214,28 @@ XbClient::SendCredential(const Arguments& args) {
 }
 
 
+Handle<Value>
+XbClient::Transmit(const Arguments& args) {
+  HandleScope scope;
+
+  if (!args[0]->IsObject() || !args[1]->IsFunction()) {
+    THROW("xblab: sendCred() requires object and callback arguments");
+  }
+
+  Local<Object> transmission = Local<Object>::Cast(args[0]);
+  Local<Value> pload = transmission->Get(String::New(XBPAYLOAD));
+
+  XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
+  instance->baton->wrapper = instance; // seems to be necessary
+
+  instance->baton->member.message = NodeUtil::v8ToString(pload);
+  instance->baton->member.hasMessage = true;
+
+  Client::onTransmit(instance->baton);
+  
+  return scope.Close(Undefined());
+}
+
 // C++ -> JS event emission wrappers
 Handle<Value>
 XbClient::requestCredentialFactory(XbClient *xbClient) {

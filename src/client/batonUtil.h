@@ -19,6 +19,9 @@ class BatonUtil {
   packageCredential(MemberBaton *baton);
 
   static void
+  packageTransmission(MemberBaton *baton);
+
+  static void
   digestBroadcast(MemberBaton *baton);
   
   BatonUtil(){};

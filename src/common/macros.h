@@ -39,6 +39,7 @@
 #define XBGROUP "group"
 #define XBUSERNAME "username"
 #define XBPASSWORD "password"
+#define XBPAYLOAD "payload"
 
 #define GET_PROP(obj, setting) obj->Get(String::New(#setting)) 
 
