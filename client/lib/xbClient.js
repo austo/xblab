@@ -22,6 +22,7 @@ function xbClient (cfg, ws){
   // happens to make. Don't pollute group field.
   delete cfg.group;
 
+
   self.xbClient.connect(function(err){
     if (err) {
       console.log(err);
@@ -31,36 +32,51 @@ function xbClient (cfg, ws){
     }
   });
 
+
   self.wsClient.on('message', function (message) {
-    if (message.type === 'utf8') {
-      if (cfg.debug){
-          console.log(
-            "Received utf-8 message of %s characters. Message: '%s'.",
-              message.utf8Data.length, message.utf8Data);
-      }
-      var userMessage = JSON.parse(message.utf8Data);
-      if (userMessage && userMessage.type){
-        switch(userMessage.type){
-          case 'CRED':
-            self.xbClient.sendCredential(
-              userMessage,
-              function (err){
-                console.log(err);
-              }
-            );
-            break; 
-        }
-      }  
-    }
+
     // We're using JSON between local server
     // and page, so this should never happen.
-    else if (message.type === 'binary') {
+    if (message.type !== 'utf8') {
       if (cfg.debug){
         console.error("Received binary message of %s bytes.",
           message.binaryData.length);
       }
+      return;
     }
+
+    if (cfg.debug){
+        console.log(
+          "Received utf-8 message of %s characters. Message: '%s'.",
+            message.utf8Data.length, message.utf8Data);
+    }
+
+    var userMessage = JSON.parse(message.utf8Data);
+    if (!userMessage || !userMessage.type){
+      console.log('invalid message data.');
+      return;
+    }
+
+    switch(userMessage.type){
+      case 'CRED': {
+        self.xbClient.sendCredential(
+          userMessage,
+          function (err) {
+            console.log(err);
+          });
+        break;
+      }
+      case 'TRANSMISSION': {
+        self.xbClient.transmit(
+          userMessage,
+          function (err) {
+            console.log(err);
+          });
+        break;
+      }
+    }        
   });
+
 
   self.wsClient.on('close', function (reasonCode, description) {
     if (cfg.debug){
@@ -72,6 +88,7 @@ function xbClient (cfg, ws){
     }
   });    
   
+
   self.wsClient.on('error', function (error) {
     console.error(
       'Connection error for xblab presentation client at %s.\n Details: %s',
@@ -89,6 +106,7 @@ function xbClient (cfg, ws){
     ));
   });
 
+
   self.xbClient.on(xblab.events.groupEntry, function (buf) {
     console.log(buf);
 
@@ -98,9 +116,11 @@ function xbClient (cfg, ws){
     ));
   });
 
+
   self.xbClient.on(xblab.events.error, function(err) {
     console.error(err);
   });
+  
 
   self.xbClient.on(xblab.events.end, function (buf) {
     console.log(buf);

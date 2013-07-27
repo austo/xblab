@@ -92,8 +92,8 @@
     // TODO: highlight user-posted messages in chat
     send: function() {
       var packet = JSON.stringify({
-        name: $('#name').val(),
-        msg: $('#message').val().replace(/\n$/, '')
+        type: 'TRANSMISSION',
+        payload: $('#message').val().replace(/\n$/, '')
       });
 
       ns.Chat.socket.send(packet);
