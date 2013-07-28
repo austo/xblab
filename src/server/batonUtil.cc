@@ -287,8 +287,10 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
          * TODO: this may not be the best solution:
          * Handles case when client has disconnected and reconnected.
          * We may want to forbid this.
-         */
+         */         
         baton->member = &mitr->second;
+        // enables access to baton from managers map through member
+        baton->member->baton = baton;
         if (!mitr->second.present) {
           mitr->second.assume(m);
           cout << rightnow() << mitr->second.username

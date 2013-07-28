@@ -20,7 +20,6 @@ using namespace std;
 
 namespace xblab {
 
-
 // xblab.cc
 extern string xbConnectionString;
 extern string xbPublicKeyFile;
@@ -32,6 +31,8 @@ extern string xbNetworkInterface;
 extern map<string, Manager*> xbManagers;
 
 extern uv_loop_t *loop;
+extern uv_idle_t xbGroupChecker;
+
 extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 
 
@@ -173,7 +174,7 @@ Server::afterOnConnect (uv_work_t *r) {
     (uv_stream_t*) &baton->uvClient) == XBGOOD) {
     baton->uvReadCb = readBuf;
     baton->setNeedCredentialCb();
-    uv_write(
+    uv_write( // TODO: macroize
       &baton->uvWrite,
       (uv_stream_t*)&baton->uvClient,
       &baton->uvBuf,

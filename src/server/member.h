@@ -13,14 +13,17 @@
 
 namespace xblab {
 
-class Manager; // fwd decl
+// fwd declarations
+class Manager;
+class MemberBaton; // enables access to baton through managers map
 
 
 class Member {
 
 public:
   Member(){
-    username = "invalid";    
+    username = "invalid";
+    baton = NULL;   
   };
 
 
@@ -88,6 +91,7 @@ public:
   std::vector<sched_t> schedule;
   bool present;
   Manager *manager;
+  MemberBaton *baton;
 
 };
 

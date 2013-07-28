@@ -21,6 +21,8 @@ public:
   bool
   allMembersPresent();
 
+  bool chatStarted;
+
   std::map<int, Member> members;
   Group group;    
 
