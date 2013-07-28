@@ -24,7 +24,6 @@ using namespace std;
 
 namespace xblab {
 
-
 extern string xbConnectionString;
 extern string xbPublicKeyFile;
 extern string xbPrivateKeyFile;
@@ -179,11 +178,11 @@ BatonUtil::exceptionBuf(
 }
 
 
+// Decrypt and compare nonces
 void
-BatonUtil::initializeMember(MemberBaton* baton) {
+BatonUtil::processTransmission(MemberBaton* baton) {
   string buf = Crypto::hybridDecrypt(baton->xBuffer);
 
-  //TODO: switch on transmission type
   Transmission trans;
   if (!trans.ParseFromString(buf)) {
     throw util_exception("Failed to deserialize transmission.");
@@ -194,20 +193,26 @@ BatonUtil::initializeMember(MemberBaton* baton) {
     throw util_exception("Failed to reserialize transmission data.");
   }
 
-  const Transmission::Data& data = trans.data();
-  string retNonce(data.return_nonce());
-
-  if (baton->nonce != retNonce) {
+  if (baton->nonce != trans.data().return_nonce()) {
     throw util_exception("Last nonce does not match transmission nonce.");
   }
-  // save incoming nonce for rebroadcast
-  baton->returnNonce = string(data.nonce());
+  // Save incoming nonce for rebroadcast
+  baton->returnNonce = string(trans.data().nonce());
 
-  // TODO: refactor into general "process transmission" method
-  switch (data.type()) {
+  routeTransmission(baton, datastr, trans);
+}
+
+
+// Decide what to do based on transmission type
+void
+BatonUtil::routeTransmission(
+  MemberBaton *baton, string& datastr, Transmission& trans) {
+  switch (trans.data().type()) {
     case Transmission::CRED: {
-      const Transmission::Credential& cred = data.credential();
-      processCredential(baton, datastr, trans.signature(), cred); 
+      if (!baton->hasMember()) {
+        processCredential(baton, datastr, trans.signature(),
+          trans.data().credential()); 
+      }
       return; 
     }
     case Transmission::ENTER:

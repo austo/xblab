@@ -21,7 +21,7 @@ public:
   Member *member;
   
   bool hasMember();
-  void initializeMember();
+  void processTransmission();
 
   // message buffer methods
   void getNeedCredential();

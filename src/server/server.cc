@@ -187,21 +187,13 @@ Server::afterOnConnect (uv_work_t *r) {
 }
 
 
-// Wherever it appears, onReadWork has to be a kind of routing function
+// Got some data from the client... unpack and forward to router method
 void
 Server::onReadWork(uv_work_t *r){
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
   baton->stringifyBuffer();
   baton->err = "";
-  if (!baton->hasMember()){
-    baton->initializeMember();
-  }
-  /* TODO: digest buffer && set baton->uvWriteCb
-   *  else {
-   *      what kind of message is it: decrypt, parse, verify, respond
-   *      general Util method accessed through baton
-   * }
-   */     
+  baton->processTransmission(); // Util router accessed through baton
 }
 
 

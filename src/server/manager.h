@@ -18,6 +18,9 @@ public:
   Manager(std::string url);    
   ~Manager();
 
+  bool
+  allMembersPresent();
+
   std::map<int, Member> members;
   Group group;    
 

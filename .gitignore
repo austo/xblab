@@ -14,3 +14,5 @@ scraps.cc
 *.o
 native.server
 _gitignore
+tags
+.tags

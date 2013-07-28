@@ -46,11 +46,15 @@ private:
   exceptionBuf(MemberBaton*, Broadcast::Type, std::string, std::string);
 
   static void
-  initializeMember(MemberBaton* baton); 
+  processTransmission(MemberBaton* baton); 
      
   static void
   processCredential(MemberBaton*, std::string&,
     std::string, const Transmission::Credential&);
+
+  static void
+  routeTransmission(MemberBaton *baton,
+    std::string& datastr, Transmission& trans);
   
 };
 

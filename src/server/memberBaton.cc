@@ -60,10 +60,9 @@ MemberBaton::hasMember() {
 
 
 void
-MemberBaton::initializeMember() {
-  BatonUtil::initializeMember(this);
+MemberBaton::processTransmission() {
+  BatonUtil::processTransmission(this);
   // TODO: set uvWriteCb here if all went well
-  // Welcome to the group
 }
 
 

@@ -13,6 +13,7 @@ using namespace std;
 
 namespace xblab{
 
+typedef map<int, Member>::iterator memb_iter;
 
 template <class T>
 void
@@ -60,7 +61,7 @@ Manager::Manager(string url) {
 
   vector< vector<sched_t>* > schedules;
   // Each member has a reference to the manager
-  map<int, Member>::iterator mitr = members.begin();
+  memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     mitr->second.manager = this;
     schedules.push_back(&mitr->second.schedule);
@@ -77,6 +78,17 @@ Manager::Manager(string url) {
 
 Manager::~Manager(){
   free(roundModulii_);
+}
+
+bool
+Manager::allMembersPresent() {
+  memb_iter mitr = members.begin();
+  for (; mitr != members.end(); ++mitr) {
+    if (!mitr->second.present) {
+      return false;
+    }
+  }
+  return true;
 }
 
 

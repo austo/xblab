@@ -153,7 +153,7 @@ Client::onTransmit(MemberBaton *baton) {
     loop,
     &baton->uvWork,
     transmitWork,
-    (uv_after_work_cb)afterSendCredential);
+    (uv_after_work_cb)afterOnRead);
   assert(status == XBGOOD);   
 }
 
