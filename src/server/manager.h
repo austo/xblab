@@ -18,17 +18,17 @@ public:
   Manager(std::string url);    
   ~Manager();
 
-  bool
-  allMembersPresent();
-
-  bool chatStarted;
-
   std::map<int, Member> members;
   Group group;    
 
   std::string publicKey;
   unsigned seed;
 
+  bool chatStarting;
+  bool chatStarted;
+
+  bool
+  allMembersPresent();
   
 private:
   std::string privateKey_;

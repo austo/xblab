@@ -17,7 +17,6 @@ namespace xblab {
 
 uv_loop_t *loop;
 uv_mutex_t xbMutex;
-uv_idle_t xbGroupChecker;
 
 std::string xbConnectionString;
 std::string xbPublicKeyFile;
@@ -26,8 +25,6 @@ std::string xbKeyPassword;
 std::string xbPort;
 std::string xbNetworkInterface;
 
-// TODO: uv_idle_t calling allMembers present on every Manager,
-// then invoking chat start
 std::map<std::string, Manager*> xbManagers;
 
 // global uv buffer allocator
@@ -70,11 +67,6 @@ main(int argc, char** argv) {
    */
   if (uv_mutex_init(&xblab::xbMutex) != XBGOOD) {
     fprintf(stderr, "Error initializing mutex\n");
-    return 1;
-  }
-
-  if (uv_idle_init(xblab::loop, &xblab::xbGroupChecker) != XBGOOD) {
-    fprintf(stderr, "Error initializing group checker\n");
     return 1;
   }
 

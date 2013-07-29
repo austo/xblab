@@ -71,7 +71,8 @@ Manager::Manager(string url) {
   roundModulii_ = NALLOC(nMembers_, int);
   cleanMemberSchedules(schedules);
   currentRound_ = 0;
-  chatStarted = false;
+  chatStarted = false; // yes, these are both unnecessary
+  chatStarting = false;
   cout << rightnow() << "Manager created for group "
       << group.url << " (\"" << group.name << "\")" << endl;  
 }

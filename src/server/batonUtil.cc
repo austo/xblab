@@ -18,7 +18,6 @@
 #include "db.h"
 #include "db_exception.h"
 
-#define DL_EX_PREFIX "Util: "
 
 using namespace std;
 
@@ -288,14 +287,13 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
          * Handles case when client has disconnected and reconnected.
          * We may want to forbid this.
          */         
-        baton->member = &mitr->second;
-        // enables access to baton from managers map through member
-        baton->member->baton = baton;
+        baton->member = &mitr->second;        
         if (!mitr->second.present) {
           mitr->second.assume(m);
           cout << rightnow() << mitr->second.username
-             << " entered group " << mgr->group.url << endl; 
+             << " entered group " << mgr->group.url << endl;
           baton->getGroupEntry();
+          // TODO: check if all members have arrived and begin round
         }
         else {
           stringstream ss;

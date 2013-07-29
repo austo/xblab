@@ -31,7 +31,7 @@ extern string xbNetworkInterface;
 extern map<string, Manager*> xbManagers;
 
 extern uv_loop_t *loop;
-extern uv_idle_t xbGroupChecker;
+extern uv_mutex_t xbMutex;
 
 extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 
@@ -213,6 +213,21 @@ Server::afterOnRead (uv_work_t *r) {
       1,
       baton->uvWriteCb
     );
+
+    // TODO: complete and refactor
+    uv_mutex_lock(&xbMutex);
+    if (baton->member->manager->allMembersPresent() &&
+      !baton->member->manager->chatStarted) {
+      if (!baton->member->manager->chatStarting) {
+        cout << "time to start chat...\n";
+        baton->member->manager->chatStarting = true;
+      }
+      else {
+        cout << "guess someone else is doing it...\n";
+      }
+      // Singleton uv_work_t with data = &xbManagers?
+    }
+    uv_mutex_unlock(&xbMutex);
   }
 }
 
