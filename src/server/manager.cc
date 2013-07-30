@@ -13,7 +13,7 @@
 
 using namespace std;
 
-namespace xblab{
+namespace xblab {
 
 typedef map<int, Member>::iterator memb_iter;
 
@@ -98,6 +98,7 @@ Manager::allMembersPresent() {
 
 void
 Manager::notifyPackedGroups(map<string, Manager*> *mgrs) {
+  map<string, Manager*>::iterator mgr_iter = mgrs->begin();
   usleep(5000); // TODO: remove when we've got a plan
   cout << "notifying packed groups...\n";
 }
