@@ -214,21 +214,50 @@ Server::afterOnRead (uv_work_t *r) {
       baton->uvWriteCb
     );
 
-    // TODO: complete and refactor
     uv_mutex_lock(&xbMutex);
     if (baton->member->manager->allMembersPresent() &&
       !baton->member->manager->chatStarted) {
       if (!baton->member->manager->chatStarting) {
-        cout << "time to start chat...\n";
-        baton->member->manager->chatStarting = true;
+        startChat(baton->member->manager);
       }
       else {
         cout << "guess someone else is doing it...\n";
       }
-      // Singleton uv_work_t with data = &xbManagers?
     }
     uv_mutex_unlock(&xbMutex);
   }
+}
+
+
+void
+Server::startChat(Manager *mgr) {
+  cout << "time to start chat...\n";
+  mgr->chatStarting = true;
+  static uv_work_t chatWork;
+
+  // probably don't have to do this
+  chatWork.data = &xbManagers;
+
+  int status = uv_queue_work(
+    loop,
+    &chatWork,
+    onStartChatWork,
+    (uv_after_work_cb)afterOnStartChat);
+  assert(status == XBGOOD);
+}
+
+
+void
+Server::onStartChatWork(uv_work_t *r) {
+  // iterate through xbManagers, send "start chat" message to members
+  // of groups of which all members are present ("packed groups")
+  // "notifyPackedGroups" - member function of manager?
+}
+
+
+void
+Server::afterOnStartChat(uv_work_t *r) {
+
 }
 
 

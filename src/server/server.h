@@ -5,6 +5,8 @@
 
 namespace xblab {
 
+class Manager; // fwd decl
+
 class Server {
 private:
   static void echoWrite(uv_write_t *req, int status);
@@ -13,6 +15,9 @@ private:
   static void afterOnConnect (uv_work_t *r);
   static void onReadWork(uv_work_t *r);
   static void afterOnRead (uv_work_t *r);
+  static void startChat(Manager *mgr); // TODO: make member of manager?
+  static void onStartChatWork(uv_work_t *r);
+  static void afterOnStartChat(uv_work_t *r);
 
 
 public:
