@@ -229,6 +229,7 @@ Server::afterOnRead (uv_work_t *r) {
 }
 
 
+// NOTE: we may want to use an explicit thread here instead of uv_queue_work
 void
 Server::startChat(Manager *mgr) {
   cout << "time to start chat...\n";
@@ -252,6 +253,7 @@ Server::onStartChatWork(uv_work_t *r) {
   // iterate through xbManagers, send "start chat" message to members
   // of groups of which all members are present ("packed groups")
   // "notifyPackedGroups" - member function of manager?
+  Manager::notifyPackedGroups(&xbManagers);
 }
 
 

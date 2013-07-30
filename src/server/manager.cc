@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include <exception>
 
+#include <unistd.h>
+
 #include "manager.h"
 #include "db.h"
 #include "db_exception.h"
@@ -91,6 +93,13 @@ Manager::allMembersPresent() {
     }
   }
   return true;
+}
+
+
+void
+Manager::notifyPackedGroups(map<string, Manager*> *mgrs) {
+  usleep(5000); // TODO: remove when we've got a plan
+  cout << "notifying packed groups...\n";
 }
 
 

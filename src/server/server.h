@@ -15,8 +15,8 @@ private:
   static void afterOnConnect (uv_work_t *r);
   static void onReadWork(uv_work_t *r);
   static void afterOnRead (uv_work_t *r);
-  static void startChat(Manager *mgr); // TODO: make member of manager?
-  static void onStartChatWork(uv_work_t *r);
+  static void startChat(Manager *mgr);
+  static void onStartChatWork(uv_work_t *r); // TODO: hand off to manager
   static void afterOnStartChat(uv_work_t *r);
 
 

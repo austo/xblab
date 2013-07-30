@@ -29,6 +29,10 @@ public:
 
   bool
   allMembersPresent();
+
+  // TODO: move to group (and add group.cc)?
+  static void
+  notifyPackedGroups(std::map<std::string, Manager*> *mgrs);
   
 private:
   std::string privateKey_;
@@ -38,7 +42,7 @@ private:
 
   template <class T>
   void
-  cleanMemberSchedules(std::vector< std::vector<T>* >& schedules); 
+  cleanMemberSchedules(std::vector< std::vector<T>* >& schedules);
 
 
 };
