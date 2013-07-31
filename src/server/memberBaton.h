@@ -9,16 +9,14 @@ namespace xblab {
 
 class MemberBaton : public DataBaton {
 public:
-  MemberBaton(){
-    uvClient.data = this;
-    member = NULL; // memberBaton does not own member
-  }
+  MemberBaton();
   ~MemberBaton(); 
 
   // TODO: add uv_work_cb and uv_after_work_cb?
   
   // Note to self: make sure to check this on error
   Member *member;
+  uv_mutex_t mutex; // enable thread-safe access to shared data
   
   bool hasMember();
   void processTransmission();

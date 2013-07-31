@@ -61,7 +61,7 @@ main(int argc, char** argv) {
   }
 
   /* 
-   * TODO: We have one global mutex, xblab::xbMutex.
+   * NOTE: We have one global mutex, xblab::xbMutex.
    * May get out of hand if/when we need to manage
    * multiple critical regions.
    */

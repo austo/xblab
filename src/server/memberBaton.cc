@@ -3,6 +3,8 @@
 
 #include <pcrecpp.h>
 
+#include <stdexcept>
+
 #include "memberBaton.h"
 #include "batonUtil.h"
 #include "common/macros.h"
@@ -18,6 +20,16 @@ extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 extern uv_loop_t *loop;
 
 
+MemberBaton::MemberBaton() {
+  uvClient.data = this;
+  member = NULL; // memberBaton does not own member
+  if (uv_mutex_init(&mutex) != XBGOOD) {
+    fprintf(stderr, "Error initializing MemberBaton mutex\n");
+    throw runtime_error("Error initializing MemberBaton mutex\n");
+  }
+}
+
+
 MemberBaton::~MemberBaton() {
   if (member != NULL) {
     member->present = false;
@@ -27,7 +39,8 @@ MemberBaton::~MemberBaton() {
   else {
     pcrecpp::RE("\\.$").Replace(": ", &err);    
     fprintf(stdout, "%sMemberBaton being deleted.\n", err.c_str());
-  }  
+  }
+  uv_mutex_destroy(&mutex);  
 }
 
 
