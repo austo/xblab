@@ -62,6 +62,9 @@ private:
   static void
   signData(Broadcast& bc, Broadcast::Data *data);
 
+  static void
+  serializeToBuffer(MemberBaton *baton, Broadcast& bc);
+
   
 };
 

@@ -75,18 +75,8 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
 
   data->set_allocated_session(sess);
 
-  signData(bc, data); 
-
-  string retval;
-  if (!bc.SerializeToString(&retval)) {
-    throw util_exception("Failed to serialize broadcast.");
-  }
-
-  Crypto::hybridEncrypt(baton->member->publicKey, retval);
-
-  baton->xBuffer = retval;    
-  baton->uvBuf.base = &baton->xBuffer[0];
-  baton->uvBuf.len = baton->xBuffer.size();
+  signData(bc, data);
+  serializeToBuffer(baton, bc);  
 }
 
 
@@ -101,8 +91,7 @@ BatonUtil::startChatBuf(MemberBaton *baton) {
       % baton->member->manager->members.size());
   prologue->set_modulo(modulo);
   signData(bc, data);
-
-  // throw util_exception("not implemented!");
+  serializeToBuffer(baton, bc);
 }
 
 
@@ -146,7 +135,8 @@ BatonUtil::exceptionBuf(
   data->set_return_nonce(baton->returnNonce);
 
   signData(bc, data);
-  
+
+  // TODO: serializeToBuffer overload for initial public key
   string retval;
   if (!bc.SerializeToString(&retval)) {
     throw util_exception("Failed to serialize broadcast.");
@@ -319,6 +309,21 @@ BatonUtil::signData(Broadcast& bc, Broadcast::Data *data) {
   catch(crypto_exception& e) {
     cout << rightnow() << "crypto exception: " << e.what() << endl;
   }
+}
+
+
+void
+BatonUtil::serializeToBuffer(MemberBaton *baton, Broadcast& bc) {
+  string retval;
+  if (!bc.SerializeToString(&retval)) {
+    throw util_exception("Failed to serialize broadcast.");
+  }
+
+  Crypto::hybridEncrypt(baton->member->publicKey, retval);
+
+  baton->xBuffer = retval;    
+  baton->uvBuf.base = &baton->xBuffer[0];
+  baton->uvBuf.len = baton->xBuffer.size();
 }
 
 
