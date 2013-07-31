@@ -25,6 +25,7 @@ Member::assume(Member* other) {
 void
 Member::notifyStartChat() {
   printf("%s starting chat\n", handle.c_str());
+  
 }
 
 } // namespace xblab

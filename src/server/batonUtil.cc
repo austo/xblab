@@ -41,18 +41,7 @@ BatonUtil::needCredBuf(MemberBaton* baton) {
   data->set_type(Broadcast::NEEDCRED);
   data->set_nonce(baton->nonce);
 
-  string sig, datastr;
-  if (!data->SerializeToString(&datastr)) {
-    throw util_exception("Failed to serialize broadcast data.");
-  }
-  try{
-    sig = Crypto::sign(datastr);
-    bc.set_signature(sig);
-    bc.set_allocated_data(data); //bc now owns data - no need to free
-  }
-  catch(crypto_exception& e) {
-    cout << rightnow() << "crypto exception: " << e.what() << endl;
-  }
+  signData(bc, data);
 
   string retval;
   if (!bc.SerializeToString(&retval)) {
@@ -86,18 +75,7 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
 
   data->set_allocated_session(sess);
 
-  string sig, datastr;
-  if (!data->SerializeToString(&datastr)) {
-    throw util_exception("Failed to serialize broadcast data.");
-  }
-  try {
-    sig = Crypto::sign(datastr);
-    bc.set_signature(sig);
-    bc.set_allocated_data(data);
-  }
-  catch(crypto_exception& e) {
-    cout << rightnow() << "crypto exception: " << e.what() << endl;
-  }
+  signData(bc, data); 
 
   string retval;
   if (!bc.SerializeToString(&retval)) {
@@ -109,6 +87,22 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
   baton->xBuffer = retval;    
   baton->uvBuf.base = &baton->xBuffer[0];
   baton->uvBuf.len = baton->xBuffer.size();
+}
+
+
+void
+BatonUtil::startChatBuf(MemberBaton *baton) {
+  baton->nonce = Crypto::generateNonce();
+  Broadcast bc;
+  Broadcast::Data *data = new Broadcast::Data();
+  Broadcast::Prologue *prologue = new Broadcast::Prologue();
+  int modulo = 
+    (Crypto::generateRandomInt<int>()
+      % baton->member->manager->members.size());
+  prologue->set_modulo(modulo);
+  signData(bc, data);
+
+  // throw util_exception("not implemented!");
 }
 
 
@@ -151,19 +145,8 @@ BatonUtil::exceptionBuf(
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
 
-  string sigstr, datastr;
-  if (!data->SerializeToString(&datastr)) {
-    throw util_exception("Failed to serialize broadcast data.");
-  }
-  try {
-    sigstr = Crypto::sign(datastr);
-    bc.set_signature(sigstr);
-    bc.set_allocated_data(data);
-  }
-  catch(crypto_exception& e) {
-    cout << rightnow() <<  "crypto exception: " << e.what() << endl;
-  }
-
+  signData(bc, data);
+  
   string retval;
   if (!bc.SerializeToString(&retval)) {
     throw util_exception("Failed to serialize broadcast.");
@@ -319,6 +302,23 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   delete m;
   exceptionBuf(baton, Broadcast::ERROR, ss.str());
   return;
+}
+
+
+void
+BatonUtil::signData(Broadcast& bc, Broadcast::Data *data) {
+  string sig, datastr;
+  if (!data->SerializeToString(&datastr)) {
+    throw util_exception("Failed to serialize broadcast data.");
+  }
+  try {
+    sig = Crypto::sign(datastr);
+    bc.set_signature(sig);
+    bc.set_allocated_data(data);
+  }
+  catch(crypto_exception& e) {
+    cout << rightnow() << "crypto exception: " << e.what() << endl;
+  }
 }
 
 

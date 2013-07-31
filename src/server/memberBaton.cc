@@ -92,6 +92,14 @@ MemberBaton::getGroupEntry() {
 }
 
 
+void
+MemberBaton::getStartChat() {
+  uv_mutex_lock(&mutex);
+  BatonUtil::startChatBuf(this);
+  uv_mutex_unlock(&mutex);
+}
+
+
 // void
 // MemberBaton::getNoOp(string what) {
 //   BatonUtil::noOpBuf(this, what);

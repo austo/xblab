@@ -34,10 +34,13 @@ private:
   ~BatonUtil(){};
 
   static void
-  needCredBuf(MemberBaton* baton);
+  needCredBuf(MemberBaton *baton);
 
   static void
-  groupEntryBuf(MemberBaton* baton);
+  groupEntryBuf(MemberBaton *baton);
+
+  static void
+  startChatBuf(MemberBaton *baton);
 
   static void
   exceptionBuf(MemberBaton*, Broadcast::Type, std::string);
@@ -46,7 +49,7 @@ private:
   exceptionBuf(MemberBaton*, Broadcast::Type, std::string, std::string);
 
   static void
-  processTransmission(MemberBaton* baton); 
+  processTransmission(MemberBaton *baton); 
      
   static void
   processCredential(MemberBaton*, std::string&,
@@ -55,6 +58,10 @@ private:
   static void
   routeTransmission(MemberBaton *baton,
     std::string& datastr, Transmission& trans);
+
+  static void
+  signData(Broadcast& bc, Broadcast::Data *data);
+
   
 };
 
