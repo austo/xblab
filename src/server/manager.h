@@ -30,7 +30,11 @@ public:
   bool
   allMembersPresent();
 
+  void
+  broadcastStartChat();
+
   // TODO: move to group (and add group.cc)?
+  // TODO: remove?
   static void
   notifyPackedGroups(std::map<std::string, Manager*> *mgrs);
   

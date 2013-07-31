@@ -287,7 +287,8 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
          * Handles case when client has disconnected and reconnected.
          * We may want to forbid this.
          */         
-        baton->member = &mitr->second;        
+        baton->member = &mitr->second;
+        baton->member->baton = baton;
         if (!mitr->second.present) {
           mitr->second.assume(m);
           cout << rightnow() << mitr->second.username

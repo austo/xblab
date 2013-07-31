@@ -18,7 +18,7 @@ endif
 
 SRCS = $(XB_SRC_C)/crypto.cc $(XB_SRC_P)/xblab.pb.cc \
 	$(XB_SRC_S)/memberBaton.cc $(XB_SRC_S)/batonUtil.cc \
-	$(XB_SRC_S)/db.cc $(XB_SRC_S)/manager.cc \
+	$(XB_SRC_S)/db.cc $(XB_SRC_S)/manager.cc $(XB_SRC_S)/member.cc \
 	$(XB_SRC_S)/server.cc $(XB_SRC_S)/xblab.cc
 
 OBJS = $(SRCS:.cc=.o)

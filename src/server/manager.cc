@@ -97,9 +97,23 @@ Manager::allMembersPresent() {
 
 
 void
+Manager::broadcastStartChat() {
+  cout << "notifying " << group.name << endl;
+  usleep(1000); // TODO: remove when we've got a plan
+
+  memb_iter mitr = members.begin();
+  for (; mitr != members.end(); ++mitr) {
+    mitr->second.notifyStartChat();
+  }
+}
+
+
+/* static */
+// TODO: remove this in favor of manager-by-manager approach
+void
 Manager::notifyPackedGroups(map<string, Manager*> *mgrs) {
   map<string, Manager*>::iterator mgr_iter = mgrs->begin();
-  usleep(5000); // TODO: remove when we've got a plan
+  usleep(1000); // TODO: remove when we've got a plan
   cout << "notifying packed groups...\n";
 }
 

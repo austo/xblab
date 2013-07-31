@@ -15,6 +15,7 @@ namespace xblab {
 
 // fwd declaration(s)
 class Manager;
+class MemberBaton; // useful to get to baton through xbManagers
 
 class Member {
 
@@ -41,7 +42,6 @@ public:
         Crypto::generateRandomInts<sched_t>(XBSCHEDULESIZE);
   }
 
-
   Member(
     std::string username,
     std::string password,
@@ -52,21 +52,14 @@ public:
     publicKey(pubkey),
     present(present) { }
 
+  void
+  assume(const Member& other);
 
   void
-  assume(const Member& other) {
-    publicKey = other.publicKey;
-    present = other.present;
-  }
-
+  assume(Member* other);
 
   void
-  assume(Member* other) {
-    publicKey = other->publicKey;
-    present = other->present;
-    delete other;
-  }
-
+  notifyStartChat();
 
   bool
   operator== (const Member& other) const {
@@ -78,7 +71,6 @@ public:
       Crypto::checkPasshash(password, other.password);          
   }
 
-
   std::string username;
   std::string password;
   std::string handle;
@@ -88,6 +80,7 @@ public:
   std::vector<sched_t> schedule;
   bool present;
   Manager *manager;
+  MemberBaton *baton;
 
 };
 

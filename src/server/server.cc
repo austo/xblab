@@ -237,7 +237,7 @@ Server::startChat(Manager *mgr) {
   static uv_work_t chatWork;
 
   // probably don't have to do this
-  chatWork.data = &xbManagers;
+  chatWork.data = mgr;
 
   int status = uv_queue_work(
     loop,
@@ -250,10 +250,12 @@ Server::startChat(Manager *mgr) {
 
 void
 Server::onStartChatWork(uv_work_t *r) {
+  Manager *mgr = reinterpret_cast<Manager *>(r->data);
+  mgr->broadcastStartChat();
   // iterate through xbManagers, send "start chat" message to members
   // of groups of which all members are present ("packed groups")
   // "notifyPackedGroups" - member function of manager?
-  Manager::notifyPackedGroups(&xbManagers);
+  // Manager::notifyPackedGroups(&xbManagers);
 }
 
 
