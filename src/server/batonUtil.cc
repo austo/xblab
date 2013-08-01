@@ -195,6 +195,7 @@ BatonUtil::routeTransmission(
       return; 
     }
     case Transmission::ENTER:
+    case Transmission::READY:
     case Transmission::TRANSMIT:
     case Transmission::EXIT:
     case Transmission::QUIT:

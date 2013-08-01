@@ -143,6 +143,8 @@ BatonUtil::enterGroup(
   string sched(session.schedule());
   baton->member.schedule = vectorize_string<sched_t>(sched);
 
+  // TODO: uv_write "READY" message
+
 #ifdef DEBUG
   for (int i = 0, n = baton->member.schedule.size(); i < n; ++i) {
     cout << baton->member.schedule[i] << ", ";

@@ -1800,6 +1800,7 @@ bool Transmission_Type_IsValid(int value) {
     case 4:
     case 5:
     case 6:
+    case 7:
       return true;
     default:
       return false;
@@ -1814,6 +1815,7 @@ const Transmission_Type Transmission::EXIT;
 const Transmission_Type Transmission::QUIT;
 const Transmission_Type Transmission::ERROR;
 const Transmission_Type Transmission::NO_OP;
+const Transmission_Type Transmission::READY;
 const Transmission_Type Transmission::Type_MIN;
 const Transmission_Type Transmission::Type_MAX;
 const int Transmission::Type_ARRAYSIZE;

@@ -5,7 +5,8 @@
 
 namespace xblab {
 
-class Manager; // fwd decl
+class Manager; // fwd decls
+class MemberBaton;
 
 class Server {
 private:
@@ -15,6 +16,8 @@ private:
   static void afterOnConnect (uv_work_t *r);
   static void onReadWork(uv_work_t *r);
   static void afterOnRead (uv_work_t *r);
+
+  static void checkStartChat(MemberBaton *baton);
   static void startChat(Manager *mgr);
   static void onStartChatWork(uv_work_t *r); // TODO: hand off to manager
   static void afterOnStartChat(uv_work_t *r);

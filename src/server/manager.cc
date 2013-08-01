@@ -20,13 +20,13 @@ typedef map<int, Member>::iterator memb_iter;
 template <class T>
 void
 Manager::cleanMemberSchedules(
-  std::vector< std::vector<T>* >& schedules) {
+  std::vector< std::vector<T>* >& schedules, size_t elemsize) {
   if (schedules.size() < 2) { return; }
 
   T i = 0, s = 0, curr;  
   std::vector<T> *firstSched = schedules.at(s);
 
-  for (; i < XBSCHEDULESIZE; i++) {
+  for (; i < elemsize; i++) {
     curr = (*firstSched)[i];
 
   #ifdef DEBUG
@@ -71,7 +71,7 @@ Manager::Manager(string url) {
 
   nMembers_ = members.size();
   roundModulii_ = NALLOC(nMembers_, int);
-  cleanMemberSchedules(schedules);
+  cleanMemberSchedules(schedules, XBSCHEDULESIZE);
   currentRound_ = 0;
   chatStarted = false; // yes, these are both unnecessary
   chatStarting = false;

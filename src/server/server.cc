@@ -217,7 +217,16 @@ Server::afterOnRead (uv_work_t *r) {
       baton->uvWriteCb
     );
 
-    uv_mutex_lock(&xbMutex);
+    // TODO: remove in favor of explicit READY message
+    // from each xbClient
+    // checkStartChat(baton);
+  }
+}
+
+
+void
+Server::checkStartChat(MemberBaton *baton) {
+  uv_mutex_lock(&xbMutex);
     if (baton->member->manager->allMembersPresent() &&
       !baton->member->manager->chatStarted) {
       if (!baton->member->manager->chatStarting) {
@@ -228,7 +237,6 @@ Server::afterOnRead (uv_work_t *r) {
       }
     }
     uv_mutex_unlock(&xbMutex);
-  }
 }
 
 

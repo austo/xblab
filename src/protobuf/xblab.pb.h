@@ -69,11 +69,12 @@ enum Transmission_Type {
   Transmission_Type_EXIT = 3,
   Transmission_Type_QUIT = 4,
   Transmission_Type_ERROR = 5,
-  Transmission_Type_NO_OP = 6
+  Transmission_Type_NO_OP = 6,
+  Transmission_Type_READY = 7
 };
 bool Transmission_Type_IsValid(int value);
 const Transmission_Type Transmission_Type_Type_MIN = Transmission_Type_CRED;
-const Transmission_Type Transmission_Type_Type_MAX = Transmission_Type_NO_OP;
+const Transmission_Type Transmission_Type_Type_MAX = Transmission_Type_READY;
 const int Transmission_Type_Type_ARRAYSIZE = Transmission_Type_Type_MAX + 1;
 
 // ===================================================================
@@ -1481,6 +1482,7 @@ class Transmission : public ::google::protobuf::MessageLite {
   static const Type QUIT = Transmission_Type_QUIT;
   static const Type ERROR = Transmission_Type_ERROR;
   static const Type NO_OP = Transmission_Type_NO_OP;
+  static const Type READY = Transmission_Type_READY;
   static inline bool Type_IsValid(int value) {
     return Transmission_Type_IsValid(value);
   }
