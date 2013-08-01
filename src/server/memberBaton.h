@@ -26,6 +26,7 @@ public:
   void setNeedCredentialCb();
   void getGroupEntry();
   void getStartChat();
+
   // void getNoOp(std::string what);
 
   // uv_write_cb's:

@@ -236,7 +236,6 @@ Server::startChat(Manager *mgr) {
   mgr->chatStarting = true;
   static uv_work_t chatWork;
 
-  // probably don't have to do this
   chatWork.data = mgr;
 
   int status = uv_queue_work(
@@ -252,16 +251,17 @@ void
 Server::onStartChatWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
   mgr->broadcastStartChat();
-  // iterate through xbManagers, send "start chat" message to members
-  // of groups of which all members are present ("packed groups")
-  // "notifyPackedGroups" - member function of manager?
-  // Manager::notifyPackedGroups(&xbManagers);
 }
 
 
 void
 Server::afterOnStartChat(uv_work_t *r) {
-
+  Manager *mgr = reinterpret_cast<Manager *>(r->data);
+#ifdef DEBUG
+  cout << "manager " << mgr->group.name << " afterOnStartChat\n";
+#endif
+  // TODO: broadcast buffer to all memberBatons
+  
 }
 
 
