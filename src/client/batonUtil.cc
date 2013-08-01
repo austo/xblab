@@ -108,7 +108,6 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         enterGroup(baton, data);
         return;
       }
-
       case Broadcast::ERROR: {
         baton->err = data.error().what();
         return;
@@ -117,9 +116,13 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         baton->err = data.no_op().what();
         return;
       }
+      case Broadcast::BEGIN: {
+        startChat(baton, data);
+        return;
+      }
+
 
       case Broadcast::GROUPLIST:
-      case Broadcast::BEGIN:
       case Broadcast::BROADCAST:
       case Broadcast::GROUPEXIT:
       case Broadcast::QUIT: {
@@ -148,6 +151,19 @@ BatonUtil::enterGroup(
 #endif
 
   baton->jsCallbackFactory = XbClient::groupEntryFactory;
+  baton->needsJsCallback = true;
+}
+
+
+void
+BatonUtil::startChat(
+  MemberBaton *baton, const Broadcast::Data& data) {
+  cout << "inside start chat\n";
+  const Broadcast::Prologue& prologue = data.prologue();
+  cout << "got prologue\n";
+  baton->member.modulus = prologue.modulo();
+  cout << baton->member.username << ": " << baton->member.modulus << endl;
+  baton->jsCallbackFactory = XbClient::startChatFactory;
   baton->needsJsCallback = true;
 }
 

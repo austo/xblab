@@ -2,6 +2,7 @@
   exports.chatProtocol = 'xblab-chat-protocol';
   exports.needCred = 'NEEDCRED';
   exports.groupEntry = 'GROUPENTRY';
+  exports.begin = 'BEGIN';
 
 // if exports is undefined, we're in the browser...
 // define NS if necessary & invoke with that instead

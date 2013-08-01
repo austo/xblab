@@ -79,6 +79,7 @@ public:
   int roundModulus;
   std::vector<sched_t> schedule;
   bool present;
+  bool ready;
   Manager *manager;
   MemberBaton *baton;
 

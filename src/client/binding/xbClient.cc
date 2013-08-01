@@ -142,6 +142,31 @@ XbClient::emitEndConnection() {
   return scope.Close(Undefined());  
 }
 
+v8::Handle<v8::Value>
+XbClient::emitStartChat() {
+  HandleScope scope;
+
+  try {
+      char buf[30];
+      sprintf(buf, "Begin chat");
+
+      Handle<Value> argv[XBEMITARGS] = {
+        String::New("beginChat"),
+        String::New(buf)
+      };
+      XBEMITCALLBACK(pHandle_, argv);
+    }
+
+    catch (util_exception& e) {
+      Handle<Value> argv[2] = {
+        String::New("error"),
+        String::New(e.what())
+      };
+      XBEMITCALLBACK(pHandle_, argv);
+    }
+    return scope.Close(Undefined());
+}
+
 /* static member functions */
 
 Handle<Value>
@@ -255,6 +280,11 @@ Handle<Value>
 XbClient::endConnectionFactory(XbClient *xbClient) {
   // cout << xbClient->baton->url;
   return xbClient->emitEndConnection();
+}
+
+v8::Handle<v8::Value>
+XbClient::startChatFactory(XbClient *xbClient) {
+  return xbClient->emitStartChat();
 }
 
 

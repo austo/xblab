@@ -65,6 +65,7 @@ message Transmission {
     QUIT = 4;
     ERROR = 5;
     NO_OP = 6;
+    READY = 7;
   }
 
   message Credential {

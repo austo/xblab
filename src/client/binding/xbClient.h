@@ -36,6 +36,9 @@ public:
   static v8::Handle<v8::Value>
   endConnectionFactory(XbClient*);
 
+  static v8::Handle<v8::Value>
+  startChatFactory(XbClient*);
+
   // static v8::Handle<v8::Value>
   // errorFactory(XbClient*);
 
@@ -68,6 +71,9 @@ private:
 
   v8::Handle<v8::Value>
   emitGroupEntry();
+
+  v8::Handle<v8::Value>
+  emitStartChat();
 
   // v8::Handle<v8::Value>
   // emitError();  

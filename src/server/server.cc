@@ -229,7 +229,11 @@ Server::afterOnRead (uv_work_t *r) {
 }
 
 
-// NOTE: we may want to use an explicit thread here instead of uv_queue_work
+/* NOTE: we may want to use an explicit thread here instead of uv_queue_work
+ * also, not requiring an acknowledgement from the client cases threading
+ * issues (which can probably be solved with mutexes, but still requires
+ * an assumption that the client is ready).
+ */
 void
 Server::startChat(Manager *mgr) {
   cout << "time to start chat...\n";
@@ -260,8 +264,22 @@ Server::afterOnStartChat(uv_work_t *r) {
 #ifdef DEBUG
   cout << "manager " << mgr->group.name << " afterOnStartChat\n";
 #endif
+  map<int, Member>::iterator mitr = mgr->members.begin();
+  for (; mitr != mgr->members.end(); ++mitr) {
+    uv_mutex_lock(&mitr->second.baton->mutex);
+    cout << "sending BEGIN to " << mitr->second.username << endl;
+    uv_write(
+      &mitr->second.baton->uvWrite,
+      (uv_stream_t*)&mitr->second.baton->uvClient,
+      &mitr->second.baton->uvBuf,
+      1,
+      mitr->second.baton->uvWriteCb
+    );
+    uv_mutex_unlock(&mitr->second.baton->mutex);
+
+  }
   // TODO: broadcast buffer to all memberBatons
-  
+  mgr->chatStarted = true;
 }
 
 

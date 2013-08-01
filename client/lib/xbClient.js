@@ -116,6 +116,15 @@ function xbClient (cfg, ws){
   });
 
 
+  self.xbClient.on(xblab.events.beginChat, function(buf) {
+    console.error(buf);
+
+    self.wsClient.send(JSON.stringify(
+      { state: constants.begin, payload: buf }
+    ));
+  });
+  
+
   self.xbClient.on(xblab.events.error, function(err) {
     console.error(err);
   });

@@ -23,13 +23,15 @@ class BatonUtil {
 
   static void
   digestBroadcast(MemberBaton *baton);
-  
-  BatonUtil(){};
-  ~BatonUtil(){};
 
   static void
   enterGroup(MemberBaton *baton, const Broadcast::Data& data);
 
+  static void
+  startChat(MemberBaton *baton, const Broadcast::Data& data);
+
+  BatonUtil(){};
+  ~BatonUtil(){};
 };
 
 } //namespace xblab

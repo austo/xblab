@@ -86,10 +86,17 @@ BatonUtil::startChatBuf(MemberBaton *baton) {
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
   Broadcast::Prologue *prologue = new Broadcast::Prologue();
-  int modulo = 
-    (Crypto::generateRandomInt<int>()
+  unsigned modulo = 
+    (Crypto::generateRandomInt<unsigned>()
       % baton->member->manager->members.size());
   prologue->set_modulo(modulo);
+
+  data->set_type(Broadcast::BEGIN);
+  data->set_nonce(baton->nonce);
+  data->set_allocated_prologue(prologue);
+  // cout << "ret. nonce: " << baton->returnNonce << endl;
+  // data->set_return_nonce(baton->returnNonce); // same return nonce
+
   signData(bc, data);
   serializeToBuffer(baton, bc);
 }

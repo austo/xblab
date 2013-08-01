@@ -20,6 +20,7 @@ for (var f in xblab){
 exports.events = {
 	needCred: 'needCred',
 	groupEntry: 'groupEntry',
+  beginChat: 'beginChat',
 	error: 'error',
 	end: 'end'
 };

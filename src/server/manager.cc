@@ -99,7 +99,7 @@ Manager::allMembersPresent() {
 void
 Manager::broadcastStartChat() {
   cout << "notifying " << group.name << endl;
-  usleep(1000); // TODO: remove when we've got a plan
+  usleep(50000); // TODO: remove when we've got a plan
 
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
@@ -113,7 +113,7 @@ Manager::broadcastStartChat() {
 void
 Manager::notifyPackedGroups(map<string, Manager*> *mgrs) {
   map<string, Manager*>::iterator mgr_iter = mgrs->begin();
-  usleep(1000); // TODO: remove when we've got a plan
+  usleep(10000); // TODO: remove when we've got a plan
   cout << "notifying packed groups...\n";
 }
 
