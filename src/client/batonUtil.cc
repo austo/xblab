@@ -132,7 +132,7 @@ BatonUtil::enterGroup(
   baton->member.schedule = vectorize_string<sched_t>(sched);
 
   // uv_write "READY" message
-  chatReady(baton);
+  // chatReady(baton);
 
 #ifdef DEBUG
   for (int i = 0, n = baton->member.schedule.size(); i < n; ++i) {
