@@ -5,6 +5,8 @@
 
 namespace xblab {
 
+class MemberBaton; //fwd
+
 class Client {
 private:
 
@@ -20,6 +22,7 @@ public:
   static void writeSendCredential(uv_write_t *req, int status);
   static void onSendCredential(MemberBaton *baton);
   static void onTransmit(MemberBaton *baton);
+  static void writeBatonBuffer(MemberBaton *baton);
 
 };
 

@@ -30,6 +30,15 @@ class BatonUtil {
   static void
   startChat(MemberBaton *baton, const Broadcast::Data& data);
 
+  static void
+  chatReady(MemberBaton *baton);
+
+  static void
+  signData(Transmission&, Transmission::Data*, std::string&);
+
+  static void
+  serializeToBuffer(MemberBaton *baton, Transmission& trans);
+
   BatonUtil(){};
   ~BatonUtil(){};
 };

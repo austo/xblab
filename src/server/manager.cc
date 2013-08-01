@@ -108,6 +108,12 @@ Manager::broadcastStartChat() {
 }
 
 
+string
+Manager::decryptSessionMessage(string& ciphertext) {
+  return Crypto::hybridDecrypt(privateKey_, ciphertext);
+}
+
+
 /* static */
 // TODO: remove this in favor of manager-by-manager approach
 void

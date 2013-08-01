@@ -160,7 +160,9 @@ BatonUtil::exceptionBuf(
 // Decrypt and compare nonces
 void
 BatonUtil::processTransmission(MemberBaton* baton) {
-  string buf = Crypto::hybridDecrypt(baton->xBuffer);
+  string buf = baton->hasMember() ? 
+    baton->member->manager->decryptSessionMessage(baton->xBuffer) :
+    Crypto::hybridDecrypt(baton->xBuffer);
 
   Transmission trans;
   if (!trans.ParseFromString(buf)) {
@@ -194,8 +196,12 @@ BatonUtil::routeTransmission(
       }
       return; 
     }
+    case Transmission::READY: {
+      cout << "READY message recieved from " << baton->member->handle << endl;
+      return;
+    }
+
     case Transmission::ENTER:
-    case Transmission::READY:
     case Transmission::TRANSMIT:
     case Transmission::EXIT:
     case Transmission::QUIT:

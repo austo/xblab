@@ -148,6 +148,23 @@ Client::writeSendCredential(uv_write_t *req, int status) {
 
 
 void
+Client::writeBatonBuffer(MemberBaton *baton) {
+  cout << "inside writeBatonBuffer\n";
+  cout << "buffer: " << baton->xBuffer << endl;;
+
+  baton->uvWriteCb = writeSendCredential;
+
+  uv_write(
+    &baton->uvWrite,
+    (uv_stream_t*)&baton->uvClient,
+    &baton->uvBuf,
+    1,
+    baton->uvWriteCb
+  );
+}
+
+
+void
 Client::onTransmit(MemberBaton *baton) {
   int status = uv_queue_work(
     loop,

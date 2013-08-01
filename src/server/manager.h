@@ -33,6 +33,9 @@ public:
   void
   broadcastStartChat();
 
+  std::string
+  decryptSessionMessage(std::string& ciphertext);
+
   // TODO: move to group (and add group.cc)?
   // TODO: remove?
   static void

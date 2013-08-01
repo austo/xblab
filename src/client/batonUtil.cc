@@ -6,6 +6,7 @@
 #include "common/crypto.h"
 #include "client/batonUtil.h"
 #include "client/binding/xbClient.h"
+#include "client/client.h"
 
 using namespace std;
 
@@ -34,22 +35,9 @@ BatonUtil::packageCredential(MemberBaton *baton) {
 
   data->set_allocated_credential(cred);
 
-
-  string sigstr, datastr;
-  if (!data->SerializeToString(&datastr)) {
-    throw util_exception("Failed to serialize broadcast data.");
-  }
-  try{
-    sigstr = Crypto::sign(baton->member.privateKey, datastr);
-    trans.set_signature(sigstr);
-    trans.set_allocated_data(data);
-  }
-  catch(crypto_exception& e){
-    cout << "crypto exception: " << e.what() << endl;
-  }
-  // Protobuf-lite doesn't support SerializeToOstream
+  signData(trans, data, baton->member.privateKey);
+  
   stringstream plaintext, ciphertext;
-
   string ptstr;
   if (!trans.SerializeToString(&ptstr)){
     throw util_exception("Failed to serialize broadcast.");
@@ -143,7 +131,8 @@ BatonUtil::enterGroup(
   string sched(session.schedule());
   baton->member.schedule = vectorize_string<sched_t>(sched);
 
-  // TODO: uv_write "READY" message
+  // uv_write "READY" message
+  chatReady(baton);
 
 #ifdef DEBUG
   for (int i = 0, n = baton->member.schedule.size(); i < n; ++i) {
@@ -167,6 +156,53 @@ BatonUtil::startChat(
   cout << baton->member.username << ": " << baton->member.modulus << endl;
   baton->jsCallbackFactory = XbClient::startChatFactory;
   baton->needsJsCallback = true;
+}
+
+
+void
+BatonUtil::chatReady(MemberBaton *baton) {
+  Transmission trans;
+  Transmission::Data *data = new Transmission::Data();  
+  data->set_type(Transmission::READY);
+  data->set_nonce(baton->nonce);
+  data->set_return_nonce(baton->returnNonce);
+
+  signData(trans, data, baton->member.privateKey);
+  serializeToBuffer(baton, trans);
+  Client::writeBatonBuffer(baton);
+}
+
+
+void
+BatonUtil::signData(
+  Transmission& trans, Transmission::Data *data, string& privateKey) {
+  string sigstr, datastr;
+  if (!data->SerializeToString(&datastr)) {
+    throw util_exception("Failed to serialize broadcast data.");
+  }
+  try{
+    sigstr = Crypto::sign(privateKey, datastr);
+    trans.set_signature(sigstr);
+    trans.set_allocated_data(data);
+  }
+  catch(crypto_exception& e){
+    cout << "crypto exception: " << e.what() << endl;
+  }
+}
+
+
+void
+BatonUtil::serializeToBuffer(MemberBaton *baton, Transmission& trans) {
+  string retval;
+  if (!trans.SerializeToString(&retval)) {
+    throw util_exception("Failed to serialize broadcast.");
+  }
+
+  Crypto::hybridEncrypt(baton->member.sessionKey, retval);
+
+  baton->xBuffer = retval;    
+  baton->uvBuf.base = &baton->xBuffer[0];
+  baton->uvBuf.len = baton->xBuffer.size();
 }
 
 
