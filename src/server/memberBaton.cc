@@ -86,23 +86,20 @@ MemberBaton::getNeedCredential() {
 }
 
 
+// Thses methods may overlap if all members arrive at once
 void
 MemberBaton::getGroupEntry() {
+  uv_mutex_lock(&mutex);
   BatonUtil::groupEntryBuf(this);
+  uv_mutex_unlock(&mutex);
 }
 
 
 void
 MemberBaton::getStartChat() {
-#ifdef DEBUG
-  cout << "locking baton->mutex\n";
-#endif
   uv_mutex_lock(&mutex);
   BatonUtil::startChatBuf(this);
   uv_mutex_unlock(&mutex);
-#ifdef DEBUG
-  cout << "unlocking baton->mutex\n";
-#endif
 }
 
 // TODO: use it or lose it...

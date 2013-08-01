@@ -47,6 +47,9 @@ extern "C" {
   void
   on_close(uv_handle_t* handle) {
     MemberBaton *baton = reinterpret_cast<MemberBaton *>(handle->data);
+
+    // TODO: send end chat
+    // baton->member->manager->chatStarted = false;
     delete baton;
   }
 }
@@ -280,6 +283,7 @@ Server::afterOnStartChat(uv_work_t *r) {
   }
   // TODO: broadcast buffer to all memberBatons
   mgr->chatStarted = true;
+  mgr->chatStarting = false;
 }
 
 

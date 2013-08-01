@@ -32,9 +32,9 @@ client.on('groupEntry', function (buf) {
   console.log(buf);
 });
 
-// client.on('beginChat', function (buf) {
-//   console.log(buf);
-// });
+client.on('beginChat', function (buf) {
+  console.log(buf);
+});
 
 client.on('end', function (buf) {
   console.log(buf);
