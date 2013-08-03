@@ -1,6 +1,5 @@
 #include <iostream>
 #include <sstream>
-#include <vector>
 #include <map>
 
 #include <unistd.h>
@@ -160,9 +159,9 @@ BatonUtil::exceptionBuf(
 // Decrypt and compare nonces
 void
 BatonUtil::processTransmission(MemberBaton* baton) {
-  string buf = baton->hasMember() ? 
-    baton->member->manager->decryptSessionMessage(baton->xBuffer) :
-    Crypto::hybridDecrypt(baton->xBuffer);
+  /*string buf = baton->useSessionKey ? // not sure why this isn't working
+    baton->member->manager->decryptSessionMessage(baton->xBuffer) :*/
+  string buf = Crypto::hybridDecrypt(baton->xBuffer);
 
   Transmission trans;
   if (!trans.ParseFromString(buf)) {
@@ -192,7 +191,7 @@ BatonUtil::routeTransmission(
     case Transmission::CRED: {
       if (!baton->hasMember()) {
         processCredential(baton, datastr, trans.signature(),
-          trans.data().credential()); 
+          trans.data().credential());
       }
       return; 
     }

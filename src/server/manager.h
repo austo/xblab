@@ -24,7 +24,7 @@ public:
   std::string publicKey;
   unsigned seed;
 
-  bool chatStarting;
+  bool chatStarting; // TODO: don't make client use these 
   bool chatStarted;
 
   bool
@@ -35,11 +35,7 @@ public:
 
   std::string
   decryptSessionMessage(std::string& ciphertext);
-
-  // TODO: move to group (and add group.cc)?
-  // TODO: remove?
-  static void
-  notifyPackedGroups(std::map<std::string, Manager*> *mgrs);
+  
   
 private:
   std::string privateKey_;

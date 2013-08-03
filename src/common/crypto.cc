@@ -8,6 +8,8 @@
 #include <botan/hex.h>
 #include <botan/lookup.h>
 #include <botan/bcrypt.h>
+#include <botan/x509_key.h>
+#include <botan/secmem.h>
 
 #include "macros.h"
 #include "common.h"
@@ -152,15 +154,34 @@ Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
 string
 Crypto::hybridEncrypt(string& publicKey, string& plaintext){
   AutoSeeded_RNG rng;
-  DataSource_Memory ds(publicKey);
-
-  std::auto_ptr<X509_PublicKey> key(X509::load_key(ds));
+  SecureVector<byte> pkBytes = SecureVector<byte>((byte*)&publicKey[0],
+    publicKey.size());
+  // DataSource_Memory ds(publicKey); // may want to revert to this...
+  std::auto_ptr<X509_PublicKey> key(X509::load_key(pkBytes));
   RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
 
   stringstream ptstream(plaintext), ctstream;
 
   hybridEncrypt(rsakey, ptstream, ctstream);
   return ctstream.str();
+}
+
+
+void
+Crypto::hybridEncrypt(
+  string& publicKey, stringstream& in, stringstream& out){
+
+  SecureVector<byte> pkBytes = // kind of a hack...
+    SecureVector<byte>((byte*)&publicKey[0], publicKey.size());
+
+  std::auto_ptr<X509_PublicKey> key(X509::load_key(pkBytes));
+  RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
+
+  if(!rsakey) {
+    throw crypto_exception("Invalid key");
+  }
+
+  hybridEncrypt(rsakey, in, out);
 }
 
 
@@ -256,11 +277,12 @@ Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
     throw crypto_exception("Invalid key");
   }
 
-  // cout << "after got key\n";
+  cout << "after got key\n";
   stringstream ctstream(ciphertext);
+  cout << ctstream.str(); 
   stringstream ptstream;
   hybridDecrypt(rng, rsakey, ctstream, ptstream);
-
+  cout << ptstream.str();
   return ptstream.str();
 }
 

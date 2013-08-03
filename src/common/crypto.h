@@ -60,6 +60,10 @@ public:
   static void
   hybridEncrypt(std::stringstream& in, std::stringstream& out);
 
+  static void
+  hybridEncrypt(
+    std::string& pu, std::stringstream& in, std::stringstream& out);
+
   static std::string
   hybridEncrypt(std::string& publicKey, std::string& plaintext);
 

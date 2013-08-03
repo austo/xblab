@@ -215,15 +215,11 @@ Server::afterOnRead (uv_work_t *r) {
       &baton->uvBuf,
       1,
       baton->uvWriteCb
-    );
-
-    // TODO: remove in favor of explicit READY message
-    // from each xbClient
-    // checkStartChat(baton);
+    );   
   }
 }
 
-
+// Currently dead code
 void
 Server::checkStartChat(MemberBaton *baton) {
   uv_mutex_lock(&xbMutex);

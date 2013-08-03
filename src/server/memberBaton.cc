@@ -33,6 +33,7 @@ MemberBaton::MemberBaton() {
 MemberBaton::~MemberBaton() {
   if (member != NULL) {
     member->present = false;
+    member->ready = false;
     fprintf(stdout, "%s%s left group %s\n",
       rightnow().c_str(), member->username.c_str(), url.c_str());  
   }
@@ -102,10 +103,5 @@ MemberBaton::getStartChat() {
   uv_mutex_unlock(&mutex);
 }
 
-// TODO: use it or lose it...
-// void
-// MemberBaton::getNoOp(string what) {
-//   BatonUtil::noOpBuf(this, what);
-// }
 
 } // namespace xblab

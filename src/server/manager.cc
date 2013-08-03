@@ -73,7 +73,7 @@ Manager::Manager(string url) {
   roundModulii_ = NALLOC(nMembers_, int);
   cleanMemberSchedules(schedules, XBSCHEDULESIZE);
   currentRound_ = 0;
-  chatStarted = false; // yes, these are both unnecessary
+  chatStarted = false; // TODO: don't make client use these
   chatStarting = false;
   cout << rightnow() << "Manager created for group "
       << group.url << " (\"" << group.name << "\")" << endl;  
@@ -107,20 +107,11 @@ Manager::broadcastStartChat() {
   }
 }
 
-
+// TODO: this method is currently unusable...
 string
 Manager::decryptSessionMessage(string& ciphertext) {
-  return Crypto::hybridDecrypt(privateKey_, ciphertext);
-}
-
-
-/* static */
-// TODO: remove this in favor of manager-by-manager approach
-void
-Manager::notifyPackedGroups(map<string, Manager*> *mgrs) {
-  map<string, Manager*>::iterator mgr_iter = mgrs->begin();
-  usleep(10000); // TODO: remove when we've got a plan
-  cout << "notifying packed groups...\n";
+  string r = Crypto::hybridDecrypt(privateKey_, ciphertext);
+  return r;
 }
 
 

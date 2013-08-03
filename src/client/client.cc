@@ -92,7 +92,10 @@ Client::afterOnRead(uv_work_t *r) {
     baton->needsJsCallback = false;
     baton->jsCallbackFactory(baton->wrapper);
   }
-  else {
+  if (baton->needsUvWrite) {
+    writeBatonBuffer(baton);
+  }
+  if (baton->err != "") {
     cout << baton->err;
   }
 }
@@ -150,9 +153,7 @@ Client::writeSendCredential(uv_write_t *req, int status) {
 void
 Client::writeBatonBuffer(MemberBaton *baton) {
   cout << "inside writeBatonBuffer\n";
-  cout << "buffer: " << baton->xBuffer << endl;;
-
-  baton->uvWriteCb = writeSendCredential;
+  cout << "buffer: " << baton->xBuffer << endl;
 
   uv_write(
     &baton->uvWrite,

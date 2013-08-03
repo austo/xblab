@@ -36,19 +36,7 @@ BatonUtil::packageCredential(MemberBaton *baton) {
   data->set_allocated_credential(cred);
 
   signData(trans, data, baton->member.privateKey);
-  
-  stringstream plaintext, ciphertext;
-  string ptstr;
-  if (!trans.SerializeToString(&ptstr)){
-    throw util_exception("Failed to serialize broadcast.");
-  }
-
-  plaintext << ptstr;
-  Crypto::hybridEncrypt(plaintext, ciphertext);
-
-  baton->xBuffer = ciphertext.str();
-  baton->uvBuf.base = &baton->xBuffer[0];
-  baton->uvBuf.len = baton->xBuffer.size();
+  serializeToBuffer(baton, trans);  
 }
 
 
@@ -105,7 +93,7 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         return;
       }
       case Broadcast::BEGIN: {
-        startChat(baton, data);
+        // startChat(baton, data);
         return;
       }
 
@@ -132,7 +120,7 @@ BatonUtil::enterGroup(
   baton->member.schedule = vectorize_string<sched_t>(sched);
 
   // uv_write "READY" message
-  // chatReady(baton);
+  chatReady(baton);
 
 #ifdef DEBUG
   for (int i = 0, n = baton->member.schedule.size(); i < n; ++i) {
@@ -162,14 +150,14 @@ BatonUtil::startChat(
 void
 BatonUtil::chatReady(MemberBaton *baton) {
   Transmission trans;
-  Transmission::Data *data = new Transmission::Data();  
+  Transmission::Data *data = new Transmission::Data();
   data->set_type(Transmission::READY);
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
 
   signData(trans, data, baton->member.privateKey);
   serializeToBuffer(baton, trans);
-  Client::writeBatonBuffer(baton);
+  baton->needsUvWrite = true;
 }
 
 
@@ -192,26 +180,22 @@ BatonUtil::signData(
 
 
 void
-BatonUtil::serializeToBuffer(MemberBaton *baton, Transmission& trans) {
-  string retval;
-  if (!trans.SerializeToString(&retval)) {
+BatonUtil::serializeToBuffer(
+  MemberBaton *baton, Transmission& trans) {
+
+  stringstream plaintext, ciphertext;
+  string ptstr;
+  if (!trans.SerializeToString(&ptstr)){
     throw util_exception("Failed to serialize broadcast.");
   }
 
-  Crypto::hybridEncrypt(baton->member.sessionKey, retval);
+  plaintext << ptstr;
+  Crypto::hybridEncrypt(plaintext, ciphertext);
 
-  baton->xBuffer = retval;    
+  baton->xBuffer = ciphertext.str();
   baton->uvBuf.base = &baton->xBuffer[0];
   baton->uvBuf.len = baton->xBuffer.size();
 }
-
-
-// void
-// BatonUtil::handleError(
-//   MemberBaton *baton) {
-//   baton->jsCallbackFactory = XbClient::errorFactory;
-//   baton->needsJsCallback = true;
-// }
 
 
 } // namespace xblab
