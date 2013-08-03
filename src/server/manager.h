@@ -22,6 +22,7 @@ public:
   Group group;    
 
   std::string publicKey;
+
   unsigned seed;
 
   bool chatStarting; // TODO: don't make client use these 
@@ -34,14 +35,20 @@ public:
   broadcastStartChat();
 
   std::string
+  getPrivateKey() {
+    return privateKey_;
+  }
+
+  std::string
   decryptSessionMessage(std::string& ciphertext);
   
   
 private:
-  std::string privateKey_;
   int nMembers_;
   int currentRound_;
   int *roundModulii_;
+  std::string privateKey_;
+
 
   template <class T>
   void

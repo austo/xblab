@@ -267,6 +267,7 @@ Crypto::hybridEncrypt(
 
 string
 Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
+  cout << "inside hybridDecrypt(string&, string&)\n";
   AutoSeeded_RNG rng;
   DataSource_Memory ds(privateKey);
   auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(ds, rng));
@@ -279,10 +280,8 @@ Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
 
   cout << "after got key\n";
   stringstream ctstream(ciphertext);
-  cout << ctstream.str(); 
   stringstream ptstream;
   hybridDecrypt(rng, rsakey, ctstream, ptstream);
-  cout << ptstream.str();
   return ptstream.str();
 }
 

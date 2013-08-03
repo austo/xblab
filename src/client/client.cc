@@ -152,8 +152,10 @@ Client::writeSendCredential(uv_write_t *req, int status) {
 
 void
 Client::writeBatonBuffer(MemberBaton *baton) {
+#ifdef DEBUG
   cout << "inside writeBatonBuffer\n";
   cout << "buffer: " << baton->xBuffer << endl;
+#endif
 
   uv_write(
     &baton->uvWrite,

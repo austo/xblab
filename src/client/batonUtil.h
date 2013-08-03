@@ -37,7 +37,8 @@ class BatonUtil {
   signData(Transmission&, Transmission::Data*, std::string&);
 
   static void
-  serializeToBuffer(MemberBaton *baton, Transmission& trans);
+  serializeToBuffer(
+    MemberBaton *baton, Transmission& trans, bool useSessionKey = false);
 
   BatonUtil(){};
   ~BatonUtil(){};

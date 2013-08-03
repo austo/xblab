@@ -12,6 +12,7 @@ struct Member {
   Member(){
     hasKeys = false;
     hasMessage = false;
+    ready = false;
   };  
 
   std::string username;
@@ -24,6 +25,7 @@ struct Member {
   std::string message;
   int modulus;
   bool hasKeys;
+  bool ready;
   bool hasMessage; // must be set to false on msg hand-off
 
 };

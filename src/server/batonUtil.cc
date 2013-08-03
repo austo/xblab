@@ -159,9 +159,15 @@ BatonUtil::exceptionBuf(
 // Decrypt and compare nonces
 void
 BatonUtil::processTransmission(MemberBaton* baton) {
-  /*string buf = baton->useSessionKey ? // not sure why this isn't working
-    baton->member->manager->decryptSessionMessage(baton->xBuffer) :*/
-  string buf = Crypto::hybridDecrypt(baton->xBuffer);
+  string buf;
+  // use session key if chat membership has been established
+  if (baton->hasMember() && baton->member->ready == true) {
+    cout << "baton had member and member is ready\n";
+    buf = baton->member->manager->decryptSessionMessage(baton->xBuffer);
+  }
+  else {
+    buf = Crypto::hybridDecrypt(baton->xBuffer);
+  }
 
   Transmission trans;
   if (!trans.ParseFromString(buf)) {
@@ -197,6 +203,13 @@ BatonUtil::routeTransmission(
     }
     case Transmission::READY: {
       cout << "READY message recieved from " << baton->member->handle << endl;
+    #ifdef DEBUG
+      cout << "manager public key: " <<
+        baton->member->manager->publicKey << endl << 
+        "manager private key: " << 
+        baton->member->manager->getPrivateKey() << endl;
+    #endif
+        baton->member->ready = true;
       return;
     }
 

@@ -156,7 +156,7 @@ BatonUtil::chatReady(MemberBaton *baton) {
   data->set_return_nonce(baton->returnNonce);
 
   signData(trans, data, baton->member.privateKey);
-  serializeToBuffer(baton, trans);
+  serializeToBuffer(baton, trans, baton->member.ready);
   baton->needsUvWrite = true;
 }
 
@@ -181,7 +181,7 @@ BatonUtil::signData(
 
 void
 BatonUtil::serializeToBuffer(
-  MemberBaton *baton, Transmission& trans) {
+  MemberBaton *baton, Transmission& trans, bool useSessionKey) {
 
   stringstream plaintext, ciphertext;
   string ptstr;
@@ -190,7 +190,15 @@ BatonUtil::serializeToBuffer(
   }
 
   plaintext << ptstr;
-  Crypto::hybridEncrypt(plaintext, ciphertext);
+  if (useSessionKey) {
+  #ifdef DEBUG
+    cout << "serializeToBuffer - using session key\n";
+  #endif
+    Crypto::hybridEncrypt(baton->member.sessionKey, plaintext, ciphertext);
+  }
+  else {
+    Crypto::hybridEncrypt(plaintext, ciphertext);
+  }
 
   baton->xBuffer = ciphertext.str();
   baton->uvBuf.base = &baton->xBuffer[0];

@@ -29,15 +29,15 @@ client.on('needCred', function (buf) {
 });
 
 client.on('groupEntry', function (buf) {
-  console.log(buf);
+  console.log('groupEntry: ' + buf);
 });
 
 client.on('beginChat', function (buf) {
-  console.log(buf);
+  console.log('beginChat: ' + buf);
 });
 
 client.on('end', function (buf) {
-  console.log(buf);
+  console.log('end: ' + buf);
 });
 
 client.on('error', function(err) {
