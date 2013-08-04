@@ -35,7 +35,7 @@ BatonUtil::packageCredential(MemberBaton *baton) {
 
   data->set_allocated_credential(cred);
 
-  signData(trans, data, baton->member.privateKey);
+  signData(baton->member.privateKey, trans, data);
   serializeToBuffer(baton, trans);  
 }
 
@@ -67,7 +67,7 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
     throw util_exception("Failed to reserialize broadcast data.");
   }
 
-  if (Crypto::verify(datastr, bc.signature())){
+  if (verifySignature(baton, datastr, bc.signature())) {
     const Broadcast::Data& data = bc.data();
 
     baton->returnNonce = string(data.nonce());
@@ -155,7 +155,7 @@ BatonUtil::chatReady(MemberBaton *baton) {
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
 
-  signData(trans, data, baton->member.privateKey);
+  signData(baton->member.privateKey, trans, data);
   serializeToBuffer(baton, trans, baton->member.ready);
   baton->needsUvWrite = true;
 }
@@ -163,7 +163,7 @@ BatonUtil::chatReady(MemberBaton *baton) {
 
 void
 BatonUtil::signData(
-  Transmission& trans, Transmission::Data *data, string& privateKey) {
+  string& privateKey, Transmission& trans, Transmission::Data *data) {
   string sigstr, datastr;
   if (!data->SerializeToString(&datastr)) {
     throw util_exception("Failed to serialize broadcast data.");
@@ -205,5 +205,14 @@ BatonUtil::serializeToBuffer(
   baton->uvBuf.len = baton->xBuffer.size();
 }
 
+
+// Use session key or global public key, depending on chat state.
+bool
+BatonUtil::verifySignature(
+  MemberBaton *baton, string& datastr, string signature) {
+  return baton->member.ready ?
+    Crypto::verify(baton->member.sessionKey, datastr, signature) :
+    Crypto::verify(datastr, signature);
+}
 
 } // namespace xblab

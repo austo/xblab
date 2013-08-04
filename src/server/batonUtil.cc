@@ -92,11 +92,9 @@ BatonUtil::startChatBuf(MemberBaton *baton) {
 
   data->set_type(Broadcast::BEGIN);
   data->set_nonce(baton->nonce);
-  data->set_allocated_prologue(prologue);
-  // cout << "ret. nonce: " << baton->returnNonce << endl;
-  // data->set_return_nonce(baton->returnNonce); // same return nonce
+  data->set_allocated_prologue(prologue);  
 
-  signData(bc, data);
+  signData(baton->member->manager->getPrivateKey(), bc, data);
   serializeToBuffer(baton, bc);
 }
 
@@ -329,6 +327,24 @@ BatonUtil::signData(Broadcast& bc, Broadcast::Data *data) {
   }
   try {
     sig = Crypto::sign(datastr);
+    bc.set_signature(sig);
+    bc.set_allocated_data(data);
+  }
+  catch(crypto_exception& e) {
+    cout << rightnow() << "crypto exception: " << e.what() << endl;
+  }
+}
+
+
+void
+BatonUtil::signData(
+  string privateKey, Broadcast& bc, Broadcast::Data *data) {
+  string sig, datastr;
+  if (!data->SerializeToString(&datastr)) {
+    throw util_exception("Failed to serialize broadcast data.");
+  }
+  try {
+    sig = Crypto::sign(privateKey, datastr);
     bc.set_signature(sig);
     bc.set_allocated_data(data);
   }

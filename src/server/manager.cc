@@ -79,6 +79,7 @@ Manager::Manager(string url) {
   roundModulii_ = NALLOC(nMembers_, int);
   cleanMemberSchedules(schedules, XBSCHEDULESIZE);
   currentRound_ = 0;
+  chatStarted_ = false;
   cout << rightnow() << "Manager created for group "
       << group.url << " (\"" << group.name << "\")" << endl;  
 }
@@ -116,12 +117,21 @@ Manager::allMembersReady() {
 
 void
 Manager::broadcastStartChat() {
-  cout << "notifying " << group.name << endl;
-  usleep(50000); // TODO: remove when we've got a plan
+  if (!chatStarted_ && allMembersReady()) {
 
-  memb_iter mitr = members.begin();
-  for (; mitr != members.end(); ++mitr) {
-    mitr->second.notifyStartChat();
+    uv_mutex_lock(&mutex_);
+
+    if (!chatStarted_ && allMembersReady()) {
+      chatStarted_ = true;
+      cout << "notifying " << group.name << endl;
+      usleep(50000); // TODO: remove when we've got a plan
+
+      memb_iter mitr = members.begin();
+      for (; mitr != members.end(); ++mitr) {
+        mitr->second.notifyStartChat();
+      }
+    }
+    uv_mutex_unlock(&mutex_);
   }
 }
 

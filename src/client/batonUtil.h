@@ -34,11 +34,15 @@ class BatonUtil {
   chatReady(MemberBaton *baton);
 
   static void
-  signData(Transmission&, Transmission::Data*, std::string&);
+  signData(std::string&, Transmission&, Transmission::Data*);
 
   static void
   serializeToBuffer(
     MemberBaton *baton, Transmission& trans, bool useSessionKey = false);
+
+  static bool
+  verifySignature(
+    MemberBaton *baton, std::string& datastr, std::string signature);
 
   BatonUtil(){};
   ~BatonUtil(){};

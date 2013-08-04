@@ -217,6 +217,12 @@ Server::afterOnRead (uv_work_t *r) {
       baton->uvWriteCb
     );   
   }
+  /* TODO: queue work (sep. thread):
+    if (baton->member->ready) {
+      baton->member->manager->broadcastStartChat();
+    }
+  */
+
 }
 
 

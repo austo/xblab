@@ -49,6 +49,7 @@ private:
   int currentRound_;
   int *roundModulii_;
   std::string privateKey_;
+  bool chatStarted_;
 
   uv_mutex_t mutex_;
 
