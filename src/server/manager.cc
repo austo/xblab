@@ -54,6 +54,12 @@ Manager::cleanMemberSchedules(
 
 
 Manager::Manager(string url) {
+
+  if (uv_mutex_init(&mutex_) != XBGOOD) {
+    fprintf(stderr, "Error initializing MemberBaton mutex\n");
+    throw runtime_error("Error initializing MemberBaton mutex\n");
+  }
+
   Crypto::generateKey(this->privateKey_, this->publicKey);
   group = Db::getGroup(url);
   
@@ -73,8 +79,6 @@ Manager::Manager(string url) {
   roundModulii_ = NALLOC(nMembers_, int);
   cleanMemberSchedules(schedules, XBSCHEDULESIZE);
   currentRound_ = 0;
-  chatStarted = false; // TODO: don't make client use these
-  chatStarting = false;
   cout << rightnow() << "Manager created for group "
       << group.url << " (\"" << group.name << "\")" << endl;  
 }
@@ -82,13 +86,27 @@ Manager::Manager(string url) {
 
 Manager::~Manager(){
   free(roundModulii_);
+  uv_mutex_destroy(&mutex_);
 }
+
 
 bool
 Manager::allMembersPresent() {
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     if (!mitr->second.present) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+bool
+Manager::allMembersReady() {
+  memb_iter mitr = members.begin();
+  for (; mitr != members.end(); ++mitr) {
+    if (!mitr->second.ready) {
       return false;
     }
   }
@@ -116,5 +134,4 @@ Manager::decryptSessionMessage(string& ciphertext) {
 
 
 } // namespace xblab
-
 

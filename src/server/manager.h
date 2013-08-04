@@ -6,6 +6,8 @@
 #include <vector>
 #include <map>
 
+#include <uv.h>
+
 #include "group.h"
 #include "member.h"
 
@@ -25,11 +27,11 @@ public:
 
   unsigned seed;
 
-  bool chatStarting; // TODO: don't make client use these 
-  bool chatStarted;
-
   bool
   allMembersPresent();
+
+  bool
+  allMembersReady();
 
   void
   broadcastStartChat();
@@ -40,8 +42,7 @@ public:
   }
 
   std::string
-  decryptSessionMessage(std::string& ciphertext);
-  
+  decryptSessionMessage(std::string& ciphertext);  
   
 private:
   int nMembers_;
@@ -49,13 +50,12 @@ private:
   int *roundModulii_;
   std::string privateKey_;
 
+  uv_mutex_t mutex_;
 
   template <class T>
   void
   cleanMemberSchedules(
     std::vector< std::vector<T>* >& schedules, size_t elemsize);
-
-
 };
 } //namespace xblab
 
