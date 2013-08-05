@@ -125,7 +125,6 @@ Manager::broadcastStartChat() {
 
     if (!chatStarted_ && allMembersReady()) {
       cout << "notifying " << group.name << endl;
-      // usleep(50000); // TODO: remove when we've got a plan
 
       memb_iter mitr = members.begin();
       for (; mitr != members.end(); ++mitr) {
