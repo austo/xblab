@@ -1,4 +1,6 @@
 #include <cstdlib>
+#include <cstdio>
+
 #include <exception>
 
 #include <unistd.h>
@@ -122,14 +124,14 @@ Manager::broadcastStartChat() {
     uv_mutex_lock(&mutex_);
 
     if (!chatStarted_ && allMembersReady()) {
-      chatStarted_ = true;
       cout << "notifying " << group.name << endl;
-      usleep(50000); // TODO: remove when we've got a plan
+      // usleep(50000); // TODO: remove when we've got a plan
 
       memb_iter mitr = members.begin();
       for (; mitr != members.end(); ++mitr) {
         mitr->second.notifyStartChat();
       }
+      chatStarted_ = true;
     }
     uv_mutex_unlock(&mutex_);
   }

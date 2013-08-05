@@ -30,7 +30,8 @@ public:
   // void getNoOp(std::string what);
 
   // uv_write_cb's:
-  static void needCredentialCb(uv_write_t *req, int status);
+  static void
+  needCredentialCb(uv_write_t *req, int status);
 
 
 };

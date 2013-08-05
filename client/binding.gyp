@@ -15,7 +15,7 @@
             'cflags': [ '-Wall', '-fexceptions', '-g' ],
             'cflags_cc!': [ '-fno-exceptions', '-fno-rtti' ],
             'link_settings': {
-              'libraries': [ '-lbotan-1.10', '-lprotobuf' ]
+              'libraries': [ '-lbotan-1.10', '-lprotobuf-lite' ]
             },
             'include_dirs': [ '/usr/local/include/botan-1.10', '../src/' ]
           }

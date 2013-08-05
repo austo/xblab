@@ -138,6 +138,7 @@ Server::onConnect(uv_stream_t *server, int status) {
 void
 Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(client->data);
+  fprintf(stdout, "inside readBuf...\n");
 
   if (nread == -1) {
     if (uv_last_error(loop).code != UV_EOF){
@@ -217,11 +218,10 @@ Server::afterOnRead (uv_work_t *r) {
       baton->uvWriteCb
     );   
   }
-  /* TODO: queue work (sep. thread):
-    if (baton->member->ready) {
-      baton->member->manager->broadcastStartChat();
-    }
-  */
+  // TODO: queue work (sep. thread):
+  if (baton->member->ready) {
+    baton->member->manager->broadcastStartChat();
+  }
 
 }
 

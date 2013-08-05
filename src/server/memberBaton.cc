@@ -54,7 +54,7 @@ MemberBaton::needCredentialCb(uv_write_t *req, int status) {
   }
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(req->data);
   uv_read_start(
-    (uv_stream_t*) &baton->uvClient,
+    (uv_stream_t*)&baton->uvClient,
     allocBuf,
     baton->uvReadCb
   );
@@ -101,6 +101,13 @@ MemberBaton::getStartChat() {
   uv_mutex_lock(&mutex);
   BatonUtil::startChatBuf(this);
   uv_mutex_unlock(&mutex);
+
+  uv_write(
+    &uvWrite,
+    (uv_stream_t*)&uvClient,
+    &uvBuf,
+    1,
+    uvWriteCb); 
 }
 
 
