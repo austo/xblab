@@ -78,14 +78,7 @@ void
 MemberBaton::getStartChat() {
   // uv_mutex_lock(&mutex);
   BatonUtil::startChatBuf(this);
-  // uv_mutex_unlock(&mutex);
-
-  // uv_write(
-  //   &uvWrite,
-  //   (uv_stream_t*)&uvClient,
-  //   &uvBuf,
-  //   1,
-  //   uvWriteCb); 
+  // uv_mutex_unlock(&mutex);  
 }
 
 

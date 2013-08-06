@@ -220,25 +220,7 @@ Server::afterOnRead(uv_work_t *r) {
       baton->uvWriteCb
     );   
   }
-
-  // baton->member->manager->safeBroadcastStartChat();
-  // TODO: queue work (sep. thread):
-  int status = uv_queue_work(
-    loop,
-    &baton->uvWork,
-    onStartChatWork,
-    (uv_after_work_cb)afterOnStartChat);
-  assert(status == XBGOOD);
-
-  // if (baton->member->ready) {
-  //   uv_read_stop((uv_stream_t*)&baton->uvClient);
-  //   baton->member->manager->broadcastStartChat();
-  //   uv_read_start((uv_stream_t*)&baton->uvClient, allocBuf, baton->uvReadCb);
-  // }
-
-  // if (baton->member->manager->allMembersReady()) {
-  //   // would like to just uv_write something in a separate loop
-  // }
+  baton->member->manager->safeBroadcastStartChat();  
 }
 
 

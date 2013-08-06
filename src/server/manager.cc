@@ -120,7 +120,6 @@ Manager::allMembersReady() {
 
 void
 Manager::safeBroadcastStartChat() {
-  if (!chatStarted_ && allMembersReady()) {
 
     uv_mutex_lock(&mutex_);
 
@@ -131,17 +130,18 @@ Manager::safeBroadcastStartChat() {
       for (; mitr != members.end(); ++mitr) {
         mitr->second.notifyStartChat();
 
-      // uv_write(
-      //   &mitr->second.baton->uvWrite,
-      //   (uv_stream_t*)&mitr->second.baton->uvClient,
-      //   &mitr->second.baton->uvBuf,
-      //   1,
-      //   mitr->second.baton->uvWriteCb);
+        uv_write(
+          &mitr->second.baton->uvWrite,
+          (uv_stream_t*)&mitr->second.baton->uvClient,
+          &mitr->second.baton->uvBuf,
+          1,
+          mitr->second.baton->uvWriteCb);     
       }
+
       chatStarted_ = true;
-    }
+    }    
+
     uv_mutex_unlock(&mutex_);
-  }
 }
 
 // TODO: this method is currently unusable...

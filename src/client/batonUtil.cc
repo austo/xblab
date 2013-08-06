@@ -93,6 +93,7 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         return;
       }
       case Broadcast::BEGIN: {
+        cout << "Broadcast::BEGIN\n";
         // startChat(baton, data);
         return;
       }
