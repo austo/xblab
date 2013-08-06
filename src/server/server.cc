@@ -217,10 +217,8 @@ Server::afterOnRead(uv_work_t *r) {
       (uv_stream_t*)&baton->uvClient,
       &baton->uvBuf,
       1,
-      baton->uvWriteCb
-    );   
+      baton->uvWriteCb);   
   }
-  baton->member->manager->safeBroadcastStartChat();  
 }
 
 
@@ -244,8 +242,7 @@ Server::afterOnStartChat(uv_work_t *r) {
       (uv_stream_t*)&baton->uvClient,
       &baton->uvBuf,
       1,
-      baton->uvWriteCb
-    );   
+      baton->uvWriteCb);   
   }
 }
 

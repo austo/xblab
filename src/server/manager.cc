@@ -117,7 +117,12 @@ Manager::allMembersReady() {
   return true;
 }
 
-
+/* NOTE: we can't call this from an after_work_cb
+ *
+ * Look into doing this from a uv_idle_t, which we initialize on
+ * construction. Once the message has been sent to every member
+ * (using uv_queue_work) we can stop the idler
+ */
 void
 Manager::safeBroadcastStartChat() {
 
