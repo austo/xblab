@@ -93,7 +93,7 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         return;
       }
       case Broadcast::BEGIN: {
-        startChat(baton, data);
+        // startChat(baton, data);
         return;
       }
 
@@ -122,7 +122,7 @@ BatonUtil::enterGroup(
   // uv_write "READY" message
   chatReady(baton);
 
-#ifdef DEBUG
+#ifdef TRACE
   for (int i = 0, n = baton->member.schedule.size(); i < n; ++i) {
     cout << baton->member.schedule[i] << ", ";
   }
@@ -158,6 +158,7 @@ BatonUtil::chatReady(MemberBaton *baton) {
   signData(baton->member.privateKey, trans, data);
   serializeToBuffer(baton, trans, baton->member.ready);
   baton->needsUvWrite = true;
+  baton->member.ready = true;
 }
 
 

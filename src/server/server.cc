@@ -136,7 +136,7 @@ Server::onConnect(uv_stream_t *server, int status) {
 
 
 void
-Server::readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
+Server::onRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(client->data);
 
   if (nread == -1) {
@@ -175,15 +175,18 @@ Server::afterOnConnect (uv_work_t *r) {
 
   if (uv_accept(baton->uvServer,
     (uv_stream_t*) &baton->uvClient) == XBGOOD) {
-    baton->uvReadCb = readBuf;
-    baton->setNeedCredentialCb();
+    baton->uvReadCb = onRead;
+    baton->uvWriteCb = onWrite;
+
     uv_write( // TODO: macroize
       &baton->uvWrite,
       (uv_stream_t*)&baton->uvClient,
       &baton->uvBuf,
       1,
-      baton->uvWriteCb
-    );        
+      baton->uvWriteCb);
+
+    // start listening to the client, now that they've authenticated
+    uv_read_start((uv_stream_t*)&baton->uvClient, allocBuf, baton->uvReadCb);
   }
   else {
     uv_close((uv_handle_t*) &baton->uvClient, NULL);
@@ -202,7 +205,7 @@ Server::onReadWork(uv_work_t *r){
 
 
 void
-Server::afterOnRead (uv_work_t *r) {
+Server::afterOnRead(uv_work_t *r) {
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
   if (baton->err != ""){
     // TODO: send error and close
@@ -217,11 +220,51 @@ Server::afterOnRead (uv_work_t *r) {
       baton->uvWriteCb
     );   
   }
-  // TODO: queue work (sep. thread):
-  if (baton->member->ready) {
-    baton->member->manager->broadcastStartChat();
-  }
 
+  // baton->member->manager->safeBroadcastStartChat();
+  // TODO: queue work (sep. thread):
+  int status = uv_queue_work(
+    loop,
+    &baton->uvWork,
+    onStartChatWork,
+    (uv_after_work_cb)afterOnStartChat);
+  assert(status == XBGOOD);
+
+  // if (baton->member->ready) {
+  //   uv_read_stop((uv_stream_t*)&baton->uvClient);
+  //   baton->member->manager->broadcastStartChat();
+  //   uv_read_start((uv_stream_t*)&baton->uvClient, allocBuf, baton->uvReadCb);
+  // }
+
+  // if (baton->member->manager->allMembersReady()) {
+  //   // would like to just uv_write something in a separate loop
+  // }
+}
+
+
+void
+Server::onStartChatWork(uv_work_t *r) {
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
+  baton->member->manager->safeBroadcastStartChat();
+}
+
+
+void
+Server::afterOnStartChat(uv_work_t *r) {
+  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
+  if (baton->err != ""){
+    // TODO: send error and close
+    uv_close((uv_handle_t*) &baton->uvClient, on_close);
+  }
+  else {
+    uv_write(
+      &baton->uvWrite,
+      (uv_stream_t*)&baton->uvClient,
+      &baton->uvBuf,
+      1,
+      baton->uvWriteCb
+    );   
+  }
 }
 
 
@@ -233,6 +276,16 @@ Server::echoWrite(uv_write_t *req, int status) {
   char *base = (char*) req->data;
   free(base);
   free(req);
+}
+
+
+void
+Server::onWrite(uv_write_t *req, int status) {
+  if (status == -1) {
+    fprintf(stderr, "Write error %s\n",
+      uv_err_name(uv_last_error(loop)));
+    return;
+  }
 }
 
 

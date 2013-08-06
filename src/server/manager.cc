@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "manager.h"
+#include "memberBaton.h"
 #include "db.h"
 #include "db_exception.h"
 #include "common/crypto.h"
@@ -118,7 +119,7 @@ Manager::allMembersReady() {
 
 
 void
-Manager::broadcastStartChat() {
+Manager::safeBroadcastStartChat() {
   if (!chatStarted_ && allMembersReady()) {
 
     uv_mutex_lock(&mutex_);
@@ -129,6 +130,13 @@ Manager::broadcastStartChat() {
       memb_iter mitr = members.begin();
       for (; mitr != members.end(); ++mitr) {
         mitr->second.notifyStartChat();
+
+      // uv_write(
+      //   &mitr->second.baton->uvWrite,
+      //   (uv_stream_t*)&mitr->second.baton->uvClient,
+      //   &mitr->second.baton->uvBuf,
+      //   1,
+      //   mitr->second.baton->uvWriteCb);
       }
       chatStarted_ = true;
     }

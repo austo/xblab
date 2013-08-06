@@ -19,7 +19,7 @@ private:
 public:
   static void onConnect(uv_connect_t *req, int status);
   static void onRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf);
-  static void writeSendCredential(uv_write_t *req, int status);
+  static void onWrite(uv_write_t *req, int status);
   static void onSendCredential(MemberBaton *baton);
   static void onTransmit(MemberBaton *baton);
   static void writeBatonBuffer(MemberBaton *baton);

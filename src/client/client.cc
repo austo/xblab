@@ -96,7 +96,7 @@ Client::afterOnRead(uv_work_t *r) {
     writeBatonBuffer(baton);
   }
   if (baton->err != "") {
-    cout << baton->err;
+    cout << "afterOnRead error: " << baton->err;
   }
 }
 
@@ -122,7 +122,7 @@ Client::sendCredentialWork(uv_work_t *r) {
 void
 Client::afterSendCredential(uv_work_t *r) {
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
-  baton->uvWriteCb = writeSendCredential;
+  baton->uvWriteCb = onWrite;
 
   uv_write(
     &baton->uvWrite,
@@ -135,18 +135,12 @@ Client::afterSendCredential(uv_work_t *r) {
 
 
 void
-Client::writeSendCredential(uv_write_t *req, int status) {
+Client::onWrite(uv_write_t *req, int status) {
   if (status == -1) {
     fprintf(stderr, "Write error %s\n",
       uv_err_name(uv_last_error(loop)));
     return;
-  }
-  MemberBaton *baton = reinterpret_cast<MemberBaton *>(req->data);
-  uv_read_start(
-    (uv_stream_t*) &baton->uvClient,
-    allocBuf,
-    baton->uvReadCb
-  );
+  }  
 }
 
 
@@ -154,7 +148,7 @@ void
 Client::writeBatonBuffer(MemberBaton *baton) {
 #ifdef DEBUG
   cout << "inside writeBatonBuffer\n";
-  cout << "buffer: " << baton->xBuffer << endl;
+  // cout << "buffer: " << baton->xBuffer << endl;
 #endif
 
   uv_write(
@@ -162,8 +156,8 @@ Client::writeBatonBuffer(MemberBaton *baton) {
     (uv_stream_t*)&baton->uvClient,
     &baton->uvBuf,
     1,
-    baton->uvWriteCb
-  );
+    baton->uvWriteCb);
+  baton->needsUvWrite = false;
 }
 
 
@@ -197,7 +191,7 @@ Client::onConnect(uv_connect_t *req, int status) {
   baton->uvServer = req->handle;
   baton->uvReadCb = onRead;
 
-  uv_read_start((uv_stream_t*) baton->uvServer, allocBuf, baton->uvReadCb);  
+  uv_read_start((uv_stream_t*) baton->uvServer, allocBuf, baton->uvReadCb);
 }
 
 } // namespace xblab

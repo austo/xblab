@@ -11,22 +11,20 @@ class MemberBaton;
 class Server {
 private:
   static void echoWrite(uv_write_t *req, int status);
+  static void onWrite(uv_write_t *req, int status);
   static void fatal(const char *what);
   static void onConnectWork(uv_work_t *r);
   static void afterOnConnect (uv_work_t *r);
   static void onReadWork(uv_work_t *r);
   static void afterOnRead (uv_work_t *r);
 
-  static void checkStartChat(MemberBaton *baton);
-  static void startChat(Manager *mgr);
   static void onStartChatWork(uv_work_t *r); // TODO: hand off to manager
   static void afterOnStartChat(uv_work_t *r);
-
 
 public:
   static int getConfig(char* filename);
   static void onConnect(uv_stream_t *server, int status);
-  static void readBuf(uv_stream_t *client, ssize_t nread, uv_buf_t buf);
+  static void onRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf);
 };
 
 // C linkage for libuv callback

@@ -45,28 +45,6 @@ MemberBaton::~MemberBaton() {
 }
 
 
-void
-MemberBaton::needCredentialCb(uv_write_t *req, int status) {
-  if (status == -1) {
-    fprintf(stderr, "Write error %s\n",
-      uv_err_name(uv_last_error(loop)));
-    return;
-  }
-  MemberBaton *baton = reinterpret_cast<MemberBaton *>(req->data);
-  uv_read_start(
-    (uv_stream_t*)&baton->uvClient,
-    allocBuf,
-    baton->uvReadCb
-  );
-}
-
-
-void
-MemberBaton::setNeedCredentialCb() {
-  this->uvWriteCb = needCredentialCb;
-}
-
-
 bool
 MemberBaton::hasMember() {
   return this->member != NULL;
@@ -98,16 +76,16 @@ MemberBaton::getGroupEntry() {
 
 void
 MemberBaton::getStartChat() {
-  uv_mutex_lock(&mutex);
+  // uv_mutex_lock(&mutex);
   BatonUtil::startChatBuf(this);
-  uv_mutex_unlock(&mutex);
+  // uv_mutex_unlock(&mutex);
 
-  uv_write(
-    &uvWrite,
-    (uv_stream_t*)&uvClient,
-    &uvBuf,
-    1,
-    uvWriteCb); 
+  // uv_write(
+  //   &uvWrite,
+  //   (uv_stream_t*)&uvClient,
+  //   &uvBuf,
+  //   1,
+  //   uvWriteCb); 
 }
 
 
