@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 #include "memberBaton.h"
+#include "server.h"
 #include "batonUtil.h"
 #include "common/macros.h"
 #include "common/common.h"
@@ -18,6 +19,7 @@ namespace xblab {
 
 extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 extern uv_loop_t *loop;
+// extern void on_write(uv_write_t *req, int status);
 
 
 MemberBaton::MemberBaton() {
@@ -74,11 +76,25 @@ MemberBaton::getGroupEntry() {
 }
 
 
+// should be called from inside uv_work_cb
 void
 MemberBaton::getStartChat() {
   // uv_mutex_lock(&mutex);
   BatonUtil::startChatBuf(this);
   // uv_mutex_unlock(&mutex);  
+}
+
+
+// should be called from inside uv_after_work_cb
+// TODO: move to BatonUtil?
+void
+MemberBaton::unicast() {
+  size_t len = xBuffer.size();
+  uv_write_t *req = (uv_write_t*)malloc(sizeof(*req) + len);
+  void *addr = req + 1;
+  memcpy(addr, &xBuffer[0], len);
+  uv_buf_t buf = uv_buf_init((char*)addr, len);
+  uv_write(req, (uv_stream_t*)&uvClient, &buf, 1, on_write);
 }
 
 

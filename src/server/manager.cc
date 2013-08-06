@@ -105,15 +105,20 @@ Manager::allMembersPresent() {
   return true;
 }
 
-
+// TODO: make thread-safe (implies members will have to be locked)
+// anytime a property is modified
 bool
 Manager::allMembersReady() {
+  // uv_mutex_lock(&mutex_); // TODO: change to rw_lock
+
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
-    if (!mitr->second.ready) {
+    if (!mitr->second.present || !mitr->second.ready) {
+      // uv_mutex_unlock(&mutex_);
       return false;
     }
   }
+  // uv_mutex_unlock(&mutex_);
   return true;
 }
 
@@ -124,27 +129,36 @@ Manager::allMembersReady() {
  * (using uv_queue_work) we can stop the idler
  */
 void
-Manager::safeBroadcastStartChat() {
+Manager::getStartChatBuffers() {
+  cout << "inside getStartChatBuffers\n";
+  cout << "for " << group.name << endl;
+  uv_mutex_lock(&mutex_);
+
+  if (!chatStarted_) {
+    cout << "notifying " << group.name << endl;
+
+    memb_iter mitr = members.begin();
+    for (; mitr != members.end(); ++mitr) {
+      mitr->second.baton->getStartChat();            
+    }
+    chatStarted_ = true;
+  }    
+
+  uv_mutex_unlock(&mutex_);
+}
+
+
+void
+Manager::broadcast() {
 
     uv_mutex_lock(&mutex_);
 
-    if (!chatStarted_ && allMembersReady()) {
-      cout << "notifying " << group.name << endl;
+    cout << "broadcasting " << group.name << endl;
 
-      memb_iter mitr = members.begin();
-      for (; mitr != members.end(); ++mitr) {
-        mitr->second.notifyStartChat();
-
-        uv_write(
-          &mitr->second.baton->uvWrite,
-          (uv_stream_t*)&mitr->second.baton->uvClient,
-          &mitr->second.baton->uvBuf,
-          1,
-          mitr->second.baton->uvWriteCb);     
-      }
-
-      chatStarted_ = true;
-    }    
+    memb_iter mitr = members.begin();
+    for (; mitr != members.end(); ++mitr) {
+      mitr->second.baton->unicast();            
+    }
 
     uv_mutex_unlock(&mutex_);
 }

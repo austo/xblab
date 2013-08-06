@@ -34,7 +34,10 @@ public:
   allMembersReady();
 
   void
-  safeBroadcastStartChat();
+  getStartChatBuffers();
+
+  void
+  broadcast();
 
   std::string
   getPrivateKey() {

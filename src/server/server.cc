@@ -35,7 +35,6 @@ extern uv_mutex_t xbMutex;
 
 extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 
-
 /* C linkage for libuv */
 extern "C" {
 
@@ -51,6 +50,11 @@ extern "C" {
     // TODO: send end chat
     // baton->member->manager->chatStarted = false;
     delete baton;
+  }
+
+  void
+  on_write(uv_write_t *req, int status) {
+    free(req);
   }
 }
 
@@ -210,40 +214,42 @@ Server::afterOnRead(uv_work_t *r) {
   if (baton->err != ""){
     // TODO: send error and close
     uv_close((uv_handle_t*) &baton->uvClient, on_close);
+    return;
   }
-  else {
-    uv_write(
-      &baton->uvWrite,
-      (uv_stream_t*)&baton->uvClient,
-      &baton->uvBuf,
-      1,
-      baton->uvWriteCb);   
-  }
+  uv_write(
+    &baton->uvWrite,
+    (uv_stream_t*)&baton->uvClient,
+    &baton->uvBuf,
+    1,
+    baton->uvWriteCb);
+
+  if (baton->member->manager->allMembersReady()) {
+    cout << "allMembersReady...\n";
+    uv_work_t *req = ALLOC(uv_work_t);
+    req->data = baton->member->manager;
+    uv_queue_work(
+      loop, req,
+      onStartChatWork,
+      (uv_after_work_cb)afterOnStartChat);
+  }  
 }
 
 
 void
 Server::onStartChatWork(uv_work_t *r) {
-  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
-  baton->member->manager->safeBroadcastStartChat();
+  cout << "inside onStartChatWork\n";
+  Manager *mgr = reinterpret_cast<Manager *>(r->data);
+  cout << "after cast\n";
+  mgr->getStartChatBuffers();
 }
 
 
 void
 Server::afterOnStartChat(uv_work_t *r) {
-  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
-  if (baton->err != ""){
-    // TODO: send error and close
-    uv_close((uv_handle_t*) &baton->uvClient, on_close);
-  }
-  else {
-    uv_write(
-      &baton->uvWrite,
-      (uv_stream_t*)&baton->uvClient,
-      &baton->uvBuf,
-      1,
-      baton->uvWriteCb);   
-  }
+  Manager *mgr = reinterpret_cast<Manager *>(r->data);
+  mgr->broadcast();
+  r->data = NULL;
+  free(r);
 }
 
 
