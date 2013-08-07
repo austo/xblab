@@ -105,24 +105,22 @@ Manager::allMembersPresent() {
   return true;
 }
 
-// TODO: make thread-safe (implies members will have to be locked)
-// anytime a property is modified
+
 bool
 Manager::allMembersReady() {
-  // uv_mutex_lock(&mutex_); // TODO: change to rw_lock
 
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     if (!mitr->second.present || !mitr->second.ready) {
-      // uv_mutex_unlock(&mutex_);
       return false;
     }
   }
-  // uv_mutex_unlock(&mutex_);
   return true;
 }
 
-/* NOTE: we can't call this from an after_work_cb
+
+/* NOTE: if using uv_queue_work, must be called 
+ * from an uv_work_cb, not uv_after_work_cb
  *
  * Look into doing this from a uv_idle_t, which we initialize on
  * construction. Once the message has been sent to every member
@@ -163,7 +161,19 @@ Manager::broadcast() {
     uv_mutex_unlock(&mutex_);
 }
 
-// TODO: this method is currently unusable...
+
+void
+Manager::endChat() {
+  // may want to handle member.present 
+  // and member.ready here instead of in baton destructor
+  if (chatStarted_) {
+    uv_mutex_lock(&mutex_);
+    chatStarted_ = false;
+    uv_mutex_unlock(&mutex_);
+  }
+}
+
+
 string
 Manager::decryptSessionMessage(string& ciphertext) {
   string r = Crypto::hybridDecrypt(privateKey_, ciphertext);

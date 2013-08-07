@@ -27,7 +27,6 @@ public:
   void getKeys();
   void digestBroadcast();
   void packageCredential();
-  void packageTransmission();
 
   Member member;
 
@@ -38,10 +37,6 @@ public:
   bool needsJsCallback;
   bool needsUvWrite;
   JsCallbackFactory jsCallbackFactory;
-
-
-  // TODO: add uv_work_cb and uv_after_work_cb?
-  // uv_write_cb's:
 
 };
 

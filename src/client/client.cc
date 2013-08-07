@@ -146,9 +146,8 @@ Client::onWrite(uv_write_t *req, int status) {
 
 void
 Client::writeBatonBuffer(MemberBaton *baton) {
-#ifdef DEBUG
+#ifdef TRACE
   cout << "inside writeBatonBuffer\n";
-  // cout << "buffer: " << baton->xBuffer << endl;
 #endif
 
   uv_write(
@@ -158,24 +157,6 @@ Client::writeBatonBuffer(MemberBaton *baton) {
     1,
     baton->uvWriteCb);
   baton->needsUvWrite = false;
-}
-
-
-void
-Client::onTransmit(MemberBaton *baton) {
-  int status = uv_queue_work(
-    loop,
-    &baton->uvWork,
-    transmitWork,
-    (uv_after_work_cb)afterOnRead);
-  assert(status == XBGOOD);   
-}
-
-
-void
-Client::transmitWork(uv_work_t *r) {
-  MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
-  baton->packageTransmission();
 }
 
 

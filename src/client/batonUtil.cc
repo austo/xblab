@@ -41,16 +41,6 @@ BatonUtil::packageCredential(MemberBaton *baton) {
 
 
 void
-BatonUtil::packageTransmission(MemberBaton *baton) {
-  // TODO: refactor common code
-  // TODO: scheduling
-  // caller has indicated we have a payload (user message),
-  // strategy for differentiating between that and normal garbage
-  // transmission.
-}
-
-
-void
 BatonUtil::digestBroadcast(MemberBaton *baton) {
   
   Broadcast bc;
@@ -80,7 +70,7 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         return;
       }
       case Broadcast::GROUPENTRY: {
-        // store key && emit "welcome" event
+        // Store key && emit "welcome" event
         enterGroup(baton, data);
         return;
       }
@@ -94,7 +84,7 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
       }
       case Broadcast::BEGIN: {
         cout << "Broadcast::BEGIN\n";
-        // startChat(baton, data);
+        startChat(baton, data);
         return;
       }
 

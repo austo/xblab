@@ -64,9 +64,4 @@ MemberBaton::packageCredential() {
 }
 
 
-void
-MemberBaton::packageTransmission() {
-  BatonUtil::packageTransmission(this);
-}
-
 } // namespace xblab

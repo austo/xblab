@@ -47,8 +47,8 @@ extern "C" {
   on_close(uv_handle_t* handle) {
     MemberBaton *baton = reinterpret_cast<MemberBaton *>(handle->data);
 
-    // TODO: send end chat
-    // baton->member->manager->chatStarted = false;
+    // TODO: broadcast end chat
+    baton->member->manager->endChat();
     delete baton;
   }
 

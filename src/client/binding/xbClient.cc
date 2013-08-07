@@ -28,6 +28,7 @@ Persistent<Object> XbClient::pHandle_;
 
 uv_loop_t *loop;
 
+
 /* instance member functions */
 
 XbClient::XbClient(string group) {
@@ -238,13 +239,13 @@ XbClient::SendCredential(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
-
+// TODO: currently dead code - use or lose
 Handle<Value>
 XbClient::Transmit(const Arguments& args) {
   HandleScope scope;
 
   if (!args[0]->IsObject() || !args[1]->IsFunction()) {
-    THROW("xblab: sendCred() requires object and callback arguments");
+    THROW("xblab: transmit() requires object and callback arguments");
   }
 
   Local<Object> transmission = Local<Object>::Cast(args[0]);
@@ -256,7 +257,7 @@ XbClient::Transmit(const Arguments& args) {
   instance->baton->member.message = NodeUtil::v8ToString(pload);
   instance->baton->member.hasMessage = true;
 
-  Client::onTransmit(instance->baton);
+  // Client::onTransmit(instance->baton);
   
   return scope.Close(Undefined());
 }

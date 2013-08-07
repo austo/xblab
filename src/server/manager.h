@@ -39,6 +39,9 @@ public:
   void
   broadcast();
 
+  void
+  endChat();
+
   std::string
   getPrivateKey() {
     return privateKey_;
