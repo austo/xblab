@@ -120,7 +120,7 @@ Manager::allMembersReady() {
 
 
 /* NOTE: if using uv_queue_work, must be called 
- * from an uv_work_cb, not uv_after_work_cb
+ * from uv_work_cb, not uv_after_work_cb
  *
  * Look into doing this from a uv_idle_t, which we initialize on
  * construction. Once the message has been sent to every member
@@ -128,12 +128,15 @@ Manager::allMembersReady() {
  */
 void
 Manager::getStartChatBuffers() {
+#ifdef TRACE
   cout << "inside getStartChatBuffers\n";
   cout << "for " << group.name << endl;
+#endif
   uv_mutex_lock(&mutex_);
 
   if (!chatStarted_) {
-    cout << "notifying " << group.name << endl;
+    cout << rightnow() << 
+      "getting start chat buffers for " << group.name << endl;
 
     memb_iter mitr = members.begin();
     for (; mitr != members.end(); ++mitr) {
@@ -151,7 +154,7 @@ Manager::broadcast() {
 
     uv_mutex_lock(&mutex_);
 
-    cout << "broadcasting " << group.name << endl;
+    cout << rightnow() << "broadcasting start chat to " << group.name << endl;
 
     memb_iter mitr = members.begin();
     for (; mitr != members.end(); ++mitr) {
@@ -164,7 +167,7 @@ Manager::broadcast() {
 
 void
 Manager::endChat() {
-  // may want to handle member.present 
+  // TODO: may want to handle member.present 
   // and member.ready here instead of in baton destructor
   if (chatStarted_) {
     uv_mutex_lock(&mutex_);

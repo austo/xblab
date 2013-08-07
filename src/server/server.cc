@@ -32,7 +32,6 @@ extern map<string, Manager*> xbManagers;
 
 extern uv_loop_t *loop;
 extern uv_mutex_t xbMutex;
-
 extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 
 /* C linkage for libuv */
@@ -60,8 +59,7 @@ extern "C" {
 
 /* public */
 
-/*
- * NOTE: yajl doesn't seem to play nicely with protobuf,
+/* NOTE: yajl doesn't seem to play nicely with protobuf,
  * although protobuf-lite appears to be okay.
  */
 int
@@ -95,7 +93,7 @@ Server::getConfig(char* filename) {
     return 1;
   }    
 
-  // Let's do some JSON parsing...
+  // Do some JSON parsing...
   yajl_val node = yajl_tree_parse(cfgbuf, errbuf, YAJL_ERR_BUF_SZ);
 
   if (node == NULL) {
@@ -165,6 +163,7 @@ Server::onRead(uv_stream_t *client, ssize_t nread, uv_buf_t buf) {
 
 
 /* private */
+
 void
 Server::onConnectWork(uv_work_t *r){
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
@@ -189,7 +188,7 @@ Server::afterOnConnect (uv_work_t *r) {
       1,
       baton->uvWriteCb);
 
-    // start listening to the client, now that they've authenticated
+    // Start listening to client, now that they've authenticated
     uv_read_start((uv_stream_t*)&baton->uvClient, allocBuf, baton->uvReadCb);
   }
   else {
@@ -198,7 +197,7 @@ Server::afterOnConnect (uv_work_t *r) {
 }
 
 
-// Got some data from the client... unpack and forward to router method
+// Got some data from the client... unpack and forward
 void
 Server::onReadWork(uv_work_t *r){
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
@@ -224,7 +223,6 @@ Server::afterOnRead(uv_work_t *r) {
     baton->uvWriteCb);
 
   if (baton->member->manager->allMembersReady()) {
-    cout << "allMembersReady...\n";
     uv_work_t *req = ALLOC(uv_work_t);
     req->data = baton->member->manager;
     uv_queue_work(
@@ -237,9 +235,7 @@ Server::afterOnRead(uv_work_t *r) {
 
 void
 Server::onStartChatWork(uv_work_t *r) {
-  cout << "inside onStartChatWork\n";
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
-  cout << "after cast\n";
   mgr->getStartChatBuffers();
 }
 

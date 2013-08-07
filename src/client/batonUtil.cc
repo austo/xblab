@@ -83,7 +83,7 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         return;
       }
       case Broadcast::BEGIN: {
-        cout << "Broadcast::BEGIN\n";
+        cout << rightnow() << "received BEGIN\n";
         startChat(baton, data);
         return;
       }
@@ -128,9 +128,13 @@ BatonUtil::enterGroup(
 void
 BatonUtil::startChat(
   MemberBaton *baton, const Broadcast::Data& data) {
+#ifdef TRACE
   cout << "inside start chat\n";
+#endif
   const Broadcast::Prologue& prologue = data.prologue();
+#ifdef TRACE
   cout << "got prologue\n";
+#endif
   baton->member.modulus = prologue.modulo();
   cout << baton->member.username << ": " << baton->member.modulus << endl;
   baton->jsCallbackFactory = XbClient::startChatFactory;

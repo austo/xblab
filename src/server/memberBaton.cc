@@ -19,7 +19,6 @@ namespace xblab {
 
 extern uv_buf_t allocBuf(uv_handle_t *handle, size_t suggested_size);
 extern uv_loop_t *loop;
-// extern void on_write(uv_write_t *req, int status);
 
 
 MemberBaton::MemberBaton() {
@@ -56,18 +55,19 @@ MemberBaton::hasMember() {
 void
 MemberBaton::processTransmission() {
   BatonUtil::processTransmission(this);
-  // TODO: set uvWriteCb here if all went well
+  // TODO: set uvWriteCb here if necessary
 }
 
 
 /* Message buffer methods */
+
 void
 MemberBaton::getNeedCredential() {
   BatonUtil::needCredBuf(this);    
 }
 
 
-// Thses methods may overlap if all members arrive at once
+// May overlap if all members arrive at once
 void
 MemberBaton::getGroupEntry() {
   uv_mutex_lock(&mutex);
@@ -76,26 +76,23 @@ MemberBaton::getGroupEntry() {
 }
 
 
-// should be called from inside uv_work_cb
+// Should be called from uv_work_cb if used with uv_queue_work
 void
 MemberBaton::getStartChat() {
-  // uv_mutex_lock(&mutex);
   BatonUtil::startChatBuf(this);
-  // uv_mutex_unlock(&mutex);  
 }
 
 
-// should be called from inside uv_after_work_cb
+// Should be called from uv_after_work_cb if used with uv_queue_work
 // TODO: move to BatonUtil?
 void
 MemberBaton::unicast() {
   size_t len = xBuffer.size();
-  uv_write_t *req = (uv_write_t*)malloc(sizeof(*req) + len);
-  void *addr = req + 1;
-  memcpy(addr, &xBuffer[0], len);
-  uv_buf_t buf = uv_buf_init((char*)addr, len);
+  uv_write_t *req = (uv_write_t*)malloc(sizeof(uv_write_t) + len);
+  void *bufStart = req + 1;
+  memcpy(bufStart, &xBuffer[0], len);
+  uv_buf_t buf = uv_buf_init((char*)bufStart, len);
   uv_write(req, (uv_stream_t*)&uvClient, &buf, 1, on_write);
 }
-
 
 } // namespace xblab

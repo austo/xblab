@@ -64,7 +64,7 @@ private:
   cleanMemberSchedules(
     std::vector< std::vector<T>* >& schedules, size_t elemsize);
 };
-} //namespace xblab
 
+} //namespace xblab
 
 #endif

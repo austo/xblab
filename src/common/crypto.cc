@@ -145,18 +145,17 @@ Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
   return ok;
 }
 
-/*
-  hybridEncrypt and hybridDecrypt are adaped from examples
-  by Botan author Jack Lloyd, and are hereby distributed
-  under the terms of the Botan license.
-*/
+/* hybridEncrypt and hybridDecrypt are adaped from examples
+ * by Botan author Jack Lloyd, and are hereby distributed
+ * under the terms of the Botan license.
+ */
 
 string
 Crypto::hybridEncrypt(string& publicKey, string& plaintext){
   AutoSeeded_RNG rng;
   SecureVector<byte> pkBytes = SecureVector<byte>((byte*)&publicKey[0],
     publicKey.size());
-  // DataSource_Memory ds(publicKey); // may want to revert to this...
+  // NOTE: could use: DataSource_Memory ds(publicKey);
   std::auto_ptr<X509_PublicKey> key(X509::load_key(pkBytes));
   RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
 
@@ -208,18 +207,17 @@ Crypto::hybridEncrypt(
     PK_Encryptor_EME encryptor(*rsakey, EMESHA1);
 
     /*
-      Generate the master key from which others are derived.
-
-      Make the master key as large as can be encrypted by the public key,
-      up to a limit of 256 bits. For 512-bit public keys, 
-      he master key will be >160 bits.
-      A >600 bit public key will use the full 256-bit master key.
-
-      In theory, this is not enough, because
-      including the initial vector, we derive 320 bits
-      (16 + 16 + 8 = 40 bytes) of secrets using the master key.
-      In practice, however, it should be fine.
-    */
+     * Generate the master key from which others are derived.
+     *
+     * Make the master key as large as can be encrypted by the public key,
+     * up to a limit of 256 bits. For 512-bit public keys, 
+     * the master key will be >160 bits.
+     * A >600 bit public key will use the full 256-bit master key.
+     *
+     * Technically this is not enough, because
+     * we derive 320 bits (16 + 16 + 8 = 40 bytes) 
+     * of secrets using the master key.     
+     */
 
     SymmetricKey masterkey(
       rng, std::min<size_t>(32, encryptor.maximum_input_size()));
@@ -248,12 +246,9 @@ Crypto::hybridEncrypt(
     in >> pipe;
     pipe.end_msg();
 
-    /* 
-      Write the MAC as the second line. That way we can pull it off right
-      from the start and feed the rest of the file right into a pipe on the
-      decrypting end.
-    */
-
+    /* Write the MAC as the second line so we can pull it off
+     * and feed the rest of the file into a pipe on the decrypting end.
+     */
     out << pipe.read_all_as_string(1) << endl;
     out << pipe.read_all_as_string(0);
 
@@ -267,7 +262,9 @@ Crypto::hybridEncrypt(
 
 string
 Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
+#ifdef TRACE
   cout << "inside hybridDecrypt(string&, string&)\n";
+#endif
   AutoSeeded_RNG rng;
   DataSource_Memory ds(privateKey);
   auto_ptr<PKCS8_PrivateKey> key(PKCS8::load_key(ds, rng));
@@ -278,7 +275,9 @@ Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
     throw crypto_exception("Invalid key");
   }
 
+#ifdef TRACE
   cout << "after got key\n";
+#endif
   stringstream ctstream(ciphertext);
   stringstream ptstream;
   hybridDecrypt(rng, rsakey, ctstream, ptstream);

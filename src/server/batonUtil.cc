@@ -158,7 +158,7 @@ BatonUtil::exceptionBuf(
 void
 BatonUtil::processTransmission(MemberBaton* baton) {
   string buf;
-  // use session key if chat membership has been established
+  // Use session key if chat membership has been established
   if (baton->hasMember() && baton->member->ready == true) {
     cout << "baton had member and member is ready\n";
     buf = baton->member->manager->decryptSessionMessage(baton->xBuffer);
