@@ -62,7 +62,7 @@ private:
   template <class T>
   void
   cleanMemberSchedules(
-    std::vector< std::vector<T>* >& schedules, size_t elemsize);
+    std::vector< std::vector<T>* >& schedules, size_t n);
 };
 
 } //namespace xblab

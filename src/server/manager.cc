@@ -23,13 +23,13 @@ typedef map<int, Member>::iterator memb_iter;
 template <class T>
 void
 Manager::cleanMemberSchedules(
-  std::vector< std::vector<T>* >& schedules, size_t elemsize) {
+  std::vector< std::vector<T>* >& schedules, size_t n) {
   if (schedules.size() < 2) { return; }
 
   T i = 0, s = 0, curr;  
   std::vector<T> *firstSched = schedules.at(s);
 
-  for (; i < elemsize; i++) {
+  for (; i < n; i++) {
     curr = (*firstSched)[i];
 
   #ifdef DEBUG
