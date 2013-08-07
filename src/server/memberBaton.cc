@@ -88,6 +88,7 @@ MemberBaton::getStartChat() {
 void
 MemberBaton::unicast() {
   size_t len = xBuffer.size();
+  // allocate contiguous block to enable single free call in on_write
   uv_write_t *req = (uv_write_t*)malloc(sizeof(uv_write_t) + len);
   void *bufStart = req + 1;
   memcpy(bufStart, &xBuffer[0], len);

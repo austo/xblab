@@ -53,6 +53,8 @@ extern "C" {
 
   void
   on_write(uv_write_t *req, int status) {
+    // Will free everything if req was allocated
+    // as (sizeof(uv_write_t) + buffer_length)
     free(req);
   }
 }
