@@ -256,7 +256,7 @@ XbClient::Transmit(const Arguments& args) {
 
   instance->baton->member.message = NodeUtil::v8ToString(pload);
   instance->baton->member.hasMessage = true;
-
+  // Should be able to hold onto this message until it's our turn to send
   // Client::onTransmit(instance->baton);
   
   return scope.Close(Undefined());

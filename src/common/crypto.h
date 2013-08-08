@@ -176,7 +176,10 @@ public:
     srandom(time(NULL));
 
     size_t i, j, n = vecs.size();
+
+  #ifdef TRACE
     printf("vecs.size = %lu\n", n);
+  #endif
 
     T *arr = (T*)malloc(sizeof(T) * n);
     initShuffle<T>(arr, n);
