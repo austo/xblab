@@ -15,7 +15,7 @@ namespace xblab {
 
 // fwd declaration(s)
 class Manager;
-class MemberBaton; // useful to get to baton through xbManagers
+class MemberBaton; // access baton through xbManagers
 
 class Member {
 
@@ -26,8 +26,8 @@ public:
 
 
 /* NOTE: since groups are defined ahead of time, it *should*
- * be okay to calculate schedules on member initialization, then finish
- * cleaning them in the manager constructor. However,
+ * be okay to allocate schedules on member initialization,
+ * then populate them in the manager constructor. However,
  * this could get out of hand if we start allowing arbitrary
  * members into the group at arbitrary times.
  */
@@ -37,11 +37,8 @@ public:
     std::string handle) :
     username(username),
     password(password),
-    handle(handle) {
-      // schedule = // may need to be reworked to account for group size
-      //   Crypto::generateRandomInts<sched_t>(XBSCHEDULESIZE);
-      schedule = std::vector<sched_t>(XBSCHEDULESIZE, 0);      
-  }
+    handle(handle),
+    schedule(XBSCHEDULESIZE) { }
 
   Member(
     std::string username,

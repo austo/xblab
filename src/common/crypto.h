@@ -98,13 +98,13 @@ public:
     return rnd % n;
   }
 
-  // drop-in repacement for simpleRandom
+  // NOTE: should be a drop-in repacement for simpleRandom,
+  // but seems not to respect limit (e.g. returns r == r for n != n)
   template <class T>
   static T
   botanRandom(T n) {
-    T r;
-    T lim = (std::numeric_limits<T>::max() - 
-      (std::numeric_limits<T>::max() % n));
+    T max = std::numeric_limits<T>::max();
+    T r, lim = max - max % n;
     unsigned char buf[sizeof(T)];
     Botan::AutoSeeded_RNG rng;
     do {
@@ -136,6 +136,9 @@ public:
   }
 
 
+  /* These two methods implement a Fisher-Yates shuffle:
+   * http://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+   */
   template <class T>
   static void
   initShuffle(T *array, size_t n) {
@@ -143,12 +146,8 @@ public:
 
     array[0] = 0;
 
-    for (i = 1; i < n; i++) {
-      r = botanRandom(i); // TODO test performance against simpleRandom
-      /* swap possibly unitialized value to avoid duplicates
-       * (likelihood of array[r] being unitialized will decrease
-       * as i (original number source) increases)
-       */
+    for (i = 1; i < n; ++i) {
+      r = simpleRandom(i);      
       array[i] = array[r]; 
       array[r] = i;
     }
@@ -160,21 +159,21 @@ public:
   shuffle(T *array, size_t n) {
     T i, r, t;
 
-    for (i = n - 1; i > 0; i--) {
-      r = botanRandom(i + 1);
+    for (i = n - 1; i > 0; --i) {
+      r = simpleRandom(i + 1);
       t = array[r];
       array[r] = array[i];
       array[i] = t;
     }
   }
 
-
+  // Use FY shuffle to fill zero-initialized vectors one step at a time
   template <class T>
   static void
   fillDisjointVectors(
     std::vector< std::vector<T>* >& vecs, size_t len) {
 
-    // NOTE: if using srandom, init here (srandom(time(NULL)));
+    srandom(time(NULL));
 
     size_t i, j, n = vecs.size();
     printf("vecs.size = %lu\n", n);
@@ -182,8 +181,8 @@ public:
     T *arr = (T*)malloc(sizeof(T) * n);
     initShuffle<T>(arr, n);
 
-    for (i = 0; i < len; i++) {
-      for (j = 0; j < n; j++) {
+    for (i = 0; i < len; ++i) {
+      for (j = 0; j < n; ++j) {
         (*vecs.at(j))[i] = arr[j];
       }
       shuffle(arr, n);
@@ -194,7 +193,6 @@ public:
 
   #ifndef XBLAB_CLIENT
 
-  // TODO: are these necessary?
   static std::string
   sign(std::string& message);
 
