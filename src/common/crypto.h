@@ -1,6 +1,10 @@
 #ifndef CRYPTO_H
 #define CRYPTO_H
 
+#include <cstdlib>
+#include <cstdio>
+#include <ctime>
+
 #include <string>
 #include <vector>
 #include <sstream>
@@ -84,6 +88,18 @@ public:
 
   template <class T>
   static T
+  simpleRandom(T n) {
+    int rnd, limit = RAND_MAX - RAND_MAX % n;
+    
+    do {
+      rnd = random();
+    } while (rnd >= limit);
+    return rnd % n;
+  }
+
+
+  template <class T>
+  static T
   generateRandomInt(){
     unsigned char buf[sizeof(T)];
     Botan::AutoSeeded_RNG rng;
@@ -92,6 +108,7 @@ public:
     return random;
   }
 
+
   template <class T>
   static std::vector<T>
   generateRandomInts(size_t n){
@@ -99,6 +116,62 @@ public:
     Botan::AutoSeeded_RNG rng;
     rng.randomize((unsigned char *)&retval[0], n * sizeof(T));
     return retval;
+  }
+
+
+  template <class T>
+  static void
+  initShuffle(T *array, size_t n) {
+    T i, r;
+
+    array[0] = 0;
+
+    for (i = 1; i < n; i++) {
+      r = simpleRandom(i);
+      /* swap possibly unitialized value to avoid duplicates
+       * (likelihood of array[r] being unitialized will decrease
+       * as i (original number source) increases)
+       */
+      array[i] = array[r]; 
+      array[r] = i;
+    }
+  }
+
+
+  template <class T>
+  static void
+  shuffle(T *array, size_t n) {
+    T i, r, t;
+
+    for (i = n - 1; i > 0; i--) {
+      r = simpleRandom(i + 1);
+      t = array[r];
+      array[r] = array[i];
+      array[i] = t;
+    }
+  }
+
+
+  template <class T>
+  static void
+  fillDisjointVectors(
+    std::vector< std::vector<T>* >& vecs, size_t len) {
+
+    srandom(time(NULL));
+
+    size_t i, j, n = vecs.size();
+    printf("vecs.size = %lu\n", n);
+
+    T *arr = (T*)malloc(sizeof(T) * n);
+    initShuffle<T>(arr, n);
+
+    for (i = 0; i < len; i++) {
+      for (j = 0; j < n; j++) {
+        (*vecs.at(j))[i] = arr[j];
+      }
+      shuffle(arr, n);
+    }
+    free(arr);
   }
 
 

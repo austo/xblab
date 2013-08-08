@@ -262,7 +262,7 @@ Crypto::hybridEncrypt(
 
 string
 Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
-#ifdef TRACE
+#ifdef DEBUG
   cout << "inside hybridDecrypt(string&, string&)\n";
 #endif
   AutoSeeded_RNG rng;
@@ -275,7 +275,7 @@ Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
     throw crypto_exception("Invalid key");
   }
 
-#ifdef TRACE
+#ifdef DEBUG
   cout << "after got key\n";
 #endif
   stringstream ctstream(ciphertext);

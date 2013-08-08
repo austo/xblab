@@ -38,8 +38,9 @@ public:
     username(username),
     password(password),
     handle(handle) {
-      schedule =
-        Crypto::generateRandomInts<sched_t>(XBSCHEDULESIZE);
+      // schedule = // may need to be reworked to account for group size
+      //   Crypto::generateRandomInts<sched_t>(XBSCHEDULESIZE);
+      schedule = std::vector<sched_t>(XBSCHEDULESIZE, 0);      
   }
 
   Member(
@@ -76,7 +77,6 @@ public:
   std::string handle;
   std::string publicKey;
   std::string roundNonce;
-  int roundModulus;
   std::vector<sched_t> schedule;
   bool present;
   bool ready;

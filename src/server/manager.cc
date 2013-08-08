@@ -11,7 +11,6 @@
 #include "db_exception.h"
 #include "common/crypto.h"
 #include "common/macros.h"
-#include "common/common.h"
 
 
 using namespace std;
@@ -58,7 +57,12 @@ Manager::cleanMemberSchedules(
 
 Manager::Manager(string url) {
 
-  if (uv_mutex_init(&mutex_) != XBGOOD) {
+  if (uv_mutex_init(&classMutex_) != XBGOOD) {
+    fprintf(stderr, "Error initializing MemberBaton mutex\n");
+    throw runtime_error("Error initializing MemberBaton mutex\n");
+  }
+
+  if (uv_mutex_init(&propertyMutex_) != XBGOOD) {
     fprintf(stderr, "Error initializing MemberBaton mutex\n");
     throw runtime_error("Error initializing MemberBaton mutex\n");
   }
@@ -68,7 +72,6 @@ Manager::Manager(string url) {
   
   // We've got the room ID, now get our members
   members = Db::getMembers(group.id);
-  seed = Crypto::generateRandomInt<unsigned>();
 
   vector< vector<sched_t>* > schedules;
   // Each member has a reference to the manager
@@ -78,19 +81,31 @@ Manager::Manager(string url) {
     schedules.push_back(&mitr->second.schedule);
   }
 
-  nMembers_ = members.size();
-  roundModulii_ = NALLOC(nMembers_, int);
-  cleanMemberSchedules(schedules, XBSCHEDULESIZE);
+  Crypto::fillDisjointVectors(schedules, XBSCHEDULESIZE);
+
+  #ifdef DEBUG
+  cout << "after fillDisjointVectors:\n";
+  unsigned i, j;
+  for (i = 0; i < schedules.size(); i++) {
+    cout << i << ":\n";
+    for (j = 0; j < schedules.at(i)->size(); j++) {
+      cout << (*schedules.at(i))[j] << ", ";
+    }
+    cout << endl;
+  }
+  #endif
+
   currentRound_ = 0;
   chatStarted_ = false;
+  moduloCalculated_ = false;
   cout << rightnow() << "Manager created for group "
-      << group.url << " (\"" << group.name << "\")" << endl;  
+    << group.url << " (\"" << group.name << "\")" << endl;  
 }
 
 
 Manager::~Manager(){
-  free(roundModulii_);
-  uv_mutex_destroy(&mutex_);
+  uv_mutex_destroy(&classMutex_);
+  uv_mutex_destroy(&propertyMutex_);
 }
 
 
@@ -132,7 +147,7 @@ Manager::getStartChatBuffers() {
   cout << "inside getStartChatBuffers\n";
   cout << "for " << group.name << endl;
 #endif
-  uv_mutex_lock(&mutex_);
+  uv_mutex_lock(&classMutex_);
 
   if (!chatStarted_) {
     cout << rightnow() << 
@@ -145,14 +160,14 @@ Manager::getStartChatBuffers() {
     chatStarted_ = true;
   }    
 
-  uv_mutex_unlock(&mutex_);
+  uv_mutex_unlock(&classMutex_);
 }
 
 
 void
 Manager::broadcast() {
 
-    uv_mutex_lock(&mutex_);
+    uv_mutex_lock(&classMutex_);
 
     cout << rightnow() << "broadcasting start chat to " << group.name << endl;
 
@@ -161,7 +176,7 @@ Manager::broadcast() {
       mitr->second.baton->unicast();            
     }
 
-    uv_mutex_unlock(&mutex_);
+    uv_mutex_unlock(&classMutex_);
 }
 
 
@@ -170,10 +185,27 @@ Manager::endChat() {
   // TODO: may want to handle member.present 
   // and member.ready here instead of in baton destructor
   if (chatStarted_) {
-    uv_mutex_lock(&mutex_);
-    chatStarted_ = false;
-    uv_mutex_unlock(&mutex_);
+    uv_mutex_lock(&classMutex_);
+    if (chatStarted_) {
+      chatStarted_ = false;
+    }
+    uv_mutex_unlock(&classMutex_);
   }
+}
+
+
+// NOTE: mutex may not actually be necessary here
+sched_t
+Manager::getTargetModulo() {
+  if (!moduloCalculated_) {
+    // uv_mutex_lock(&propertyMutex_);
+    // if (!moduloCalculated_) {
+      targetModulo_ = (Crypto::generateRandomInt<sched_t>() % members.size());
+      moduloCalculated_ = true;
+    // }
+    // uv_mutex_unlock(&propertyMutex_);
+  }
+  return targetModulo_;
 }
 
 

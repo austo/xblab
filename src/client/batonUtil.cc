@@ -135,8 +135,8 @@ BatonUtil::startChat(
 #ifdef TRACE
   cout << "got prologue\n";
 #endif
-  baton->member.modulus = prologue.modulo();
-  cout << baton->member.username << ": " << baton->member.modulus << endl;
+  baton->member.modulo = prologue.modulo();
+  cout << baton->member.username << ": " << baton->member.modulo << endl;
   baton->jsCallbackFactory = XbClient::startChatFactory;
   baton->needsJsCallback = true;
 }
@@ -144,6 +144,8 @@ BatonUtil::startChat(
 
 void
 BatonUtil::chatReady(MemberBaton *baton) {
+  baton->member.ready = true;
+
   Transmission trans;
   Transmission::Data *data = new Transmission::Data();
   data->set_type(Transmission::READY);
@@ -151,9 +153,9 @@ BatonUtil::chatReady(MemberBaton *baton) {
   data->set_return_nonce(baton->returnNonce);
 
   signData(baton->member.privateKey, trans, data);
+
   serializeToBuffer(baton, trans, baton->member.ready);
   baton->needsUvWrite = true;
-  baton->member.ready = true;
 }
 
 
@@ -187,7 +189,7 @@ BatonUtil::serializeToBuffer(
 
   plaintext << ptstr;
   if (useSessionKey) {
-  #ifdef DEBUG
+  #ifdef TRACE
     cout << "serializeToBuffer - using session key\n";
   #endif
     Crypto::hybridEncrypt(baton->member.sessionKey, plaintext, ciphertext);

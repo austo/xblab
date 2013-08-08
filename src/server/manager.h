@@ -10,6 +10,7 @@
 
 #include "group.h"
 #include "member.h"
+#include "common/common.h"
 
 
 namespace xblab {
@@ -25,7 +26,8 @@ public:
 
   std::string publicKey;
 
-  unsigned seed;
+  sched_t
+  getTargetModulo();
 
   bool
   allMembersPresent();
@@ -51,13 +53,14 @@ public:
   decryptSessionMessage(std::string& ciphertext);  
   
 private:
-  int nMembers_;
   int currentRound_;
-  int *roundModulii_;
+  sched_t targetModulo_;
   std::string privateKey_;
+  bool moduloCalculated_;
   bool chatStarted_;
 
-  uv_mutex_t mutex_;
+  uv_mutex_t classMutex_;
+  uv_mutex_t propertyMutex_;
 
   template <class T>
   void

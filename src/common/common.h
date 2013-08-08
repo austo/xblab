@@ -23,13 +23,13 @@ inline std::string rightnow() {
 
 
 template <class T>
-static std::vector<T>
+inline std::vector<T>
 vectorize_string(std::string& s) {
   return std::vector<T>((T*)&s[0], (T*)&s[0] + (s.size() / sizeof(T)));
 }
 
 template <class T>
-static std::vector<T>
+inline std::vector<T>
 vectorize_buf(void *buf, size_t n) {
   return std::vector<T>((T*)buf, (T*)buf + n);
 }

@@ -85,10 +85,9 @@ BatonUtil::startChatBuf(MemberBaton *baton) {
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
   Broadcast::Prologue *prologue = new Broadcast::Prologue();
-  unsigned modulo = 
-    (Crypto::generateRandomInt<unsigned>()
-      % baton->member->manager->members.size());
-  prologue->set_modulo(modulo);
+  // sched_t modulo = baton->member->manager->getTargetModulo();
+  // TODO: set manager->moduloCalculated_ false on round end
+  prologue->set_modulo(baton->member->manager->getTargetModulo());
 
   data->set_type(Broadcast::BEGIN);
   data->set_nonce(baton->nonce);
@@ -287,7 +286,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
         baton->member = &mitr->second;
         baton->member->baton = baton;
         if (!mitr->second.present) {
-          mitr->second.assume(m);
+          mitr->second.assume(m); // TODO make threadsafe and move to manager
           cout << rightnow() << mitr->second.username
              << " entered group " << mgr->group.url << endl;
           baton->getGroupEntry();

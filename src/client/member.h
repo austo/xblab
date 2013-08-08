@@ -23,7 +23,7 @@ struct Member {
   std::string sessionKey; // session public key from server 
   std::vector<sched_t> schedule;
   std::string message;
-  int modulus;
+  sched_t modulo;
   bool hasKeys;
   bool ready;
   bool hasMessage; // must be set to false on msg hand-off
