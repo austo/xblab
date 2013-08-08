@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <limits>
 #include <sstream>
 #include <exception>
 
@@ -97,6 +98,22 @@ public:
     return rnd % n;
   }
 
+  // drop-in repacement for simpleRandom
+  template <class T>
+  static T
+  botanRandom(T n) {
+    T r;
+    T lim = (std::numeric_limits<T>::max() - 
+      (std::numeric_limits<T>::max() % n));
+    unsigned char buf[sizeof(T)];
+    Botan::AutoSeeded_RNG rng;
+    do {
+      rng.randomize(buf, sizeof(T));
+      r = T(*((T *)buf));
+    } while (r >= lim);
+    return r % n;
+  }
+
 
   template <class T>
   static T
@@ -127,7 +144,7 @@ public:
     array[0] = 0;
 
     for (i = 1; i < n; i++) {
-      r = simpleRandom(i);
+      r = botanRandom(i); // TODO test performance against simpleRandom
       /* swap possibly unitialized value to avoid duplicates
        * (likelihood of array[r] being unitialized will decrease
        * as i (original number source) increases)
@@ -144,7 +161,7 @@ public:
     T i, r, t;
 
     for (i = n - 1; i > 0; i--) {
-      r = simpleRandom(i + 1);
+      r = botanRandom(i + 1);
       t = array[r];
       array[r] = array[i];
       array[i] = t;
@@ -157,7 +174,7 @@ public:
   fillDisjointVectors(
     std::vector< std::vector<T>* >& vecs, size_t len) {
 
-    srandom(time(NULL));
+    // NOTE: if using srandom, init here (srandom(time(NULL)));
 
     size_t i, j, n = vecs.size();
     printf("vecs.size = %lu\n", n);

@@ -144,7 +144,6 @@ BatonUtil::startChat(
 
 void
 BatonUtil::chatReady(MemberBaton *baton) {
-  baton->member.ready = true;
 
   Transmission trans;
   Transmission::Data *data = new Transmission::Data();
@@ -154,8 +153,16 @@ BatonUtil::chatReady(MemberBaton *baton) {
 
   signData(baton->member.privateKey, trans, data);
 
-  serializeToBuffer(baton, trans, baton->member.ready);
+// TODO: determine why this happens...
+#ifdef MAC_OS_X
+  serializeToBuffer(baton, trans, true);
+#else
+  serializeToBuffer(baton, trans, false);
+#endif
+
   baton->needsUvWrite = true;
+  baton->member.ready = true;
+
 }
 
 

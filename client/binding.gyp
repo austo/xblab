@@ -9,7 +9,7 @@
       "../src/protobuf/xblab.pb.cc",
       "../src/common/crypto.cc",
       "../src/client/binding/xbClient.cc" ],
-      'defines': [ 'XBLAB_CLIENT', 'DEBUG' ],
+      'defines': [ 'XBLAB_CLIENT', 'DEBUG'],
       'conditions': [
           ['OS!="win"', {
             'cflags': [ '-Wall', '-fexceptions', '-g' ],
@@ -25,7 +25,8 @@
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
             'GCC_ENABLE_CPP_RTTI': 'YES',
             'MACOSX_DEPLOYMENT_TARGET': '10.6'
-          }          
+          },
+          'defines': [ 'MAC_OS_X' ]       
         }]        
       ]
     }
