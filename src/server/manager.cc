@@ -124,21 +124,16 @@ Manager::allMembersPresent() {
 
 
 bool
-Manager::canStartChat() {
-  // uv_mutex_lock(&classMutex_);
-
+Manager::canStartChat() { // not threadsafe at the moment
   if (chatStarted_) {
-    // uv_mutex_unlock(&classMutex_);
     return false;
   }
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     if (!mitr->second.present || !mitr->second.ready) {
-      // uv_mutex_unlock(&classMutex_);
       return false;
     }
   }
-  // uv_mutex_unlock(&classMutex_);
   return true;
 }
 
@@ -152,7 +147,7 @@ Manager::startChatIfNecessary(uv_work_cb wcb, uv_after_work_cb awcb) {
     req->data = this;
     uv_queue_work(loop, req, wcb, awcb);
   }
-  
+
   uv_mutex_unlock(&classMutex_);
 }
 

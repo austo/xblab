@@ -35,7 +35,6 @@ public:
 
   XbClient *wrapper;
   bool needsJsCallback;
-  bool needsUvWrite;
   JsCallbackFactory jsCallbackFactory;
 
 };
