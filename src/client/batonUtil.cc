@@ -165,6 +165,7 @@ BatonUtil::startChat(
   cout << baton->member.username << ": " << baton->member.modulo << endl;
   baton->jsCallbackFactory = XbClient::startChatFactory;
   baton->needsJsCallback = true;
+  packageTransmission(baton);
 }
 
 
@@ -177,19 +178,27 @@ BatonUtil::packageTransmission(MemberBaton *baton) {
   data->set_return_nonce(baton->returnNonce);
 
   Transmission::Payload *payload = new Transmission::Payload();
-  payload->set_is_important(baton->member.hasMessage);    
 
-  if (baton->member.hasMessage) {
-    payload->set_content(baton->member.message);
+  if (baton->member.canTransmit()) {
+    payload->set_is_important(baton->member.hasMessage);    
+
+    if (baton->member.hasMessage) {
+      payload->set_content(baton->member.message);
+    }
+    else {
+      payload->set_content(
+        Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
+    }
   }
   else {
-    payload->set_content(
-      Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
+    payload->set_is_important(false);
+    payload->set_content(Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
   }
 
   data->set_allocated_payload(payload);
   signData(baton->member.privateKey, trans, data);
   serializeToBuffer(baton, trans, true); // should be baton->member-ready
+  baton->needsUvWrite = true;
 }
 
 

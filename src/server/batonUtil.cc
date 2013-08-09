@@ -159,7 +159,8 @@ BatonUtil::processTransmission(MemberBaton* baton) {
   string buf;
   // Use session key if chat membership has been established
   if (baton->hasMember() && baton->member->ready == true) {
-    cout << "baton had member and member is ready\n";
+    cout << "(" << baton->member->handle 
+      << ") baton had member and member is ready\n";
     buf = baton->member->manager->decryptSessionMessage(baton->xBuffer);
   }
   else {
@@ -212,11 +213,11 @@ BatonUtil::routeTransmission(
     #endif
       return;
     }
-
-    case Transmission::ENTER:
     case Transmission::TRANSMIT: {
       cout << "TRANSMIT recieved from " << baton->member->handle << endl;
+      return;
     }
+    case Transmission::ENTER:
     case Transmission::EXIT:
     case Transmission::QUIT:
     case Transmission::ERROR:

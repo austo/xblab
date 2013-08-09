@@ -217,6 +217,7 @@ Server::afterOnRead(uv_work_t *r) {
     uv_close((uv_handle_t*) &baton->uvClient, on_close);
     return;
   }
+
   uv_write(
     &baton->uvWrite,
     (uv_stream_t*)&baton->uvClient,
@@ -224,14 +225,8 @@ Server::afterOnRead(uv_work_t *r) {
     1,
     baton->uvWriteCb);
 
-  if (baton->member->manager->allMembersReady()) {
-    uv_work_t *req = ALLOC(uv_work_t);
-    req->data = baton->member->manager;
-    uv_queue_work(
-      loop, req,
-      onStartChatWork,
-      (uv_after_work_cb)afterOnStartChat);
-  }  
+  baton->member->manager->startChatIfNecessary(
+    onStartChatWork, (uv_after_work_cb)afterOnStartChat);  
 }
 
 

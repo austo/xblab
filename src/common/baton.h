@@ -16,6 +16,7 @@ public:
     err = "";
     uvBuf.base = NULL;
     uvBuf.len = 0;
+    needsUvWrite = false;
   }
 
   virtual ~DataBaton(){ }
@@ -33,6 +34,7 @@ public:
   std::string returnNonce;
   std::string url;
   std::string err;
+  bool needsUvWrite;
 
   void *auxData;
 

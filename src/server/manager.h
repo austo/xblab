@@ -33,7 +33,10 @@ public:
   allMembersPresent();
 
   bool
-  allMembersReady();
+  canStartChat(); // Not thread-safe at the moment
+
+  void
+  startChatIfNecessary(uv_work_cb wcb, uv_after_work_cb awcb);
 
   void
   getStartChatBuffers();

@@ -13,6 +13,7 @@ struct Member {
     hasKeys = false;
     hasMessage = false;
     ready = false;
+    currentRound = 0;
   };  
 
   std::string username;
@@ -24,9 +25,15 @@ struct Member {
   std::vector<sched_t> schedule;
   std::string message;
   sched_t modulo;
+  int currentRound;
   bool hasKeys;
   bool ready;
   bool hasMessage; // must be set to false on msg hand-off
+
+  bool
+  canTransmit() {
+    return schedule[currentRound] == modulo;
+  }
 
 };
 } //namespace xblab

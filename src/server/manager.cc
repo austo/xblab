@@ -17,6 +17,8 @@ using namespace std;
 
 namespace xblab {
 
+extern uv_loop_t *loop;
+
 typedef map<int, Member>::iterator memb_iter;
 
 template <class T>
@@ -122,15 +124,36 @@ Manager::allMembersPresent() {
 
 
 bool
-Manager::allMembersReady() {
+Manager::canStartChat() {
+  // uv_mutex_lock(&classMutex_);
 
+  if (chatStarted_) {
+    // uv_mutex_unlock(&classMutex_);
+    return false;
+  }
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     if (!mitr->second.present || !mitr->second.ready) {
+      // uv_mutex_unlock(&classMutex_);
       return false;
     }
   }
+  // uv_mutex_unlock(&classMutex_);
   return true;
+}
+
+
+void
+Manager::startChatIfNecessary(uv_work_cb wcb, uv_after_work_cb awcb) {
+  uv_mutex_lock(&classMutex_);
+
+  if (canStartChat()) {
+    uv_work_t *req = ALLOC(uv_work_t);
+    req->data = this;
+    uv_queue_work(loop, req, wcb, awcb);
+  }
+  
+  uv_mutex_unlock(&classMutex_);
 }
 
 

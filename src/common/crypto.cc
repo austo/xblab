@@ -355,16 +355,37 @@ Crypto::generateNonce(){
 }
 
 
+// string
+// Crypto::generateRandomMessage(size_t maxlen) {
+//   cout << "inside generateRandomMessage\n";
+//   int len = static_cast<int>(maxlen);
+//   int sz = botanRandom<int>(len);
+//   SecureVector<byte> buf(sz);
+//   AutoSeeded_RNG rng;
+//   rng.randomize(buf, buf.size());
+//   Pipe pipe(new Base64_Encoder);
+//   pipe.process_msg(buf);
+//   string r = pipe.read_all_as_string();
+//   cout << "random message: " << r << endl;
+//   return r;
+// }
+
 string
 Crypto::generateRandomMessage(size_t maxlen) {
-  int len = static_cast<int>(maxlen);
-  int sz = botanRandom<int>(len);
-  SecureVector<byte> buf(sz);
-  AutoSeeded_RNG rng;
-  rng.randomize(buf, buf.size());
-  Pipe pipe(new Base64_Encoder);
-  pipe.process_msg(buf);
-  return pipe.read_all_as_string();
+  static const char alphanum[] =
+    "0123456789"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz";
+  static const size_t alen = sizeof(alphanum) - 1;
+
+  srandom(time(NULL));
+  int rlen = simpleRandom(static_cast<int>(maxlen));
+  string retval;
+  for (int i = 0; i < rlen; ++i) {
+    retval.push_back(alphanum[random() % alen]);
+  }
+
+  return retval;
 }
 
 
