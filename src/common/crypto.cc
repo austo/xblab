@@ -355,6 +355,19 @@ Crypto::generateNonce(){
 }
 
 
+string
+Crypto::generateRandomMessage(size_t maxlen) {
+  int len = static_cast<int>(maxlen);
+  int sz = botanRandom<int>(len);
+  SecureVector<byte> buf(sz);
+  AutoSeeded_RNG rng;
+  rng.randomize(buf, buf.size());
+  Pipe pipe(new Base64_Encoder);
+  pipe.process_msg(buf);
+  return pipe.read_all_as_string();
+}
+
+
 void
 Crypto::generateKey(string& pr, string& pu){    
   AutoSeeded_RNG rng;

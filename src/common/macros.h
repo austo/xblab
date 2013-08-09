@@ -26,6 +26,7 @@
 #define XBSCHEDULESIZE 100
 #define XBEMITARGS 2
 #define XBEMIT "emit"
+#define XBMAXMESSAGELENGTH 1000
 
 #define XBEMITCALLBACK(h, a) node::MakeCallback(h, "emit", 2, a)
 

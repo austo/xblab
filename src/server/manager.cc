@@ -144,8 +144,8 @@ Manager::allMembersReady() {
 void
 Manager::getStartChatBuffers() {
 #ifdef TRACE
-  cout << "inside getStartChatBuffers\n";
-  cout << "for " << group.name << endl;
+  cout << rightnow() << "inside getStartChatBuffers " <<
+    "for " << group.name << endl;
 #endif
   uv_mutex_lock(&classMutex_);
 

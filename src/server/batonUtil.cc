@@ -200,18 +200,23 @@ BatonUtil::routeTransmission(
     }
     case Transmission::READY: {
       cout << "READY message recieved from " << baton->member->handle << endl;
+      baton->member->ready = true;
     #ifdef DEBUG
       cout << "manager public key: " <<
         baton->member->manager->publicKey << endl << 
         "manager private key: " << 
         baton->member->manager->getPrivateKey() << endl;
+      if (baton->member->ready) {
+        cout << baton->member->handle << " is now ready.\n\n";
+      }
     #endif
-        baton->member->ready = true;
       return;
     }
 
     case Transmission::ENTER:
-    case Transmission::TRANSMIT:
+    case Transmission::TRANSMIT: {
+      cout << "TRANSMIT recieved from " << baton->member->handle << endl;
+    }
     case Transmission::EXIT:
     case Transmission::QUIT:
     case Transmission::ERROR:

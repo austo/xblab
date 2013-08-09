@@ -31,6 +31,9 @@ class BatonUtil {
   chatReady(MemberBaton *baton);
 
   static void
+  packageTransmission(MemberBaton *baton);
+
+  static void
   signData(std::string&, Transmission&, Transmission::Data*);
 
   static void

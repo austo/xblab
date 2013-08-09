@@ -47,6 +47,9 @@ public:
   generateNonce();
 
   static std::string
+  generateRandomMessage(size_t maxlen);
+
+  static std::string
   sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
 
   static std::string

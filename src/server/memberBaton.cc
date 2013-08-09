@@ -93,6 +93,10 @@ MemberBaton::unicast() {
   void *bufStart = req + 1;
   memcpy(bufStart, &xBuffer[0], len);
   uv_buf_t buf = uv_buf_init((char*)bufStart, len);
+#ifdef DEBUG
+  fprintf(stdout, "%sunicasting to %s...\n",
+      rightnow().c_str(), member->username.c_str());  
+#endif
   uv_write(req, (uv_stream_t*)&uvClient, &buf, 1, on_write);
 }
 

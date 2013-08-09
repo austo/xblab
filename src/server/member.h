@@ -22,6 +22,8 @@ class Member {
 public:
   Member(){
     username = "invalid";
+    ready = false;
+    present = false;
   };
 
 
@@ -37,8 +39,11 @@ public:
     std::string handle) :
     username(username),
     password(password),
-    handle(handle),
-    schedule(XBSCHEDULESIZE) { }
+    handle(handle),    
+    schedule(XBSCHEDULESIZE) {
+      ready = false;
+      present = false;
+    }
 
   Member(
     std::string username,
@@ -47,8 +52,10 @@ public:
     bool present) : 
     username(username),
     password(password),
-    publicKey(pubkey),
-    present(present) { }
+    publicKey(pubkey),    
+    present(present) {
+      ready = false;
+    }
 
   void
   assume(const Member& other);

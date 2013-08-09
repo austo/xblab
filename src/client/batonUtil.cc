@@ -126,6 +126,32 @@ BatonUtil::enterGroup(
 
 
 void
+BatonUtil::chatReady(MemberBaton *baton) {
+
+  Transmission trans;
+  Transmission::Data *data = new Transmission::Data();
+  data->set_type(Transmission::READY);
+  data->set_nonce(baton->nonce);
+  data->set_return_nonce(baton->returnNonce);
+
+  signData(baton->member.privateKey, trans, data);
+
+// TODO: I don't know why this seems to work the first time
+// on os x, but it shouldn't (e.g. it's wrong).
+// Ready message is sent using original key, whereupon
+// we switch to session key for all subsequent messages.
+#ifdef MAC_OS_X
+  serializeToBuffer(baton, trans, true);
+#else
+  serializeToBuffer(baton, trans, false);
+#endif
+
+  baton->needsUvWrite = true;
+  baton->member.ready = true;
+}
+
+
+void
 BatonUtil::startChat(
   MemberBaton *baton, const Broadcast::Data& data) {
 #ifdef TRACE
@@ -143,27 +169,30 @@ BatonUtil::startChat(
 
 
 void
-BatonUtil::chatReady(MemberBaton *baton) {
-
+BatonUtil::packageTransmission(MemberBaton *baton) {
   Transmission trans;
   Transmission::Data *data = new Transmission::Data();
-  data->set_type(Transmission::READY);
+  data->set_type(Transmission::TRANSMIT);
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
 
+  Transmission::Payload *payload = new Transmission::Payload();
+  payload->set_is_important(baton->member.hasMessage);    
+
+  if (baton->member.hasMessage) {
+    payload->set_content(baton->member.message);
+  }
+  else {
+    payload->set_content(
+      Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
+  }
+
+  data->set_allocated_payload(payload);
   signData(baton->member.privateKey, trans, data);
-
-// TODO: determine why this happens...
-#ifdef MAC_OS_X
-  serializeToBuffer(baton, trans, true);
-#else
-  serializeToBuffer(baton, trans, false);
-#endif
-
-  baton->needsUvWrite = true;
-  baton->member.ready = true;
-
+  serializeToBuffer(baton, trans, true); // should be baton->member-ready
 }
+
+
 
 
 void
@@ -196,7 +225,7 @@ BatonUtil::serializeToBuffer(
 
   plaintext << ptstr;
   if (useSessionKey) {
-  #ifdef TRACE
+  #ifdef DEBUG
     cout << "serializeToBuffer - using session key\n";
   #endif
     Crypto::hybridEncrypt(baton->member.sessionKey, plaintext, ciphertext);
