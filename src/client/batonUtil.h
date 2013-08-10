@@ -37,8 +37,7 @@ class BatonUtil {
   signData(std::string&, Transmission&, Transmission::Data*);
 
   static void
-  serializeToBuffer(
-    MemberBaton *baton, Transmission& trans, bool useSessionKey = false);
+  serializeToBuffer(MemberBaton *baton, Transmission& trans);
 
   static bool
   verifySignature(

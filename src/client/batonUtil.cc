@@ -110,7 +110,7 @@ BatonUtil::enterGroup(
   string sched(session.schedule());
   baton->member.schedule = vectorize_string<sched_t>(sched);
 
-  // uv_write "READY" message
+  // uv_write "READY" message & sign with xbPublicKeyFile
   chatReady(baton);
 
 #ifdef TRACE
@@ -136,15 +136,9 @@ BatonUtil::chatReady(MemberBaton *baton) {
 
   signData(baton->member.privateKey, trans, data);
 
-// TODO: I don't know why this seems to work the first time
-// on os x, but it shouldn't (e.g. it's wrong).
-// Ready message is sent using original key, whereupon
-// we switch to session key for all subsequent messages.
-#ifdef MAC_OS_X
-  serializeToBuffer(baton, trans, true);
-#else
-  serializeToBuffer(baton, trans, false);
-#endif
+  // Ready message is sent using original key, whereupon
+  // we switch to session key for all subsequent messages.
+  serializeToBuffer(baton, trans);
 
   baton->needsUvWrite = true;
   baton->member.ready = true;
@@ -197,11 +191,9 @@ BatonUtil::packageTransmission(MemberBaton *baton) {
 
   data->set_allocated_payload(payload);
   signData(baton->member.privateKey, trans, data);
-  serializeToBuffer(baton, trans, true); // should be baton->member-ready
+  serializeToBuffer(baton, trans);
   baton->needsUvWrite = true;
 }
-
-
 
 
 void
@@ -224,7 +216,7 @@ BatonUtil::signData(
 
 void
 BatonUtil::serializeToBuffer(
-  MemberBaton *baton, Transmission& trans, bool useSessionKey) {
+  MemberBaton *baton, Transmission& trans) {
 
   stringstream plaintext, ciphertext;
   string ptstr;
@@ -233,7 +225,7 @@ BatonUtil::serializeToBuffer(
   }
 
   plaintext << ptstr;
-  if (useSessionKey) {
+  if (baton->member.ready) {
   #ifdef DEBUG
     cout << "serializeToBuffer - using session key\n";
   #endif

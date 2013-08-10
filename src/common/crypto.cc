@@ -206,8 +206,7 @@ Crypto::hybridEncrypt(
     AutoSeeded_RNG rng;
     PK_Encryptor_EME encryptor(*rsakey, EMESHA1);
 
-    /*
-     * Generate the master key from which others are derived.
+    /* Generate the master key from which others are derived.
      *
      * Make the master key as large as can be encrypted by the public key,
      * up to a limit of 256 bits. For 512-bit public keys, 
@@ -354,21 +353,6 @@ Crypto::generateNonce(){
   return pipe.read_all_as_string();
 }
 
-
-// string
-// Crypto::generateRandomMessage(size_t maxlen) {
-//   cout << "inside generateRandomMessage\n";
-//   int len = static_cast<int>(maxlen);
-//   int sz = botanRandom<int>(len);
-//   SecureVector<byte> buf(sz);
-//   AutoSeeded_RNG rng;
-//   rng.randomize(buf, buf.size());
-//   Pipe pipe(new Base64_Encoder);
-//   pipe.process_msg(buf);
-//   string r = pipe.read_all_as_string();
-//   cout << "random message: " << r << endl;
-//   return r;
-// }
 
 string
 Crypto::generateRandomMessage(size_t maxlen) {
