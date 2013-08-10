@@ -170,6 +170,8 @@ XbClient::emitStartChat() {
 
 /* static member functions */
 
+// NOTE: look into converting object args to array Gets
+// for use with JS shim
 Handle<Value>
 XbClient::New(const Arguments& args) {
   HandleScope scope; 

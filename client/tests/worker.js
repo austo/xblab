@@ -5,6 +5,11 @@ var un = process.argv[2],
   pw = process.argv[3];
 cfg.group = process.argv[4];
 
+if (/r/i.test(process.argv[5])) {
+  cfg['xbServerAddress'] = cfg['xbServerAddressRemote'];
+}
+delete cfg['xbServerAddressRemote'];
+
 // console.log("username: %s, password: %s", un, pw);
 
 var client = new xblab.Client(cfg);

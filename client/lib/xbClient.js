@@ -1,3 +1,6 @@
+// NOTE: handle argument checking and verification here,
+// where JIT can optimize, then ASSERT in native code
+
 var util = require('util'),
   xblab = require('./xblab.wrapper'),
   path = require('path'),
