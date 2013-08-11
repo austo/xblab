@@ -245,10 +245,17 @@ class Broadcast_Payload : public ::google::protobuf::MessageLite {
 
   // accessors -------------------------------------------------------
 
-  // required string content = 1;
+  // required bool is_important = 1;
+  inline bool has_is_important() const;
+  inline void clear_is_important();
+  static const int kIsImportantFieldNumber = 1;
+  inline bool is_important() const;
+  inline void set_is_important(bool value);
+
+  // required string content = 2;
   inline bool has_content() const;
   inline void clear_content();
-  static const int kContentFieldNumber = 1;
+  static const int kContentFieldNumber = 2;
   inline const ::std::string& content() const;
   inline void set_content(const ::std::string& value);
   inline void set_content(const char* value);
@@ -257,25 +264,28 @@ class Broadcast_Payload : public ::google::protobuf::MessageLite {
   inline ::std::string* release_content();
   inline void set_allocated_content(::std::string* content);
 
-  // required fixed32 modulo = 2;
+  // required fixed32 modulo = 3;
   inline bool has_modulo() const;
   inline void clear_modulo();
-  static const int kModuloFieldNumber = 2;
+  static const int kModuloFieldNumber = 3;
   inline ::google::protobuf::uint32 modulo() const;
   inline void set_modulo(::google::protobuf::uint32 value);
 
   // @@protoc_insertion_point(class_scope:xblab.Broadcast.Payload)
  private:
+  inline void set_has_is_important();
+  inline void clear_has_is_important();
   inline void set_has_content();
   inline void clear_has_content();
   inline void set_has_modulo();
   inline void clear_has_modulo();
 
   ::std::string* content_;
+  bool is_important_;
   ::google::protobuf::uint32 modulo_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
 
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   friend void  protobuf_AddDesc_xblab_2eproto_impl();
@@ -1713,15 +1723,37 @@ inline void Broadcast_Session::set_schedule_size(::google::protobuf::uint32 valu
 
 // Broadcast_Payload
 
-// required string content = 1;
-inline bool Broadcast_Payload::has_content() const {
+// required bool is_important = 1;
+inline bool Broadcast_Payload::has_is_important() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void Broadcast_Payload::set_has_content() {
+inline void Broadcast_Payload::set_has_is_important() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void Broadcast_Payload::clear_has_content() {
+inline void Broadcast_Payload::clear_has_is_important() {
   _has_bits_[0] &= ~0x00000001u;
+}
+inline void Broadcast_Payload::clear_is_important() {
+  is_important_ = false;
+  clear_has_is_important();
+}
+inline bool Broadcast_Payload::is_important() const {
+  return is_important_;
+}
+inline void Broadcast_Payload::set_is_important(bool value) {
+  set_has_is_important();
+  is_important_ = value;
+}
+
+// required string content = 2;
+inline bool Broadcast_Payload::has_content() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Broadcast_Payload::set_has_content() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Broadcast_Payload::clear_has_content() {
+  _has_bits_[0] &= ~0x00000002u;
 }
 inline void Broadcast_Payload::clear_content() {
   if (content_ != &::google::protobuf::internal::kEmptyString) {
@@ -1783,15 +1815,15 @@ inline void Broadcast_Payload::set_allocated_content(::std::string* content) {
   }
 }
 
-// required fixed32 modulo = 2;
+// required fixed32 modulo = 3;
 inline bool Broadcast_Payload::has_modulo() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
 inline void Broadcast_Payload::set_has_modulo() {
-  _has_bits_[0] |= 0x00000002u;
+  _has_bits_[0] |= 0x00000004u;
 }
 inline void Broadcast_Payload::clear_has_modulo() {
-  _has_bits_[0] &= ~0x00000002u;
+  _has_bits_[0] &= ~0x00000004u;
 }
 inline void Broadcast_Payload::clear_modulo() {
   modulo_ = 0u;

@@ -225,8 +225,7 @@ Server::afterOnRead(uv_work_t *r) {
     1,
     baton->uvWriteCb);
 
-  baton->member->manager->startChatIfNecessary(
-    onStartChatWork, (uv_after_work_cb)afterOnStartChat);  
+  respondAfterRead(baton->member->manager);
 }
 
 
@@ -238,11 +237,22 @@ Server::onStartChatWork(uv_work_t *r) {
 
 
 void
-Server::afterOnStartChat(uv_work_t *r) {
+Server::onBroadcastWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
-  mgr->broadcast();
-  r->data = NULL;
-  free(r);
+  mgr->getStartChatBuffers();
+}
+
+
+void
+Server::respondAfterRead(Manager *mgr) {
+
+  if (mgr->canStartChat()) {
+    mgr->startChatIfNecessary(onStartChatWork);
+  }
+  // else (mgr->allMessagesProcessed()) {
+  //   mgr->broadcastIfNecessary(onBroadcastWork);
+  // }
+  return;
 }
 
 

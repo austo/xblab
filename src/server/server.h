@@ -19,7 +19,10 @@ private:
   static void afterOnRead (uv_work_t *r);
 
   static void onStartChatWork(uv_work_t *r); // TODO: hand off to manager
-  static void afterOnStartChat(uv_work_t *r);
+  static void onBroadcastWork(uv_work_t *r);
+
+  static void respondAfterRead(Manager *mgr);
+
 
 public:
   static int getConfig(char* filename);

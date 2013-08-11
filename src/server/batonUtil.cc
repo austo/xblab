@@ -215,6 +215,13 @@ BatonUtil::routeTransmission(
     }
     case Transmission::TRANSMIT: {
       cout << "TRANSMIT recieved from " << baton->member->handle << endl;
+      /* TODO:
+       * Can user broadcast?
+       * If so, decrypt and verify message.
+       * If message is okay, is the message important?
+       * If so, broadcast message with next round modulo.
+       * If not, broadcast no message with next round modulo. 
+       */
       return;
     }
     case Transmission::ENTER:
@@ -321,6 +328,18 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   delete m;
   exceptionBuf(baton, Broadcast::ERROR, ss.str());
   return;
+}
+
+
+void
+BatonUtil::processMessage(MemberBaton *baton) {
+  /* TODO:
+   * Can user broadcast?
+   * If so, decrypt and verify message.
+   * If message is okay, is the message important?
+   * If so, broadcast message with next round modulo.
+   * If not, broadcast no message with next round modulo. 
+   */
 }
 
 

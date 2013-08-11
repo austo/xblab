@@ -23,8 +23,9 @@ message Broadcast {
   }
 
   message Payload {
-    required string content = 1;
-    required fixed32 modulo = 2;
+    required bool is_important = 1;
+    required string content = 2;
+    required fixed32 modulo = 3;
   }
 
   message Prologue {

@@ -368,6 +368,7 @@ void Broadcast_Session::Swap(Broadcast_Session* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
+const int Broadcast_Payload::kIsImportantFieldNumber;
 const int Broadcast_Payload::kContentFieldNumber;
 const int Broadcast_Payload::kModuloFieldNumber;
 #endif  // !_MSC_VER
@@ -388,6 +389,7 @@ Broadcast_Payload::Broadcast_Payload(const Broadcast_Payload& from)
 
 void Broadcast_Payload::SharedCtor() {
   _cached_size_ = 0;
+  is_important_ = false;
   content_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   modulo_ = 0u;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -431,6 +433,7 @@ Broadcast_Payload* Broadcast_Payload::New() const {
 
 void Broadcast_Payload::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    is_important_ = false;
     if (has_content()) {
       if (content_ != &::google::protobuf::internal::kEmptyString) {
         content_->clear();
@@ -447,21 +450,37 @@ bool Broadcast_Payload::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required string content = 1;
+      // required bool is_important = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &is_important_)));
+          set_has_is_important();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_content;
+        break;
+      }
+
+      // required string content = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_content:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
                 input, this->mutable_content()));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(21)) goto parse_modulo;
+        if (input->ExpectTag(29)) goto parse_modulo;
         break;
       }
 
-      // required fixed32 modulo = 2;
-      case 2: {
+      // required fixed32 modulo = 3;
+      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_modulo:
@@ -493,15 +512,20 @@ bool Broadcast_Payload::MergePartialFromCodedStream(
 
 void Broadcast_Payload::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required string content = 1;
-  if (has_content()) {
-    ::google::protobuf::internal::WireFormatLite::WriteString(
-      1, this->content(), output);
+  // required bool is_important = 1;
+  if (has_is_important()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(1, this->is_important(), output);
   }
 
-  // required fixed32 modulo = 2;
+  // required string content = 2;
+  if (has_content()) {
+    ::google::protobuf::internal::WireFormatLite::WriteString(
+      2, this->content(), output);
+  }
+
+  // required fixed32 modulo = 3;
   if (has_modulo()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFixed32(2, this->modulo(), output);
+    ::google::protobuf::internal::WireFormatLite::WriteFixed32(3, this->modulo(), output);
   }
 
 }
@@ -510,14 +534,19 @@ int Broadcast_Payload::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required string content = 1;
+    // required bool is_important = 1;
+    if (has_is_important()) {
+      total_size += 1 + 1;
+    }
+
+    // required string content = 2;
     if (has_content()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->content());
     }
 
-    // required fixed32 modulo = 2;
+    // required fixed32 modulo = 3;
     if (has_modulo()) {
       total_size += 1 + 4;
     }
@@ -537,6 +566,9 @@ void Broadcast_Payload::CheckTypeAndMergeFrom(
 void Broadcast_Payload::MergeFrom(const Broadcast_Payload& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_is_important()) {
+      set_is_important(from.is_important());
+    }
     if (from.has_content()) {
       set_content(from.content());
     }
@@ -553,13 +585,14 @@ void Broadcast_Payload::CopyFrom(const Broadcast_Payload& from) {
 }
 
 bool Broadcast_Payload::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
 
   return true;
 }
 
 void Broadcast_Payload::Swap(Broadcast_Payload* other) {
   if (other != this) {
+    std::swap(is_important_, other->is_important_);
     std::swap(content_, other->content_);
     std::swap(modulo_, other->modulo_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);

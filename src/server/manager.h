@@ -33,10 +33,18 @@ public:
   allMembersPresent();
 
   bool
-  canStartChat(); // Not thread-safe at the moment
+  canStartChat(); // not thread-safe
+
+  bool
+  allMessagesProcessed(); // not thread-safe
+
+
+  // TODO: make wcb and awcb members?
+  void
+  startChatIfNecessary(uv_work_cb wcb /*, uv_after_work_cb awcb*/);
 
   void
-  startChatIfNecessary(uv_work_cb wcb, uv_after_work_cb awcb);
+  broadcastIfNecessary(uv_work_cb wcb /*, uv_after_work_cb awcb*/);
 
   void
   getStartChatBuffers();
@@ -53,7 +61,11 @@ public:
   }
 
   std::string
-  decryptSessionMessage(std::string& ciphertext);  
+  decryptSessionMessage(std::string& ciphertext);
+
+  // static uv_after_work_cb
+  static void
+  afterRoundWork(uv_work_t *r); 
   
 private:
   int currentRound_;

@@ -138,14 +138,42 @@ Manager::canStartChat() { // not threadsafe at the moment
 }
 
 
+bool
+Manager::allMessagesProcessed() {
+  memb_iter mitr = members.begin();
+  for (; mitr != members.end(); ++mitr) {
+    if (!mitr->second.messageProcessed) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
 void
-Manager::startChatIfNecessary(uv_work_cb wcb, uv_after_work_cb awcb) {
+Manager::startChatIfNecessary(uv_work_cb wcb) {
   uv_mutex_lock(&classMutex_);
 
   if (canStartChat()) {
     uv_work_t *req = ALLOC(uv_work_t);
     req->data = this;
-    uv_queue_work(loop, req, wcb, awcb);
+    uv_queue_work(loop, req, wcb,
+      (uv_after_work_cb)afterRoundWork);
+  }
+
+  uv_mutex_unlock(&classMutex_);
+}
+
+
+void
+Manager::broadcastIfNecessary(uv_work_cb wcb) {
+  uv_mutex_lock(&classMutex_);
+
+  if (allMessagesProcessed()) {
+    uv_work_t *req = ALLOC(uv_work_t);
+    req->data = this;
+    uv_queue_work(loop, req, wcb,
+      (uv_after_work_cb)afterRoundWork);
   }
 
   uv_mutex_unlock(&classMutex_);
@@ -195,6 +223,15 @@ Manager::broadcast() {
     }
 
     uv_mutex_unlock(&classMutex_);
+}
+
+
+void
+Manager::afterRoundWork(uv_work_t *r) {
+  Manager *mgr = reinterpret_cast<Manager *>(r->data);
+  mgr->broadcast();
+  r->data = NULL;
+  free(r);
 }
 
 

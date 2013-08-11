@@ -24,6 +24,7 @@ public:
     username = "invalid";
     ready = false;
     present = false;
+    messageProcessed = false;
   };
 
 
@@ -43,6 +44,7 @@ public:
     schedule(XBSCHEDULESIZE) {
       ready = false;
       present = false;
+      messageProcessed = false;
     }
 
   Member(
@@ -55,6 +57,7 @@ public:
     publicKey(pubkey),    
     present(present) {
       ready = false;
+      messageProcessed = false;
     }
 
   void
@@ -84,6 +87,7 @@ public:
   std::vector<sched_t> schedule;
   bool present;
   bool ready;
+  bool messageProcessed;
   Manager *manager;
   MemberBaton *baton;
 

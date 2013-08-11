@@ -60,6 +60,9 @@ private:
     std::string& datastr, Transmission& trans);
 
   static void
+  processMessage(MemberBaton *baton);
+
+  static void
   signData(Broadcast& bc, Broadcast::Data *data);
 
   static void
