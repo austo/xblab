@@ -24,6 +24,7 @@ public:
   void getNeedCredential();
   void getGroupEntry();
   void getStartChat();
+  void getMessage();
   void unicast();
 
 };

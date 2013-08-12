@@ -230,27 +230,13 @@ Server::afterOnRead(uv_work_t *r) {
 
 
 void
-Server::onStartChatWork(uv_work_t *r) {
-  Manager *mgr = reinterpret_cast<Manager *>(r->data);
-  mgr->getStartChatBuffers();
-}
-
-
-void
-Server::onBroadcastWork(uv_work_t *r) {
-  Manager *mgr = reinterpret_cast<Manager *>(r->data);
-  mgr->getStartChatBuffers();
-}
-
-
-void
 Server::respondAfterRead(Manager *mgr) {
 
   if (mgr->canStartChat()) {
-    mgr->startChatIfNecessary(onStartChatWork);
+    mgr->startChatIfNecessary();
   }
-  // else (mgr->allMessagesProcessed()) {
-  //   mgr->broadcastIfNecessary(onBroadcastWork);
+  // else if (mgr->allMessagesProcessed()) {
+  //   mgr->broadcastIfNecessary();
   // }
   return;
 }

@@ -153,6 +153,26 @@ BatonUtil::exceptionBuf(
 }
 
 
+void
+BatonUtil::messageBuf(MemberBaton *baton) {
+  baton->nonce = Crypto::generateNonce();
+  Broadcast bc;
+  Broadcast::Data *data = new Broadcast::Data();
+  Broadcast::Payload *payload = new Broadcast::Payload();
+
+  payload->set_modulo(baton->member->manager->getTargetModulo());
+  payload->set_content(baton->member->manager->getRoundMessage());
+  payload->set_is_important(baton->member->manager->roundIsImportant());
+
+  data->set_type(Broadcast::BROADCAST);
+  data->set_nonce(baton->nonce);
+  data->set_allocated_payload(payload);  
+
+  signData(baton->member->manager->getPrivateKey(), bc, data);
+  serializeToBuffer(baton, bc);  
+}
+
+
 // Decrypt and compare nonces
 void
 BatonUtil::processTransmission(MemberBaton* baton) {
@@ -215,13 +235,7 @@ BatonUtil::routeTransmission(
     }
     case Transmission::TRANSMIT: {
       cout << "TRANSMIT recieved from " << baton->member->handle << endl;
-      /* TODO:
-       * Can user broadcast?
-       * If so, decrypt and verify message.
-       * If message is okay, is the message important?
-       * If so, broadcast message with next round modulo.
-       * If not, broadcast no message with next round modulo. 
-       */
+      processMessage(baton, datastr, trans.signature(), trans.data().payload());
       return;
     }
     case Transmission::ENTER:
@@ -332,14 +346,30 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
 
 
 void
-BatonUtil::processMessage(MemberBaton *baton) {
+BatonUtil::processMessage(MemberBaton *baton, string& datastr,
+  string signature, const Transmission::Payload& payload) {
   /* TODO:
    * Can user broadcast?
    * If so, decrypt and verify message.
    * If message is okay, is the message important?
-   * If so, broadcast message with next round modulo.
+   * If so, set manager round message and broadcast with next round modulo.
    * If not, broadcast no message with next round modulo. 
    */
+  uv_mutex_lock(&xbMutex);
+  if (Manager::memberCanTransmit(baton->member->manager, baton->member)) {
+    // TODO: trouble spot
+    if (!Crypto::verify(baton->member->publicKey, datastr, signature)) { 
+      #ifdef DEBUG
+      cout << "offending public key for " << baton->member->handle << ": " <<
+        baton->member->publicKey << endl;
+      #endif
+      throw util_exception("User key not verified.");
+    }
+    if (payload.is_important()) {
+      baton->member->manager->setRoundMessage(payload.content());
+    }
+  }
+  uv_mutex_unlock(&xbMutex);
 }
 
 

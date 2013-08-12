@@ -100,6 +100,7 @@ Manager::Manager(string url) {
   currentRound_ = 0;
   chatStarted_ = false;
   moduloCalculated_ = false;
+  roundMessage_ = "";
   cout << rightnow() << "Manager created for group "
     << group.url << " (\"" << group.name << "\")" << endl;  
 }
@@ -124,7 +125,7 @@ Manager::allMembersPresent() {
 
 
 bool
-Manager::canStartChat() { // not threadsafe at the moment
+Manager::canStartChat() { // not threadsafe
   if (chatStarted_) {
     return false;
   }
@@ -139,7 +140,7 @@ Manager::canStartChat() { // not threadsafe at the moment
 
 
 bool
-Manager::allMessagesProcessed() {
+Manager::allMessagesProcessed() { // not threadsafe
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     if (!mitr->second.messageProcessed) {
@@ -151,13 +152,22 @@ Manager::allMessagesProcessed() {
 
 
 void
-Manager::startChatIfNecessary(uv_work_cb wcb) {
+Manager::setRoundMessage(string msg) {
+  uv_mutex_lock(&propertyMutex_);
+  roundMessage_ = msg;
+  roundIsImportant_ = true;
+  uv_mutex_unlock(&propertyMutex_);
+}
+
+
+void
+Manager::startChatIfNecessary() {
   uv_mutex_lock(&classMutex_);
 
   if (canStartChat()) {
     uv_work_t *req = ALLOC(uv_work_t);
     req->data = this;
-    uv_queue_work(loop, req, wcb,
+    uv_queue_work(loop, req, onStartChatWork,
       (uv_after_work_cb)afterRoundWork);
   }
 
@@ -166,13 +176,13 @@ Manager::startChatIfNecessary(uv_work_cb wcb) {
 
 
 void
-Manager::broadcastIfNecessary(uv_work_cb wcb) {
+Manager::broadcastIfNecessary() {
   uv_mutex_lock(&classMutex_);
 
   if (allMessagesProcessed()) {
     uv_work_t *req = ALLOC(uv_work_t);
     req->data = this;
-    uv_queue_work(loop, req, wcb,
+    uv_queue_work(loop, req, onBroadcastWork,
       (uv_after_work_cb)afterRoundWork);
   }
 
@@ -227,9 +237,24 @@ Manager::broadcast() {
 
 
 void
+Manager::onStartChatWork(uv_work_t *r) {
+  Manager *mgr = reinterpret_cast<Manager *>(r->data);
+  mgr->getStartChatBuffers();
+}
+
+
+void
+Manager::onBroadcastWork(uv_work_t *r) {
+  Manager *mgr = reinterpret_cast<Manager *>(r->data);
+  mgr->getStartChatBuffers();
+}
+
+
+void
 Manager::afterRoundWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
   mgr->broadcast();
+  mgr->roundIsImportant_ = false;
   r->data = NULL;
   free(r);
 }
@@ -253,12 +278,8 @@ Manager::endChat() {
 sched_t
 Manager::getTargetModulo() {
   if (!moduloCalculated_) {
-    // uv_mutex_lock(&propertyMutex_);
-    // if (!moduloCalculated_) {
       targetModulo_ = (Crypto::generateRandomInt<sched_t>() % members.size());
       moduloCalculated_ = true;
-    // }
-    // uv_mutex_unlock(&propertyMutex_);
   }
   return targetModulo_;
 }
@@ -268,6 +289,13 @@ string
 Manager::decryptSessionMessage(string& ciphertext) {
   string r = Crypto::hybridDecrypt(privateKey_, ciphertext);
   return r;
+}
+
+// static
+bool
+Manager::memberCanTransmit(Manager *mgr, Member *member) {
+  bool retval = mgr->targetModulo_ == member->schedule[mgr->currentRound_];
+  return retval;
 }
 
 

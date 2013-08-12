@@ -67,6 +67,7 @@ MemberBaton::getNeedCredential() {
 }
 
 
+// TODO: mutex may be unnecessary
 // May overlap if all members arrive at once
 void
 MemberBaton::getGroupEntry() {
@@ -80,6 +81,11 @@ MemberBaton::getGroupEntry() {
 void
 MemberBaton::getStartChat() {
   BatonUtil::startChatBuf(this);
+}
+
+void
+MemberBaton::getMessage() {
+  BatonUtil::messageBuf(this);
 }
 
 

@@ -49,18 +49,22 @@ private:
   exceptionBuf(MemberBaton*, Broadcast::Type, std::string, std::string);
 
   static void
+  messageBuf(MemberBaton *baton);
+
+  static void
   processTransmission(MemberBaton *baton); 
      
   static void
-  processCredential(MemberBaton*, std::string&,
-    std::string, const Transmission::Credential&);
+  processCredential(MemberBaton*, std::string& datastr,
+    std::string signature, const Transmission::Credential& cred);
+
+  static void
+  processMessage(MemberBaton *baton, std::string& datastr,
+    std::string signature, const Transmission::Payload& payload);
 
   static void
   routeTransmission(MemberBaton *baton,
     std::string& datastr, Transmission& trans);
-
-  static void
-  processMessage(MemberBaton *baton);
 
   static void
   signData(Broadcast& bc, Broadcast::Data *data);

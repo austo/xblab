@@ -38,13 +38,16 @@ public:
   bool
   allMessagesProcessed(); // not thread-safe
 
+  bool
+  roundIsImportant() {
+    return roundIsImportant_;
+  }
 
-  // TODO: make wcb and awcb members?
   void
-  startChatIfNecessary(uv_work_cb wcb /*, uv_after_work_cb awcb*/);
+  startChatIfNecessary();
 
   void
-  broadcastIfNecessary(uv_work_cb wcb /*, uv_after_work_cb awcb*/);
+  broadcastIfNecessary();
 
   void
   getStartChatBuffers();
@@ -61,7 +64,26 @@ public:
   }
 
   std::string
+  getRoundMessage() {
+    return roundMessage_;
+  }
+
+  void
+  setRoundMessage(std::string msg);
+
+  std::string
   decryptSessionMessage(std::string& ciphertext);
+
+  static bool
+  memberCanTransmit(Manager *mgr, Member *member);
+
+  // static uv_work_cb
+  static void
+  onStartChatWork(uv_work_t *r);
+
+  static void
+  onBroadcastWork(uv_work_t *r);
+
 
   // static uv_after_work_cb
   static void
@@ -70,9 +92,13 @@ public:
 private:
   int currentRound_;
   sched_t targetModulo_;
+
   std::string privateKey_;
+  std::string roundMessage_;
+
   bool moduloCalculated_;
   bool chatStarted_;
+  bool roundIsImportant_;
 
   uv_mutex_t classMutex_;
   uv_mutex_t propertyMutex_;
