@@ -65,6 +65,14 @@ public:
   verify(Botan::RSA_PublicKey* rsakey,
     std::string message, std::string signature);
 
+  static bool
+  verifyShort(std::string publicKey,
+    std::string message, std::string signature);
+
+  static bool
+  verifyShort(Botan::RSA_PublicKey* rsakey,
+    std::string message, std::string signature);
+
   static void
   hybridEncrypt(std::stringstream& in, std::stringstream& out);
 

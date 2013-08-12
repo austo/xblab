@@ -180,6 +180,7 @@ BatonUtil::packageTransmission(MemberBaton *baton) {
       payload->set_content(baton->member.message);
     }
     else {
+      cout << "setting content to random message.\n";
       payload->set_content(
         Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
     }

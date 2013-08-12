@@ -129,12 +129,14 @@ bool
 Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){   
 
   Pipe pipe(new Base64_Decoder);
-  pipe.process_msg(signature);
+  pipe.process_msg(
+    reinterpret_cast<const byte*>(signature.data()), signature.size());
   SecureVector<byte> sig = pipe.read_all();
 
   PK_Verifier ver(*rsakey, SHA1);
 
-  DataSource_Memory in(message);
+  DataSource_Memory in(
+    reinterpret_cast<const byte*>(message.data()), message.size());
   byte buf[SIG_BUF_SIZE] = { 0 };
   while(size_t got = in.read(buf, sizeof(buf))){
     ver.update(buf, got);
@@ -143,6 +145,36 @@ Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
   const bool ok = ver.check_signature(sig);
   
   return ok;
+}
+
+
+bool
+Crypto::verifyShort(string publicKey, string message, string signature){
+  DataSource_Memory ds(publicKey);
+
+  std::auto_ptr<X509_PublicKey> key(X509::load_key(ds));
+  RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
+
+  if(!rsakey) {
+    cout << "BAD KEY!!" << endl;
+    throw crypto_exception("Invalid key");
+  }
+  return verifyShort(rsakey, message, signature);
+}
+
+
+bool
+Crypto::verifyShort(RSA_PublicKey* rsakey, string message, string signature){
+
+  Pipe pipe(new Base64_Decoder);
+  pipe.process_msg(
+    reinterpret_cast<const byte*>(signature.data()), signature.size());
+  SecureVector<byte> sig = pipe.read_all();
+
+  PK_Verifier ver(*rsakey, SHA1);
+
+  return ver.verify_message(reinterpret_cast<const byte*>(message.data()),
+    message.size(), reinterpret_cast<const byte*>(&sig[0]), sig.size());  
 }
 
 /* hybridEncrypt and hybridDecrypt are adaped from examples

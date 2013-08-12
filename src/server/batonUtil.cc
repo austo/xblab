@@ -235,7 +235,12 @@ BatonUtil::routeTransmission(
     }
     case Transmission::TRANSMIT: {
       cout << "TRANSMIT recieved from " << baton->member->handle << endl;
-      processMessage(baton, datastr, trans.signature(), trans.data().payload());
+      try {
+        processMessage(baton, datastr, trans.signature(), trans.data().payload());
+      }
+      catch (util_exception& e) {
+        baton->err = e.what();
+      }
       return;
     }
     case Transmission::ENTER:
@@ -358,11 +363,13 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
   uv_mutex_lock(&xbMutex);
   if (Manager::memberCanTransmit(baton->member->manager, baton->member)) {
     // TODO: trouble spot
-    if (!Crypto::verify(baton->member->publicKey, datastr, signature)) { 
-      #ifdef DEBUG
-      cout << "offending public key for " << baton->member->handle << ": " <<
-        baton->member->publicKey << endl;
-      #endif
+    if (!Crypto::verifyShort(baton->member->publicKey, datastr, signature)) { 
+    #ifdef DEBUG
+      cout << "offending public key for " << baton->member->handle <<
+        ": " << endl << baton->member->publicKey << endl <<
+        "signature: " << endl << signature << endl << 
+        "datastr: " << datastr << endl;
+    #endif
       throw util_exception("User key not verified.");
     }
     if (payload.is_important()) {

@@ -55,7 +55,7 @@ private:
   processTransmission(MemberBaton *baton); 
      
   static void
-  processCredential(MemberBaton*, std::string& datastr,
+  processCredential(MemberBaton *baton, std::string& datastr,
     std::string signature, const Transmission::Credential& cred);
 
   static void
