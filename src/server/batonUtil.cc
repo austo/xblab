@@ -352,7 +352,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
 
 void
 BatonUtil::processMessage(MemberBaton *baton, string& datastr,
-  string signature, const Transmission::Payload& payload) {
+  string signature, const Transmission::Payload& payload) {  
   /* TODO:
    * Can user broadcast?
    * If so, decrypt and verify message.
@@ -362,16 +362,16 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
    */
   uv_mutex_lock(&xbMutex);
   if (Manager::memberCanTransmit(baton->member->manager, baton->member)) {
-    // TODO: trouble spot
-    if (!Crypto::verifyShort(baton->member->publicKey, datastr, signature)) { 
-    #ifdef DEBUG
-      cout << "offending public key for " << baton->member->handle <<
-        ": " << endl << baton->member->publicKey << endl <<
-        "signature: " << endl << signature << endl << 
-        "datastr: " << endl << datastr << endl;
-    #endif
-      throw util_exception("User key not verified.");
-    }
+    // // TODO: trouble spot
+    // if (!Crypto::verifyShort(baton->member->publicKey, datastr, signature)) { 
+    // #ifdef DEBUG
+    //   cout << "offending public key for " << baton->member->handle <<
+    //     ": " << endl << baton->member->publicKey << endl <<
+    //     "signature: " << endl << signature << endl << 
+    //     "datastr: " << endl << datastr << endl;
+    // #endif
+    //   throw util_exception("User key not verified.");
+    // }
     if (payload.is_important()) {
       baton->member->manager->setRoundMessage(payload.content());
     }
