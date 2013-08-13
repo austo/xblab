@@ -206,6 +206,11 @@ BatonUtil::signData(
   }
   try{
     sigstr = Crypto::sign(privateKey, datastr);
+  #ifdef DEBUG
+    cout << "signature:\n" << sigstr << endl;
+    cout << "datastr:\n" << datastr << endl;
+  #endif
+
     trans.set_signature(sigstr);
     trans.set_allocated_data(data);
   }

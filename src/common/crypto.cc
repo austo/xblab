@@ -11,6 +11,8 @@
 #include <botan/x509_key.h>
 #include <botan/secmem.h>
 
+#include <pcrecpp.h>
+
 #include "macros.h"
 #include "common.h"
 #include "crypto.h"
@@ -84,6 +86,7 @@ Crypto::sign(string& privateKey, string& message){
 
 string
 Crypto::sign(AutoSeeded_RNG& rng, RSA_PrivateKey*& rsakey, string& message){
+  
   PK_Signer signer(*rsakey, SHA1);
 
   DataSource_Memory in(message);
@@ -150,9 +153,14 @@ Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
 
 bool
 Crypto::verifyShort(string publicKey, string message, string signature){
-  DataSource_Memory ds(publicKey);
 
-  std::auto_ptr<X509_PublicKey> key(X509::load_key(ds));
+  // pcrecpp::RE("\\s+$").Replace("", &signature);
+  cout << "verifyShort\nmessage:\n" << message << "\nsignature:\n" <<
+    signature << endl; 
+  SecureVector<byte> pkBytes = SecureVector<byte>((byte*)&publicKey[0],
+    publicKey.size());
+
+  std::auto_ptr<X509_PublicKey> key(X509::load_key(pkBytes));
   RSA_PublicKey* rsakey = dynamic_cast<RSA_PublicKey*>(key.get());
 
   if(!rsakey) {
@@ -164,18 +172,15 @@ Crypto::verifyShort(string publicKey, string message, string signature){
 
 
 bool
-Crypto::verifyShort(RSA_PublicKey* rsakey, string message, string signature){
-
-  Pipe pipe(new Base64_Decoder);
-  pipe.process_msg(
-    reinterpret_cast<const byte*>(signature.data()), signature.size());
-  SecureVector<byte> sig = pipe.read_all();
+Crypto::verifyShort(RSA_PublicKey* rsakey, string message, string signature){  
 
   PK_Verifier ver(*rsakey, SHA1);
 
-  return ver.verify_message(reinterpret_cast<const byte*>(message.data()),
-    message.size(), reinterpret_cast<const byte*>(&sig[0]), sig.size());  
+  return ver.verify_message(
+    reinterpret_cast<const byte*>(&message[0]), message.size(),
+    reinterpret_cast<const byte*>(&signature[0]), signature.size());
 }
+
 
 /* hybridEncrypt and hybridDecrypt are adaped from examples
  * by Botan author Jack Lloyd, and are hereby distributed
@@ -184,7 +189,6 @@ Crypto::verifyShort(RSA_PublicKey* rsakey, string message, string signature){
 
 string
 Crypto::hybridEncrypt(string& publicKey, string& plaintext){
-  AutoSeeded_RNG rng;
   SecureVector<byte> pkBytes = SecureVector<byte>((byte*)&publicKey[0],
     publicKey.size());
   // NOTE: could use: DataSource_Memory ds(publicKey);

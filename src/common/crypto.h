@@ -53,7 +53,7 @@ public:
   sign(Botan::AutoSeeded_RNG&, Botan::RSA_PrivateKey*&, std::string&);
 
   static std::string
-  sign(std::string& privateKey, std::string& message);
+  sign(std::string& privateKey, std::string& message);  
 
   static bool
   verify(std::string message, std::string signature);

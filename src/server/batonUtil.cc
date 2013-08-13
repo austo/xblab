@@ -222,15 +222,15 @@ BatonUtil::routeTransmission(
     case Transmission::READY: {
       cout << "READY message recieved from " << baton->member->handle << endl;
       baton->member->ready = true;
-    #ifdef DEBUG
-      cout << "manager public key: " <<
-        baton->member->manager->publicKey << endl << 
-        "manager private key: " << 
-        baton->member->manager->getPrivateKey() << endl;
-      if (baton->member->ready) {
-        cout << baton->member->handle << " is now ready.\n\n";
-      }
-    #endif
+    // #ifdef DEBUG
+    //   cout << "manager public key: " <<
+    //     baton->member->manager->publicKey << endl << 
+    //     "manager private key: " << 
+    //     baton->member->manager->getPrivateKey() << endl;
+    //   if (baton->member->ready) {
+    //     cout << baton->member->handle << " is now ready.\n\n";
+    //   }
+    // #endif
       return;
     }
     case Transmission::TRANSMIT: {
@@ -368,7 +368,7 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
       cout << "offending public key for " << baton->member->handle <<
         ": " << endl << baton->member->publicKey << endl <<
         "signature: " << endl << signature << endl << 
-        "datastr: " << datastr << endl;
+        "datastr: " << endl << datastr << endl;
     #endif
       throw util_exception("User key not verified.");
     }
