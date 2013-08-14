@@ -175,23 +175,35 @@ BatonUtil::packageTransmission(MemberBaton *baton) {
 
   if (baton->member.canTransmit()) {
     payload->set_is_important(baton->member.hasMessage);    
-
-    if (baton->member.hasMessage) {
-      payload->set_content(baton->member.message);
-    }
-    else {
-      cout << "setting content to random message.\n";
-      payload->set_content(
-        Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
-    }
+    string message = baton->member.hasMessage ?
+      baton->member.message :
+      Crypto::generateRandomMessage(XBMAXMESSAGELENGTH);
+    cout << "message from " << baton->member.username << ":\n" <<
+      message << endl;
+    string sig = Crypto::sign(baton->member.privateKey, message); 
+    payload->set_content(message);
+    trans.set_signature(sig);
+    // trans.set_allocated_payload(payload);
+    // if (baton->member.hasMessage) {
+    //   payload->set_content(baton->member.message);
+    // }
+    // else {
+    //   cout << "setting content to random message.\n";
+    //   string msg = Crypto::generateRandomMessage(XBMAXMESSAGELENGTH);
+    //   cout << "random message:\n" << msg << endl;
+    //   payload->set_content(msg);
+    // }
   }
   else {
     payload->set_is_important(false);
     payload->set_content(Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
+    trans.set_signature("nope");
   }
 
   data->set_allocated_payload(payload);
-  signData(baton->member.privateKey, trans, data);
+  trans.set_allocated_data(data);
+
+  // signData(baton->member.privateKey, trans, data);
   serializeToBuffer(baton, trans);
   baton->needsUvWrite = true;
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <fstream> // TODO: add logging layer
 #include <map>
 
 #include <unistd.h>
@@ -221,22 +222,14 @@ BatonUtil::routeTransmission(
     }
     case Transmission::READY: {
       cout << "READY message recieved from " << baton->member->handle << endl;
-      baton->member->ready = true;
-    // #ifdef DEBUG
-    //   cout << "manager public key: " <<
-    //     baton->member->manager->publicKey << endl << 
-    //     "manager private key: " << 
-    //     baton->member->manager->getPrivateKey() << endl;
-    //   if (baton->member->ready) {
-    //     cout << baton->member->handle << " is now ready.\n\n";
-    //   }
-    // #endif
+      baton->member->ready = true;    
       return;
     }
     case Transmission::TRANSMIT: {
       cout << "TRANSMIT recieved from " << baton->member->handle << endl;
       try {
-        processMessage(baton, datastr, trans.signature(), trans.data().payload());
+        processMessage(
+          baton, datastr, trans.signature(), trans.data().payload());
       }
       catch (util_exception& e) {
         baton->err = e.what();
@@ -362,16 +355,20 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
    */
   uv_mutex_lock(&xbMutex);
   if (Manager::memberCanTransmit(baton->member->manager, baton->member)) {
-    // // TODO: trouble spot
-    // if (!Crypto::verifyShort(baton->member->publicKey, datastr, signature)) { 
-    // #ifdef DEBUG
-    //   cout << "offending public key for " << baton->member->handle <<
-    //     ": " << endl << baton->member->publicKey << endl <<
-    //     "signature: " << endl << signature << endl << 
-    //     "datastr: " << endl << datastr << endl;
-    // #endif
-    //   throw util_exception("User key not verified.");
-    // }
+    // TODO: trouble spot
+    string msg(payload.content());
+    if (!Crypto::verify(baton->member->publicKey, msg, signature)) { 
+    #ifdef DEBUG
+      fstream fs;
+      fs.open("crypto.debug.txt", fstream::out | fstream::app);
+      fs << "offending public key for " << baton->member->handle <<
+        ": " << endl << baton->member->publicKey << endl <<
+        "signature: " << endl << signature << endl << 
+        "msg: " << endl << msg << endl;
+      fs.close();
+    #endif
+      throw util_exception("User key not verified.");
+    }
     if (payload.is_important()) {
       baton->member->manager->setRoundMessage(payload.content());
     }

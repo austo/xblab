@@ -404,6 +404,7 @@ Crypto::generateRandomMessage(size_t maxlen) {
   for (int i = 0; i < rlen; ++i) {
     retval.push_back(alphanum[random() % alen]);
   }
+  retval.push_back('\0');
 
   return retval;
 }
