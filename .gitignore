@@ -16,3 +16,4 @@ native.server
 _gitignore
 tags
 .tags
+*.log

@@ -23,8 +23,6 @@ public:
   ~MemberBaton();
 
   void createCredential();
-  bool hasKeys();
-  void getKeys();
   void digestBroadcast();
   void packageCredential();
 

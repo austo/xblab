@@ -36,21 +36,6 @@ MemberBaton::~MemberBaton() {
 }
 
 
-bool
-MemberBaton::hasKeys() {
-  return this->member.hasKeys;
-}
-
-
-void
-MemberBaton::getKeys() {
-  Crypto::generateKey(
-    this->member.privateKey,
-    this->member.publicKey
-  );
-}
-
-
 void
 MemberBaton::digestBroadcast() {
   this->stringifyBuffer();

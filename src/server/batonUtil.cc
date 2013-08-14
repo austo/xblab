@@ -251,6 +251,8 @@ void
 BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   string signature, const Transmission::Credential& cred) {
 
+  uv_mutex_lock(&xbMutex);
+
   typedef map<int, Member>::iterator memb_iter;
 
   string pubkey(cred.pub_key());
@@ -270,7 +272,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   if (xbManagers.find(baton->url) == xbManagers.end()) {
     // We want a "singleton" manager per group,
     // so check for group manager again inside the lock.
-    uv_mutex_lock(&xbMutex);
+    // uv_mutex_lock(&xbMutex);
     if (xbManagers.find(baton->url) == xbManagers.end()) {
       try {
         mgr = new Manager(baton->url);
@@ -285,7 +287,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
     else {
       mgr = xbManagers.at(baton->url);
     }
-    uv_mutex_unlock(&xbMutex);    
+    // uv_mutex_unlock(&xbMutex);    
   }
   else {
     mgr = xbManagers.at(baton->url);
@@ -296,6 +298,8 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
     return;
   }
 
+  cout << "public key for " << un << " before assume:\n" <<
+    pubkey << endl;
   Member *m = new Member(un, pw, pubkey, true);
 
   memb_iter mitr = mgr->members.begin();
@@ -313,7 +317,8 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
         if (!mitr->second.present) {
           mitr->second.assume(m); // TODO make threadsafe and move to manager
           cout << rightnow() << mitr->second.username
-             << " entered group " << mgr->group.url << endl;
+             << " entered group " << mgr->group.url << endl <<
+             "with public key:\n" << mitr->second.publicKey << endl;
           baton->getGroupEntry();
           // TODO: check if all members have arrived and begin round
         }
@@ -324,6 +329,8 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
           cout << ss.str();
           exceptionBuf(baton, Broadcast::NO_OP, ss.str());
         }
+        
+        uv_mutex_unlock(&xbMutex);
         return; 
       }      
     }
@@ -332,6 +339,9 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
       baton->err = e.what();
       delete m;
       exceptionBuf(baton, Broadcast::ERROR, e.what());
+      
+      uv_mutex_unlock(&xbMutex);
+      return; 
     }
   }
   stringstream ss;
@@ -339,6 +349,8 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
     << mgr->group.url << endl;
   delete m;
   exceptionBuf(baton, Broadcast::ERROR, ss.str());
+
+  uv_mutex_unlock(&xbMutex);
   return;
 }
 
@@ -346,8 +358,8 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
 void
 BatonUtil::processMessage(MemberBaton *baton, string& datastr,
   string signature, const Transmission::Payload& payload) {  
-  /* TODO:
-   * Can user broadcast?
+  
+  /* Can user broadcast?
    * If so, decrypt and verify message.
    * If message is okay, is the message important?
    * If so, set manager round message and broadcast with next round modulo.
@@ -355,22 +367,26 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
    */
   uv_mutex_lock(&xbMutex);
   if (Manager::memberCanTransmit(baton->member->manager, baton->member)) {
-    // TODO: trouble spot
-    string msg(payload.content());
-    if (!Crypto::verify(baton->member->publicKey, msg, signature)) { 
-    #ifdef DEBUG
+    if (!Crypto::verify(baton->member->publicKey, datastr, signature)) { 
+    #ifdef DEBUG // TODO: LOGGING!!
       fstream fs;
-      fs.open("crypto.debug.txt", fstream::out | fstream::app);
+      fs.open(logname().c_str(), fstream::out | fstream::app);
       fs << "offending public key for " << baton->member->handle <<
-        ": " << endl << baton->member->publicKey << endl <<
-        "signature: " << endl << signature << endl << 
-        "msg: " << endl << msg << endl;
+        ":\n" << baton->member->publicKey << endl <<
+        "signature:\n" << signature << endl << 
+        "msg:\n" << datastr << endl;
       fs.close();
     #endif
       throw util_exception("User key not verified.");
     }
     if (payload.is_important()) {
-      baton->member->manager->setRoundMessage(payload.content());
+      baton->member->manager->setRoundMessage(payload.content());     
+    }
+    else {
+      fstream lg; // logging test
+      lg.open(logname().c_str(), fstream::out | fstream::app);
+      lg << baton->member->handle << " has nothing to say.\n";
+      lg.close();
     }
   }
   uv_mutex_unlock(&xbMutex);

@@ -5,16 +5,18 @@
 #include <vector>
 
 #include "common/common.h"
+#include "common/crypto.h"
 
 namespace xblab {
 
 struct Member {
-  Member(){
-    hasKeys = false;
+  Member() {
     hasMessage = false;
     ready = false;
     currentRound = 0;
-  };  
+    Crypto::generateKey(privateKey, publicKey);
+  }
+  
 
   std::string username;
   std::string password;
@@ -26,7 +28,6 @@ struct Member {
   std::string message;
   sched_t modulo;
   int currentRound;
-  bool hasKeys;
   bool ready;
   bool hasMessage; // must be set to false on msg hand-off
 

@@ -21,6 +21,14 @@ inline std::string rightnow() {
   return std::string(buf);
 }
 
+inline std::string logname() {
+  static time_t now;
+  static char buf[30];
+  time(&now);
+  struct tm *t_info = localtime(&now);
+  strftime(buf, 30, "%F.log", t_info);
+  return std::string(buf);
+}
 
 template <class T>
 inline std::vector<T>

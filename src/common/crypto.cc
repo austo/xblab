@@ -87,7 +87,7 @@ Crypto::sign(string& privateKey, string& message){
 string
 Crypto::sign(AutoSeeded_RNG& rng, RSA_PrivateKey*& rsakey, string& message){
   
-  PK_Signer signer(*rsakey, SHA1);
+  PK_Signer signer(*rsakey, EMSA4);
 
   DataSource_Memory in(message);
   byte buf[SIG_BUF_SIZE] = { 0 };
@@ -136,7 +136,7 @@ Crypto::verify(RSA_PublicKey* rsakey, string message, string signature){
     reinterpret_cast<const byte*>(signature.data()), signature.size());
   SecureVector<byte> sig = pipe.read_all();
 
-  PK_Verifier ver(*rsakey, SHA1);
+  PK_Verifier ver(*rsakey, EMSA4);
 
   DataSource_Memory in(
     reinterpret_cast<const byte*>(message.data()), message.size());
@@ -174,7 +174,7 @@ Crypto::verifyShort(string publicKey, string message, string signature){
 bool
 Crypto::verifyShort(RSA_PublicKey* rsakey, string message, string signature){  
 
-  PK_Verifier ver(*rsakey, SHA1);
+  PK_Verifier ver(*rsakey, EMSA4);
 
   return ver.verify_message(
     reinterpret_cast<const byte*>(&message[0]), message.size(),

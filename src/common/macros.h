@@ -8,6 +8,7 @@
 #define BCRYPT_PH_SIZE 60
 
 #define SHA1 "EMSA1(SHA-1)"
+#define EMSA4 "EMSA4(SHA-256)"
 #define SHA256 "EME1(SHA-256)"
 #define EMESHA1 "EME1(SHA-1)"
 #define HMACSHA1 "HMAC(SHA-1)"

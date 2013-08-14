@@ -30,7 +30,7 @@ TARGET = xblab
 all:	$(TARGET)
 
 clean:
-	rm -f core $(TARGET) *.o
+	rm -f core $(TARGET) *.o *.log
 
 debug:	CFLAGS += -D DEBUG=1 -D TRACE=1
 

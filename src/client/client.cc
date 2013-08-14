@@ -75,10 +75,7 @@ Client::onRead(uv_stream_t* server, ssize_t nread, uv_buf_t buf) {
 void
 Client::onReadWork(uv_work_t *r) {
   MemberBaton *baton = reinterpret_cast<MemberBaton *>(r->data);
-  if (!baton->hasKeys()) {
-    baton->getKeys();
-  }
-
+  
   baton->needsJsCallback = false;
   baton->digestBroadcast();
 }

@@ -28,9 +28,14 @@ BatonUtil::packageCredential(MemberBaton *baton) {
 
   cred->set_username(baton->member.username);
 
+  string pk(baton->member.publicKey);
+
+  cout << "packageCredential - pk for " << baton->member.username <<
+    ":\n" << pk << endl;
+
   // Plaintext user password will be compared to stored passhash
   cred->set_password(baton->member.password);
-  cred->set_pub_key(baton->member.publicKey);
+  cred->set_pub_key(pk);
   cred->set_group(baton->url);
 
   data->set_allocated_credential(cred);
@@ -148,13 +153,9 @@ BatonUtil::chatReady(MemberBaton *baton) {
 void
 BatonUtil::startChat(
   MemberBaton *baton, const Broadcast::Data& data) {
-#ifdef TRACE
-  cout << "inside start chat\n";
-#endif
+
   const Broadcast::Prologue& prologue = data.prologue();
-#ifdef TRACE
-  cout << "got prologue\n";
-#endif
+
   baton->member.modulo = prologue.modulo();
   cout << baton->member.username << ": " << baton->member.modulo << endl;
   baton->jsCallbackFactory = XbClient::startChatFactory;
@@ -175,35 +176,20 @@ BatonUtil::packageTransmission(MemberBaton *baton) {
 
   if (baton->member.canTransmit()) {
     payload->set_is_important(baton->member.hasMessage);    
-    string message = baton->member.hasMessage ?
+
+    payload->set_content(
+      baton->member.hasMessage ?
       baton->member.message :
-      Crypto::generateRandomMessage(XBMAXMESSAGELENGTH);
-    cout << "message from " << baton->member.username << ":\n" <<
-      message << endl;
-    string sig = Crypto::sign(baton->member.privateKey, message); 
-    payload->set_content(message);
-    trans.set_signature(sig);
-    // trans.set_allocated_payload(payload);
-    // if (baton->member.hasMessage) {
-    //   payload->set_content(baton->member.message);
-    // }
-    // else {
-    //   cout << "setting content to random message.\n";
-    //   string msg = Crypto::generateRandomMessage(XBMAXMESSAGELENGTH);
-    //   cout << "random message:\n" << msg << endl;
-    //   payload->set_content(msg);
-    // }
+      Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
+    
   }
   else {
     payload->set_is_important(false);
     payload->set_content(Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
-    trans.set_signature("nope");
   }
 
   data->set_allocated_payload(payload);
-  trans.set_allocated_data(data);
-
-  // signData(baton->member.privateKey, trans, data);
+  signData(baton->member.privateKey, trans, data);
   serializeToBuffer(baton, trans);
   baton->needsUvWrite = true;
 }
@@ -218,10 +204,6 @@ BatonUtil::signData(
   }
   try{
     sigstr = Crypto::sign(privateKey, datastr);
-  #ifdef DEBUG
-    cout << "signature:\n" << sigstr << endl;
-    cout << "datastr:\n" << datastr << endl;
-  #endif
 
     trans.set_signature(sigstr);
     trans.set_allocated_data(data);
