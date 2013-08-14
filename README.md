@@ -1,8 +1,8 @@
 xblab
 =====
-### An encrypted chat server inspired by David Chaum's "Dining Cryptographers" ###
+### A messaging server inspired by David Chaum's "Dining Cryptographers" ###
 
-xblab started as a Node.js addon and has inched steadily closer to being a standalone server and Node binding+library on the client. It relies heavily on libuv. While I realize no one needs another chat application, some of the functionality may have other uses for projects using Node and libuv.
+xblab started as a Node.js addon and has evolved into a standalone server and Node binding/library on the client. It relies heavily on libuv. While no one needs another chat application, some of the functionality may prove useful in areas requiring stateful, secure and concurrent message processing.
 
 ### Dependencies ###
 

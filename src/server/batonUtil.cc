@@ -251,7 +251,7 @@ void
 BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   string signature, const Transmission::Credential& cred) {
 
-  uv_mutex_lock(&xbMutex);
+  // NOTE: if uv_mutex_lock'ing here, macroize unlock and return
 
   typedef map<int, Member>::iterator memb_iter;
 
@@ -272,7 +272,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   if (xbManagers.find(baton->url) == xbManagers.end()) {
     // We want a "singleton" manager per group,
     // so check for group manager again inside the lock.
-    // uv_mutex_lock(&xbMutex);
+    uv_mutex_lock(&xbMutex);
     if (xbManagers.find(baton->url) == xbManagers.end()) {
       try {
         mgr = new Manager(baton->url);
@@ -287,7 +287,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
     else {
       mgr = xbManagers.at(baton->url);
     }
-    // uv_mutex_unlock(&xbMutex);    
+    uv_mutex_unlock(&xbMutex);    
   }
   else {
     mgr = xbManagers.at(baton->url);
@@ -307,8 +307,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
 
     try {
       if (*m == mitr->second) {
-        /* 
-         * TODO: this may not be the best solution:
+        /* TODO: this may not be the best solution:
          * Handles case when client has disconnected and reconnected.
          * We may want to forbid this.
          */         
@@ -330,7 +329,6 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
           exceptionBuf(baton, Broadcast::NO_OP, ss.str());
         }
         
-        uv_mutex_unlock(&xbMutex);
         return; 
       }      
     }
@@ -340,7 +338,6 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
       delete m;
       exceptionBuf(baton, Broadcast::ERROR, e.what());
       
-      uv_mutex_unlock(&xbMutex);
       return; 
     }
   }
@@ -350,7 +347,6 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   delete m;
   exceptionBuf(baton, Broadcast::ERROR, ss.str());
 
-  uv_mutex_unlock(&xbMutex);
   return;
 }
 

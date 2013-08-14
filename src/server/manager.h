@@ -29,6 +29,9 @@ public:
   sched_t
   getTargetModulo();
 
+  void
+  fillMemberSchedules();
+
   bool
   allMembersPresent();
 

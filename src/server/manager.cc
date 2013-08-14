@@ -73,29 +73,11 @@ Manager::Manager(string url) {
   group = Db::getGroup(url);
   
   // We've got the room ID, now get our members
-  members = Db::getMembers(group.id);
+  members = Db::getMembers(group.id);  
 
-  vector< vector<sched_t>* > schedules;
-  // Each member has a reference to the manager
-  memb_iter mitr = members.begin();
-  for (; mitr != members.end(); ++mitr) {
-    mitr->second.manager = this;
-    schedules.push_back(&mitr->second.schedule);
-  }
-
-  Crypto::fillDisjointVectors(schedules, XBSCHEDULESIZE);
-
-  #ifdef DEBUG
-  cout << "after fillDisjointVectors:\n";
-  unsigned i, j;
-  for (i = 0; i < schedules.size(); i++) {
-    cout << i << ":\n";
-    for (j = 0; j < schedules.at(i)->size(); j++) {
-      cout << (*schedules.at(i))[j] << ", ";
-    }
-    cout << endl;
-  }
-  #endif
+  // TODO: move to separate broadcast type,
+  // initiated when all members have arrived
+  fillMemberSchedules(); 
 
   currentRound_ = 0;
   chatStarted_ = false;
@@ -109,6 +91,33 @@ Manager::Manager(string url) {
 Manager::~Manager(){
   uv_mutex_destroy(&classMutex_);
   uv_mutex_destroy(&propertyMutex_);
+}
+
+
+// TODO: should be called before broadcasting GROUPENTRY
+void
+Manager::fillMemberSchedules() {
+  vector< vector<sched_t>* > schedules;
+  // Each member has a reference to the manager
+  memb_iter mitr = members.begin();
+  for (; mitr != members.end(); ++mitr) {
+    mitr->second.manager = this;
+    schedules.push_back(&mitr->second.schedule);
+  }
+
+  Crypto::fillDisjointVectors(schedules, XBSCHEDULESIZE);
+
+#ifdef DEBUG
+  cout << "after fillDisjointVectors:\n";
+  unsigned i, j;
+  for (i = 0; i < schedules.size(); i++) {
+    cout << i << ":\n";
+    for (j = 0; j < schedules.at(i)->size(); j++) {
+      cout << (*schedules.at(i))[j] << ", ";
+    }
+    cout << endl;
+  }
+#endif
 }
 
 
