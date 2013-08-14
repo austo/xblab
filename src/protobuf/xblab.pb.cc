@@ -99,6 +99,7 @@ bool Broadcast_Type_IsValid(int value) {
     case 6:
     case 7:
     case 8:
+    case 9:
       return true;
     default:
       return false;
@@ -109,6 +110,7 @@ bool Broadcast_Type_IsValid(int value) {
 const Broadcast_Type Broadcast::NEEDCRED;
 const Broadcast_Type Broadcast::GROUPLIST;
 const Broadcast_Type Broadcast::GROUPENTRY;
+const Broadcast_Type Broadcast::SETUP;
 const Broadcast_Type Broadcast::BEGIN;
 const Broadcast_Type Broadcast::BROADCAST;
 const Broadcast_Type Broadcast::GROUPEXIT;

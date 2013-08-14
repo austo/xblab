@@ -8,12 +8,13 @@ message Broadcast {
     NEEDCRED = 0;
     GROUPLIST = 1;
     GROUPENTRY = 2;
-    BEGIN = 3;
-    BROADCAST = 4;
-    GROUPEXIT = 5;
-    QUIT = 6;
-    ERROR = 7;
-    NO_OP = 8;
+    SETUP = 3;
+    BEGIN = 4;
+    BROADCAST = 5;
+    GROUPEXIT = 6;
+    QUIT = 7;
+    ERROR = 8;
+    NO_OP = 9;
   }
 
   message Session {

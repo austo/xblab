@@ -50,12 +50,13 @@ enum Broadcast_Type {
   Broadcast_Type_NEEDCRED = 0,
   Broadcast_Type_GROUPLIST = 1,
   Broadcast_Type_GROUPENTRY = 2,
-  Broadcast_Type_BEGIN = 3,
-  Broadcast_Type_BROADCAST = 4,
-  Broadcast_Type_GROUPEXIT = 5,
-  Broadcast_Type_QUIT = 6,
-  Broadcast_Type_ERROR = 7,
-  Broadcast_Type_NO_OP = 8
+  Broadcast_Type_SETUP = 3,
+  Broadcast_Type_BEGIN = 4,
+  Broadcast_Type_BROADCAST = 5,
+  Broadcast_Type_GROUPEXIT = 6,
+  Broadcast_Type_QUIT = 7,
+  Broadcast_Type_ERROR = 8,
+  Broadcast_Type_NO_OP = 9
 };
 bool Broadcast_Type_IsValid(int value);
 const Broadcast_Type Broadcast_Type_Type_MIN = Broadcast_Type_NEEDCRED;
@@ -794,6 +795,7 @@ class Broadcast : public ::google::protobuf::MessageLite {
   static const Type NEEDCRED = Broadcast_Type_NEEDCRED;
   static const Type GROUPLIST = Broadcast_Type_GROUPLIST;
   static const Type GROUPENTRY = Broadcast_Type_GROUPENTRY;
+  static const Type SETUP = Broadcast_Type_SETUP;
   static const Type BEGIN = Broadcast_Type_BEGIN;
   static const Type BROADCAST = Broadcast_Type_BROADCAST;
   static const Type GROUPEXIT = Broadcast_Type_GROUPEXIT;
