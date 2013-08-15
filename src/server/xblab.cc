@@ -49,10 +49,8 @@ main(int argc, char** argv) {
     return 1;
   }
 
-  // if (xblab::Crypto::init() != XBGOOD) {
-  //   return 1;
-  // }
-
+  // Non-global Botan initializer needs 
+  // to stick around for lifetime of application
   Botan::LibraryInitializer init("thread_safe=true");
 
   int port = atoi(xblab::xbPort.c_str());
@@ -64,11 +62,8 @@ main(int argc, char** argv) {
     return 1;
   }
 
-  /* 
-   * NOTE: We have one global mutex, xblab::xbMutex.
-   * May get out of hand if/when we need to manage
-   * multiple critical regions.
-   */
+  // NOTE: We have one global mutex, xblab::xbMutex,
+  // and several class member mutexes
   if (uv_mutex_init(&xblab::xbMutex) != XBGOOD) {
     fprintf(stderr, "Error initializing mutex\n");
     return 1;

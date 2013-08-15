@@ -65,17 +65,12 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
   data->set_type(Broadcast::GROUPENTRY);
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
-  cout << "after set_return_nonce\n";
   sess->set_pub_key(baton->member->manager->publicKey);
-  cout << "after set_pub_key\n";
-
 
   data->set_allocated_session(sess);
-  cout << "after set_allocated_session\n";
 
   signData(bc, data);
   serializeToBuffer(baton, bc);
-  cout << "end groupEntryBuf\n";
 }
 
 
