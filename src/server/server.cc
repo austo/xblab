@@ -235,6 +235,9 @@ Server::respondAfterRead(Manager *mgr) {
   if (mgr->canStartChat()) {
     mgr->startChatIfNecessary();
   }
+  else if (mgr->canDeliverSchedules()) {
+    mgr->deliverSchedulesIfNecessary();
+  }
   // else if (mgr->allMessagesProcessed()) {
   //   mgr->broadcastIfNecessary();
   // }

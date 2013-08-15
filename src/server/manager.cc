@@ -82,6 +82,7 @@ Manager::Manager(string url) {
   currentRound_ = 0;
   chatStarted_ = false;
   moduloCalculated_ = false;
+  schedulesDelivered_ = false;
   roundMessage_ = "";
   cout << rightnow() << "Manager created for group "
     << group.url << " (\"" << group.name << "\")" << endl;  
@@ -94,7 +95,7 @@ Manager::~Manager(){
 }
 
 
-// TODO: should be called before broadcasting GROUPENTRY
+// TODO: should be called before broadcasting SETUP
 void
 Manager::fillMemberSchedules() {
   vector< vector<sched_t>* > schedules;
@@ -134,13 +135,29 @@ Manager::allMembersPresent() {
 
 
 bool
+Manager::canDeliverSchedules() {
+  if (schedulesDelivered_) {
+    return false;
+  }
+  memb_iter mitr = members.begin();
+  for (; mitr != members.end(); ++mitr) {
+    if (!mitr->second.present || !mitr->second.ready) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+bool
 Manager::canStartChat() { // not threadsafe
   if (chatStarted_) {
     return false;
   }
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
-    if (!mitr->second.present || !mitr->second.ready) {
+    if (!mitr->second.present ||
+      !mitr->second.ready || !mitr->second.clientHasSchedule) {
       return false;
     }
   }
@@ -178,6 +195,20 @@ Manager::startChatIfNecessary() {
     req->data = this;
     uv_queue_work(loop, req, onStartChatWork,
       (uv_after_work_cb)afterRoundWork);
+  }
+  uv_mutex_unlock(&classMutex_);
+}
+
+
+void
+Manager::deliverSchedulesIfNecessary() {
+  uv_mutex_lock(&classMutex_);
+
+  if (canDeliverSchedules()) {
+    uv_work_t *req = ALLOC(uv_work_t);
+    req->data = this;
+    uv_queue_work(loop, req, onSetupWork,
+      (uv_after_work_cb)afterSetupWork);
   }
 
   uv_mutex_unlock(&classMutex_);
@@ -230,6 +261,31 @@ Manager::getStartChatBuffers() {
 
 
 void
+Manager::getSetupBuffers() {
+#ifdef TRACE
+  cout << rightnow() << "inside getSetupBuffers " <<
+    "for " << group.name << endl;
+#endif
+  uv_mutex_lock(&classMutex_);
+
+  if (!schedulesDelivered_) {
+    cout << rightnow() << 
+      "getting setup buffers for " << group.name << endl;
+
+    fillMemberSchedules();
+
+    memb_iter mitr = members.begin();
+    for (; mitr != members.end(); ++mitr) {
+      mitr->second.baton->getSetup();            
+    }
+    schedulesDelivered_ = true;
+  }    
+
+  uv_mutex_unlock(&classMutex_);
+}
+
+
+void
 Manager::broadcast() {
 
     uv_mutex_lock(&classMutex_);
@@ -253,6 +309,13 @@ Manager::onStartChatWork(uv_work_t *r) {
 
 
 void
+Manager::onSetupWork(uv_work_t *r) {
+  Manager *mgr = reinterpret_cast<Manager *>(r->data);
+  mgr->getSetupBuffers();
+}
+
+
+void
 Manager::onBroadcastWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
   mgr->getStartChatBuffers();
@@ -270,13 +333,24 @@ Manager::afterRoundWork(uv_work_t *r) {
 
 
 void
+Manager::afterSetupWork(uv_work_t *r) {
+  Manager *mgr = reinterpret_cast<Manager *>(r->data);
+  mgr->broadcast();
+  r->data = NULL;
+  free(r);
+}
+
+
+void
 Manager::endChat() {
   // TODO: may want to handle member.present 
   // and member.ready here instead of in baton destructor
   if (chatStarted_) {
     uv_mutex_lock(&classMutex_);
     if (chatStarted_) {
+      cout << rightnow() << "ending chat for " << group.name << endl;
       chatStarted_ = false;
+      schedulesDelivered_ = false;
     }
     uv_mutex_unlock(&classMutex_);
   }
@@ -287,8 +361,8 @@ Manager::endChat() {
 sched_t
 Manager::getTargetModulo() {
   if (!moduloCalculated_) {
-      targetModulo_ = (Crypto::generateRandomInt<sched_t>() % members.size());
-      moduloCalculated_ = true;
+    targetModulo_ = (Crypto::generateRandomInt<sched_t>() % members.size());
+    moduloCalculated_ = true;
   }
   return targetModulo_;
 }

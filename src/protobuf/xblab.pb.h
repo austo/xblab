@@ -34,6 +34,7 @@ void protobuf_ShutdownFile_xblab_2eproto();
 
 class Broadcast;
 class Broadcast_Session;
+class Broadcast_Setup;
 class Broadcast_Payload;
 class Broadcast_Prologue;
 class Broadcast_Error;
@@ -145,40 +146,15 @@ class Broadcast_Session : public ::google::protobuf::MessageLite {
   inline ::std::string* release_pub_key();
   inline void set_allocated_pub_key(::std::string* pub_key);
 
-  // required bytes schedule = 2;
-  inline bool has_schedule() const;
-  inline void clear_schedule();
-  static const int kScheduleFieldNumber = 2;
-  inline const ::std::string& schedule() const;
-  inline void set_schedule(const ::std::string& value);
-  inline void set_schedule(const char* value);
-  inline void set_schedule(const void* value, size_t size);
-  inline ::std::string* mutable_schedule();
-  inline ::std::string* release_schedule();
-  inline void set_allocated_schedule(::std::string* schedule);
-
-  // optional fixed32 schedule_size = 3;
-  inline bool has_schedule_size() const;
-  inline void clear_schedule_size();
-  static const int kScheduleSizeFieldNumber = 3;
-  inline ::google::protobuf::uint32 schedule_size() const;
-  inline void set_schedule_size(::google::protobuf::uint32 value);
-
   // @@protoc_insertion_point(class_scope:xblab.Broadcast.Session)
  private:
   inline void set_has_pub_key();
   inline void clear_has_pub_key();
-  inline void set_has_schedule();
-  inline void clear_has_schedule();
-  inline void set_has_schedule_size();
-  inline void clear_has_schedule_size();
 
   ::std::string* pub_key_;
-  ::std::string* schedule_;
-  ::google::protobuf::uint32 schedule_size_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
 
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   friend void  protobuf_AddDesc_xblab_2eproto_impl();
@@ -190,6 +166,104 @@ class Broadcast_Session : public ::google::protobuf::MessageLite {
 
   void InitAsDefaultInstance();
   static Broadcast_Session* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class Broadcast_Setup : public ::google::protobuf::MessageLite {
+ public:
+  Broadcast_Setup();
+  virtual ~Broadcast_Setup();
+
+  Broadcast_Setup(const Broadcast_Setup& from);
+
+  inline Broadcast_Setup& operator=(const Broadcast_Setup& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  static const Broadcast_Setup& default_instance();
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  // Returns the internal default instance pointer. This function can
+  // return NULL thus should not be used by the user. This is intended
+  // for Protobuf internal code. Please use default_instance() declared
+  // above instead.
+  static inline const Broadcast_Setup* internal_default_instance() {
+    return default_instance_;
+  }
+  #endif
+
+  void Swap(Broadcast_Setup* other);
+
+  // implements Message ----------------------------------------------
+
+  Broadcast_Setup* New() const;
+  void CheckTypeAndMergeFrom(const ::google::protobuf::MessageLite& from);
+  void CopyFrom(const Broadcast_Setup& from);
+  void MergeFrom(const Broadcast_Setup& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::std::string GetTypeName() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required bytes schedule = 1;
+  inline bool has_schedule() const;
+  inline void clear_schedule();
+  static const int kScheduleFieldNumber = 1;
+  inline const ::std::string& schedule() const;
+  inline void set_schedule(const ::std::string& value);
+  inline void set_schedule(const char* value);
+  inline void set_schedule(const void* value, size_t size);
+  inline ::std::string* mutable_schedule();
+  inline ::std::string* release_schedule();
+  inline void set_allocated_schedule(::std::string* schedule);
+
+  // optional fixed32 schedule_size = 2;
+  inline bool has_schedule_size() const;
+  inline void clear_schedule_size();
+  static const int kScheduleSizeFieldNumber = 2;
+  inline ::google::protobuf::uint32 schedule_size() const;
+  inline void set_schedule_size(::google::protobuf::uint32 value);
+
+  // @@protoc_insertion_point(class_scope:xblab.Broadcast.Setup)
+ private:
+  inline void set_has_schedule();
+  inline void clear_has_schedule();
+  inline void set_has_schedule_size();
+  inline void clear_has_schedule_size();
+
+  ::std::string* schedule_;
+  ::google::protobuf::uint32 schedule_size_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  friend void  protobuf_AddDesc_xblab_2eproto_impl();
+  #else
+  friend void  protobuf_AddDesc_xblab_2eproto();
+  #endif
+  friend void protobuf_AssignDesc_xblab_2eproto();
+  friend void protobuf_ShutdownFile_xblab_2eproto();
+
+  void InitAsDefaultInstance();
+  static Broadcast_Setup* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -653,37 +727,46 @@ class Broadcast_Data : public ::google::protobuf::MessageLite {
   inline ::xblab::Broadcast_Session* release_session();
   inline void set_allocated_session(::xblab::Broadcast_Session* session);
 
-  // optional .xblab.Broadcast.Prologue prologue = 5;
+  // optional .xblab.Broadcast.Setup setup = 5;
+  inline bool has_setup() const;
+  inline void clear_setup();
+  static const int kSetupFieldNumber = 5;
+  inline const ::xblab::Broadcast_Setup& setup() const;
+  inline ::xblab::Broadcast_Setup* mutable_setup();
+  inline ::xblab::Broadcast_Setup* release_setup();
+  inline void set_allocated_setup(::xblab::Broadcast_Setup* setup);
+
+  // optional .xblab.Broadcast.Prologue prologue = 6;
   inline bool has_prologue() const;
   inline void clear_prologue();
-  static const int kPrologueFieldNumber = 5;
+  static const int kPrologueFieldNumber = 6;
   inline const ::xblab::Broadcast_Prologue& prologue() const;
   inline ::xblab::Broadcast_Prologue* mutable_prologue();
   inline ::xblab::Broadcast_Prologue* release_prologue();
   inline void set_allocated_prologue(::xblab::Broadcast_Prologue* prologue);
 
-  // optional .xblab.Broadcast.Payload payload = 6;
+  // optional .xblab.Broadcast.Payload payload = 7;
   inline bool has_payload() const;
   inline void clear_payload();
-  static const int kPayloadFieldNumber = 6;
+  static const int kPayloadFieldNumber = 7;
   inline const ::xblab::Broadcast_Payload& payload() const;
   inline ::xblab::Broadcast_Payload* mutable_payload();
   inline ::xblab::Broadcast_Payload* release_payload();
   inline void set_allocated_payload(::xblab::Broadcast_Payload* payload);
 
-  // optional .xblab.Broadcast.Error error = 7;
+  // optional .xblab.Broadcast.Error error = 8;
   inline bool has_error() const;
   inline void clear_error();
-  static const int kErrorFieldNumber = 7;
+  static const int kErrorFieldNumber = 8;
   inline const ::xblab::Broadcast_Error& error() const;
   inline ::xblab::Broadcast_Error* mutable_error();
   inline ::xblab::Broadcast_Error* release_error();
   inline void set_allocated_error(::xblab::Broadcast_Error* error);
 
-  // optional .xblab.Broadcast.No_Op no_op = 8;
+  // optional .xblab.Broadcast.No_Op no_op = 9;
   inline bool has_no_op() const;
   inline void clear_no_op();
-  static const int kNoOpFieldNumber = 8;
+  static const int kNoOpFieldNumber = 9;
   inline const ::xblab::Broadcast_No_Op& no_op() const;
   inline ::xblab::Broadcast_No_Op* mutable_no_op();
   inline ::xblab::Broadcast_No_Op* release_no_op();
@@ -699,6 +782,8 @@ class Broadcast_Data : public ::google::protobuf::MessageLite {
   inline void clear_has_return_nonce();
   inline void set_has_session();
   inline void clear_has_session();
+  inline void set_has_setup();
+  inline void clear_has_setup();
   inline void set_has_prologue();
   inline void clear_has_prologue();
   inline void set_has_payload();
@@ -711,6 +796,7 @@ class Broadcast_Data : public ::google::protobuf::MessageLite {
   ::std::string* nonce_;
   ::std::string* return_nonce_;
   ::xblab::Broadcast_Session* session_;
+  ::xblab::Broadcast_Setup* setup_;
   ::xblab::Broadcast_Prologue* prologue_;
   ::xblab::Broadcast_Payload* payload_;
   ::xblab::Broadcast_Error* error_;
@@ -718,7 +804,7 @@ class Broadcast_Data : public ::google::protobuf::MessageLite {
   int type_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(8 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
 
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   friend void  protobuf_AddDesc_xblab_2eproto_impl();
@@ -785,6 +871,7 @@ class Broadcast : public ::google::protobuf::MessageLite {
   // nested types ----------------------------------------------------
 
   typedef Broadcast_Session Session;
+  typedef Broadcast_Setup Setup;
   typedef Broadcast_Payload Payload;
   typedef Broadcast_Prologue Prologue;
   typedef Broadcast_Error Error;
@@ -1629,54 +1716,58 @@ inline void Broadcast_Session::set_allocated_pub_key(::std::string* pub_key) {
   }
 }
 
-// required bytes schedule = 2;
-inline bool Broadcast_Session::has_schedule() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+// -------------------------------------------------------------------
+
+// Broadcast_Setup
+
+// required bytes schedule = 1;
+inline bool Broadcast_Setup::has_schedule() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void Broadcast_Session::set_has_schedule() {
-  _has_bits_[0] |= 0x00000002u;
+inline void Broadcast_Setup::set_has_schedule() {
+  _has_bits_[0] |= 0x00000001u;
 }
-inline void Broadcast_Session::clear_has_schedule() {
-  _has_bits_[0] &= ~0x00000002u;
+inline void Broadcast_Setup::clear_has_schedule() {
+  _has_bits_[0] &= ~0x00000001u;
 }
-inline void Broadcast_Session::clear_schedule() {
+inline void Broadcast_Setup::clear_schedule() {
   if (schedule_ != &::google::protobuf::internal::kEmptyString) {
     schedule_->clear();
   }
   clear_has_schedule();
 }
-inline const ::std::string& Broadcast_Session::schedule() const {
+inline const ::std::string& Broadcast_Setup::schedule() const {
   return *schedule_;
 }
-inline void Broadcast_Session::set_schedule(const ::std::string& value) {
+inline void Broadcast_Setup::set_schedule(const ::std::string& value) {
   set_has_schedule();
   if (schedule_ == &::google::protobuf::internal::kEmptyString) {
     schedule_ = new ::std::string;
   }
   schedule_->assign(value);
 }
-inline void Broadcast_Session::set_schedule(const char* value) {
+inline void Broadcast_Setup::set_schedule(const char* value) {
   set_has_schedule();
   if (schedule_ == &::google::protobuf::internal::kEmptyString) {
     schedule_ = new ::std::string;
   }
   schedule_->assign(value);
 }
-inline void Broadcast_Session::set_schedule(const void* value, size_t size) {
+inline void Broadcast_Setup::set_schedule(const void* value, size_t size) {
   set_has_schedule();
   if (schedule_ == &::google::protobuf::internal::kEmptyString) {
     schedule_ = new ::std::string;
   }
   schedule_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* Broadcast_Session::mutable_schedule() {
+inline ::std::string* Broadcast_Setup::mutable_schedule() {
   set_has_schedule();
   if (schedule_ == &::google::protobuf::internal::kEmptyString) {
     schedule_ = new ::std::string;
   }
   return schedule_;
 }
-inline ::std::string* Broadcast_Session::release_schedule() {
+inline ::std::string* Broadcast_Setup::release_schedule() {
   clear_has_schedule();
   if (schedule_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
@@ -1686,7 +1777,7 @@ inline ::std::string* Broadcast_Session::release_schedule() {
     return temp;
   }
 }
-inline void Broadcast_Session::set_allocated_schedule(::std::string* schedule) {
+inline void Broadcast_Setup::set_allocated_schedule(::std::string* schedule) {
   if (schedule_ != &::google::protobuf::internal::kEmptyString) {
     delete schedule_;
   }
@@ -1699,24 +1790,24 @@ inline void Broadcast_Session::set_allocated_schedule(::std::string* schedule) {
   }
 }
 
-// optional fixed32 schedule_size = 3;
-inline bool Broadcast_Session::has_schedule_size() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
+// optional fixed32 schedule_size = 2;
+inline bool Broadcast_Setup::has_schedule_size() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void Broadcast_Session::set_has_schedule_size() {
-  _has_bits_[0] |= 0x00000004u;
+inline void Broadcast_Setup::set_has_schedule_size() {
+  _has_bits_[0] |= 0x00000002u;
 }
-inline void Broadcast_Session::clear_has_schedule_size() {
-  _has_bits_[0] &= ~0x00000004u;
+inline void Broadcast_Setup::clear_has_schedule_size() {
+  _has_bits_[0] &= ~0x00000002u;
 }
-inline void Broadcast_Session::clear_schedule_size() {
+inline void Broadcast_Setup::clear_schedule_size() {
   schedule_size_ = 0u;
   clear_has_schedule_size();
 }
-inline ::google::protobuf::uint32 Broadcast_Session::schedule_size() const {
+inline ::google::protobuf::uint32 Broadcast_Setup::schedule_size() const {
   return schedule_size_;
 }
-inline void Broadcast_Session::set_schedule_size(::google::protobuf::uint32 value) {
+inline void Broadcast_Setup::set_schedule_size(::google::protobuf::uint32 value) {
   set_has_schedule_size();
   schedule_size_ = value;
 }
@@ -2222,15 +2313,57 @@ inline void Broadcast_Data::set_allocated_session(::xblab::Broadcast_Session* se
   }
 }
 
-// optional .xblab.Broadcast.Prologue prologue = 5;
-inline bool Broadcast_Data::has_prologue() const {
+// optional .xblab.Broadcast.Setup setup = 5;
+inline bool Broadcast_Data::has_setup() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
-inline void Broadcast_Data::set_has_prologue() {
+inline void Broadcast_Data::set_has_setup() {
   _has_bits_[0] |= 0x00000010u;
 }
-inline void Broadcast_Data::clear_has_prologue() {
+inline void Broadcast_Data::clear_has_setup() {
   _has_bits_[0] &= ~0x00000010u;
+}
+inline void Broadcast_Data::clear_setup() {
+  if (setup_ != NULL) setup_->::xblab::Broadcast_Setup::Clear();
+  clear_has_setup();
+}
+inline const ::xblab::Broadcast_Setup& Broadcast_Data::setup() const {
+#ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
+  return setup_ != NULL ? *setup_ : *default_instance().setup_;
+#else
+  return setup_ != NULL ? *setup_ : *default_instance_->setup_;
+#endif
+}
+inline ::xblab::Broadcast_Setup* Broadcast_Data::mutable_setup() {
+  set_has_setup();
+  if (setup_ == NULL) setup_ = new ::xblab::Broadcast_Setup;
+  return setup_;
+}
+inline ::xblab::Broadcast_Setup* Broadcast_Data::release_setup() {
+  clear_has_setup();
+  ::xblab::Broadcast_Setup* temp = setup_;
+  setup_ = NULL;
+  return temp;
+}
+inline void Broadcast_Data::set_allocated_setup(::xblab::Broadcast_Setup* setup) {
+  delete setup_;
+  setup_ = setup;
+  if (setup) {
+    set_has_setup();
+  } else {
+    clear_has_setup();
+  }
+}
+
+// optional .xblab.Broadcast.Prologue prologue = 6;
+inline bool Broadcast_Data::has_prologue() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void Broadcast_Data::set_has_prologue() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void Broadcast_Data::clear_has_prologue() {
+  _has_bits_[0] &= ~0x00000020u;
 }
 inline void Broadcast_Data::clear_prologue() {
   if (prologue_ != NULL) prologue_->::xblab::Broadcast_Prologue::Clear();
@@ -2264,15 +2397,15 @@ inline void Broadcast_Data::set_allocated_prologue(::xblab::Broadcast_Prologue* 
   }
 }
 
-// optional .xblab.Broadcast.Payload payload = 6;
+// optional .xblab.Broadcast.Payload payload = 7;
 inline bool Broadcast_Data::has_payload() const {
-  return (_has_bits_[0] & 0x00000020u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 inline void Broadcast_Data::set_has_payload() {
-  _has_bits_[0] |= 0x00000020u;
+  _has_bits_[0] |= 0x00000040u;
 }
 inline void Broadcast_Data::clear_has_payload() {
-  _has_bits_[0] &= ~0x00000020u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void Broadcast_Data::clear_payload() {
   if (payload_ != NULL) payload_->::xblab::Broadcast_Payload::Clear();
@@ -2306,15 +2439,15 @@ inline void Broadcast_Data::set_allocated_payload(::xblab::Broadcast_Payload* pa
   }
 }
 
-// optional .xblab.Broadcast.Error error = 7;
+// optional .xblab.Broadcast.Error error = 8;
 inline bool Broadcast_Data::has_error() const {
-  return (_has_bits_[0] & 0x00000040u) != 0;
+  return (_has_bits_[0] & 0x00000080u) != 0;
 }
 inline void Broadcast_Data::set_has_error() {
-  _has_bits_[0] |= 0x00000040u;
+  _has_bits_[0] |= 0x00000080u;
 }
 inline void Broadcast_Data::clear_has_error() {
-  _has_bits_[0] &= ~0x00000040u;
+  _has_bits_[0] &= ~0x00000080u;
 }
 inline void Broadcast_Data::clear_error() {
   if (error_ != NULL) error_->::xblab::Broadcast_Error::Clear();
@@ -2348,15 +2481,15 @@ inline void Broadcast_Data::set_allocated_error(::xblab::Broadcast_Error* error)
   }
 }
 
-// optional .xblab.Broadcast.No_Op no_op = 8;
+// optional .xblab.Broadcast.No_Op no_op = 9;
 inline bool Broadcast_Data::has_no_op() const {
-  return (_has_bits_[0] & 0x00000080u) != 0;
+  return (_has_bits_[0] & 0x00000100u) != 0;
 }
 inline void Broadcast_Data::set_has_no_op() {
-  _has_bits_[0] |= 0x00000080u;
+  _has_bits_[0] |= 0x00000100u;
 }
 inline void Broadcast_Data::clear_has_no_op() {
-  _has_bits_[0] &= ~0x00000080u;
+  _has_bits_[0] &= ~0x00000100u;
 }
 inline void Broadcast_Data::clear_no_op() {
   if (no_op_ != NULL) no_op_->::xblab::Broadcast_No_Op::Clear();

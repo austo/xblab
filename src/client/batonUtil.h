@@ -28,7 +28,7 @@ class BatonUtil {
   startChat(MemberBaton *baton, const Broadcast::Data& data);
 
   static void
-  chatReady(MemberBaton *baton);
+  chatReady(MemberBaton *baton, const Broadcast::Data& data);
 
   static void
   packageTransmission(MemberBaton *baton);

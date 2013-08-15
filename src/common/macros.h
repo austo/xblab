@@ -84,6 +84,7 @@
   fprintf(stderr, "\n");                                      \
 }
 
+
 #endif
 
 #define log(x) printf("%s\n", x);

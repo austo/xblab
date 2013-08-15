@@ -23,6 +23,7 @@ public:
   // message buffer methods
   void getNeedCredential();
   void getGroupEntry();
+  void getSetup();
   void getStartChat();
   void getMessage();
   void unicast();

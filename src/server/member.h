@@ -25,6 +25,7 @@ public:
     ready = false;
     present = false;
     messageProcessed = false;
+    clientHasSchedule = false;
   };
 
 
@@ -45,6 +46,7 @@ public:
       ready = false;
       present = false;
       messageProcessed = false;
+      clientHasSchedule = false;
     }
 
   Member(
@@ -58,6 +60,7 @@ public:
     present(present) {
       ready = false;
       messageProcessed = false;
+      clientHasSchedule = false;
     }
 
   void
@@ -88,6 +91,7 @@ public:
   bool present;
   bool ready;
   bool messageProcessed;
+  bool clientHasSchedule; // TODO: better place for this?
   Manager *manager;
   MemberBaton *baton;
 

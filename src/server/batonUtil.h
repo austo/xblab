@@ -40,6 +40,9 @@ private:
   groupEntryBuf(MemberBaton *baton);
 
   static void
+  setupBuf(MemberBaton *baton);
+
+  static void
   startChatBuf(MemberBaton *baton);
 
   static void

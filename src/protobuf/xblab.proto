@@ -19,8 +19,13 @@ message Broadcast {
 
   message Session {
     required string pub_key = 1;
-    required bytes schedule = 2;
-    optional fixed32 schedule_size = 3;
+    // required bytes schedule = 2;
+    // optional fixed32 schedule_size = 3;
+  }
+
+  message Setup {
+    required bytes schedule = 1;
+    optional fixed32 schedule_size = 2;
   }
 
   message Payload {
@@ -47,10 +52,11 @@ message Broadcast {
     required string nonce = 2;
     optional string return_nonce = 3;
     optional Session session = 4;
-    optional Prologue prologue = 5;
-    optional Payload payload = 6;
-    optional Error error = 7;
-    optional No_Op no_op = 8;
+    optional Setup setup = 5;
+    optional Prologue prologue = 6;
+    optional Payload payload = 7;
+    optional Error error = 8;
+    optional No_Op no_op = 9;
   }
 
   required Data data = 2;

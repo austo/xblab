@@ -68,14 +68,38 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
   data->set_return_nonce(baton->returnNonce);
   sess->set_pub_key(baton->member->manager->publicKey);
 
-  string sched = string(
-    (char *)&baton->member->schedule[0],
-    (baton->member->schedule.size() * sizeof(sched_t)));
-  sess->set_schedule(sched);
+  // string sched = string(
+  //   (char *)&baton->member->schedule[0],
+  //   (baton->member->schedule.size() * sizeof(sched_t)));
+  // sess->set_schedule(sched);
 
   data->set_allocated_session(sess);
 
   signData(bc, data);
+  serializeToBuffer(baton, bc);
+}
+
+
+void
+BatonUtil::setupBuf(MemberBaton *baton) {
+  baton->nonce = Crypto::generateNonce();
+  Broadcast bc;
+  Broadcast::Data *data = new Broadcast::Data();
+  Broadcast::Setup *setup = new Broadcast::Setup();
+
+  // TODO: use member for this?
+  data->set_type(Broadcast::SETUP);
+  data->set_nonce(baton->nonce);
+  data->set_return_nonce(baton->returnNonce);
+
+  string sched = string(
+    (char *)&baton->member->schedule[0],
+    (baton->member->schedule.size() * sizeof(sched_t)));
+  setup->set_schedule(sched);
+
+  data->set_allocated_setup(setup);
+
+  signData(baton->member->manager->getPrivateKey(), bc, data);
   serializeToBuffer(baton, bc);  
 }
 
@@ -86,7 +110,7 @@ BatonUtil::startChatBuf(MemberBaton *baton) {
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
   Broadcast::Prologue *prologue = new Broadcast::Prologue();
-  // sched_t modulo = baton->member->manager->getTargetModulo();
+
   // TODO: set manager->moduloCalculated_ false on round end
   prologue->set_modulo(baton->member->manager->getTargetModulo());
 
@@ -179,7 +203,7 @@ void
 BatonUtil::processTransmission(MemberBaton* baton) {
   string buf;
   // Use session key if chat membership has been established
-  if (baton->hasMember() && baton->member->ready == true) {
+  if (baton->hasMember() && baton->member->ready) {
     cout << "(" << baton->member->handle 
       << ") baton had member and member is ready\n";
     buf = baton->member->manager->decryptSessionMessage(baton->xBuffer);
@@ -220,9 +244,15 @@ BatonUtil::routeTransmission(
       }
       return; 
     }
+    case Transmission::ENTER: {
+      cout << "ENTER message recieved from " << baton->member->handle << endl;
+      // baton->getSetup();
+      baton->member->ready = true;
+      return;
+    }
     case Transmission::READY: {
       cout << "READY message recieved from " << baton->member->handle << endl;
-      baton->member->ready = true;    
+      baton->member->clientHasSchedule = true;    
       return;
     }
     case Transmission::TRANSMIT: {
@@ -236,7 +266,6 @@ BatonUtil::routeTransmission(
       }
       return;
     }
-    case Transmission::ENTER:
     case Transmission::EXIT:
     case Transmission::QUIT:
     case Transmission::ERROR:

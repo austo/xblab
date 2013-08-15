@@ -35,6 +35,7 @@ MemberBaton::~MemberBaton() {
   if (member != NULL) {
     member->present = false;
     member->ready = false;
+    member->clientHasSchedule = false;
     fprintf(stdout, "%s%s left group %s\n",
       rightnow().c_str(), member->username.c_str(), url.c_str());  
   }
@@ -77,11 +78,17 @@ MemberBaton::getGroupEntry() {
 }
 
 
+void
+MemberBaton::getSetup() {
+  BatonUtil::setupBuf(this);
+}
+
 // Should be called from uv_work_cb if used with uv_queue_work
 void
 MemberBaton::getStartChat() {
   BatonUtil::startChatBuf(this);
 }
+
 
 void
 MemberBaton::getMessage() {

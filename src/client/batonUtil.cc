@@ -28,14 +28,9 @@ BatonUtil::packageCredential(MemberBaton *baton) {
 
   cred->set_username(baton->member.username);
 
-  string pk(baton->member.publicKey);
-
-  cout << "packageCredential - pk for " << baton->member.username <<
-    ":\n" << pk << endl;
-
   // Plaintext user password will be compared to stored passhash
   cred->set_password(baton->member.password);
-  cred->set_pub_key(pk);
+  cred->set_pub_key(baton->member.publicKey);
   cred->set_group(baton->url);
 
   data->set_allocated_credential(cred);
@@ -75,8 +70,12 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         return;
       }
       case Broadcast::GROUPENTRY: {
-        // Store key && emit "welcome" event
+        // Store key & emit "welcome" event
         enterGroup(baton, data);
+        return;
+      }
+      case Broadcast::SETUP: {
+        chatReady(baton, data);
         return;
       }
       case Broadcast::ERROR: {
@@ -109,44 +108,59 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
 void
 BatonUtil::enterGroup(
   MemberBaton *baton, const Broadcast::Data& data) {
+
   const Broadcast::Session& session = data.session();
   baton->member.sessionKey = session.pub_key();
 
-  string sched(session.schedule());
-  baton->member.schedule = vectorize_string<sched_t>(sched);
+  Transmission trans;
+  Transmission::Data *tdata = new Transmission::Data();
+  tdata->set_type(Transmission::ENTER);
+  tdata->set_nonce(baton->nonce);
+  tdata->set_return_nonce(baton->returnNonce);  
 
-  // uv_write "READY" message & sign with xbPublicKeyFile
-  chatReady(baton);
+  signData(baton->member.privateKey, trans, tdata);
+
+  // ENTER message is sent using original key, whereupon
+  // we switch to session key for all subsequent messages.
+  serializeToBuffer(baton, trans);
+  baton->member.ready = true;
+
+  baton->jsCallbackFactory = XbClient::groupEntryFactory;
+  baton->needsJsCallback = true;
+  baton->needsUvWrite = true;
+}
+
+
+// In response to SETUP,
+// uv_write "READY" message & sign with xbPublicKeyFile
+void
+BatonUtil::chatReady(MemberBaton *baton, const Broadcast::Data& data) {
+
+  const Broadcast::Setup& setup = data.setup();  
+  string sched(setup.schedule());
+  baton->member.schedule = vectorize_string<sched_t>(sched);
 
 #ifdef TRACE
   for (int i = 0, n = baton->member.schedule.size(); i < n; ++i) {
-    cout << baton->member.schedule[i] << ", ";
+    if (i != 0) {
+      cout << ", ";
+    }
+    cout << baton->member.schedule[i];
   }
   cout << endl;
 #endif
 
-  baton->jsCallbackFactory = XbClient::groupEntryFactory;
-  baton->needsJsCallback = true;
-}
-
-
-void
-BatonUtil::chatReady(MemberBaton *baton) {
-
   Transmission trans;
-  Transmission::Data *data = new Transmission::Data();
-  data->set_type(Transmission::READY);
-  data->set_nonce(baton->nonce);
-  data->set_return_nonce(baton->returnNonce);
+  Transmission::Data *tdata = new Transmission::Data();
+  tdata->set_type(Transmission::READY);
+  tdata->set_nonce(baton->nonce);
+  tdata->set_return_nonce(baton->returnNonce);
 
-  signData(baton->member.privateKey, trans, data);
+  signData(baton->member.privateKey, trans, tdata);
 
-  // Ready message is sent using original key, whereupon
-  // we switch to session key for all subsequent messages.
+  // READY message will be encrypted using session key
   serializeToBuffer(baton, trans);
-
   baton->needsUvWrite = true;
-  baton->member.ready = true;
 }
 
 

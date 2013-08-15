@@ -42,6 +42,9 @@ public:
   allMessagesProcessed(); // not thread-safe
 
   bool
+  canDeliverSchedules(); // not thread-safe
+
+  bool
   roundIsImportant() {
     return roundIsImportant_;
   }
@@ -50,10 +53,16 @@ public:
   startChatIfNecessary();
 
   void
+  deliverSchedulesIfNecessary();
+
+  void
   broadcastIfNecessary();
 
   void
   getStartChatBuffers();
+
+  void
+  getSetupBuffers();
 
   void
   broadcast();
@@ -87,10 +96,16 @@ public:
   static void
   onBroadcastWork(uv_work_t *r);
 
+  static void
+  onSetupWork(uv_work_t *r);
+
 
   // static uv_after_work_cb
   static void
-  afterRoundWork(uv_work_t *r); 
+  afterRoundWork(uv_work_t *r);
+
+  static void
+  afterSetupWork(uv_work_t *r);
   
 private:
   int currentRound_;
@@ -102,6 +117,7 @@ private:
   bool moduloCalculated_;
   bool chatStarted_;
   bool roundIsImportant_;
+  bool schedulesDelivered_;
 
   uv_mutex_t classMutex_;
   uv_mutex_t propertyMutex_;
