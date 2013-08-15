@@ -56,7 +56,6 @@ BatonUtil::needCredBuf(MemberBaton* baton) {
 
 void
 BatonUtil::groupEntryBuf(MemberBaton* baton) { 
-
   baton->nonce = Crypto::generateNonce();
   Broadcast bc;
   Broadcast::Data *data = new Broadcast::Data();
@@ -66,17 +65,17 @@ BatonUtil::groupEntryBuf(MemberBaton* baton) {
   data->set_type(Broadcast::GROUPENTRY);
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
+  cout << "after set_return_nonce\n";
   sess->set_pub_key(baton->member->manager->publicKey);
+  cout << "after set_pub_key\n";
 
-  // string sched = string(
-  //   (char *)&baton->member->schedule[0],
-  //   (baton->member->schedule.size() * sizeof(sched_t)));
-  // sess->set_schedule(sched);
 
   data->set_allocated_session(sess);
+  cout << "after set_allocated_session\n";
 
   signData(bc, data);
   serializeToBuffer(baton, bc);
+  cout << "end groupEntryBuf\n";
 }
 
 
@@ -87,7 +86,6 @@ BatonUtil::setupBuf(MemberBaton *baton) {
   Broadcast::Data *data = new Broadcast::Data();
   Broadcast::Setup *setup = new Broadcast::Setup();
 
-  // TODO: use member for this?
   data->set_type(Broadcast::SETUP);
   data->set_nonce(baton->nonce);
   data->set_return_nonce(baton->returnNonce);
@@ -296,7 +294,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   string pw(cred.password());
   baton->url = string(cred.group());
 
-  Manager *mgr;
+  Manager *mgr = NULL;
 
   if (xbManagers.find(baton->url) == xbManagers.end()) {
     // We want a "singleton" manager per group,
@@ -327,8 +325,8 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
     return;
   }
 
-  cout << "public key for " << un << " before assume:\n" <<
-    pubkey << endl;
+  // cout << "public key for " << un << " before assume:\n" <<
+  //   pubkey << endl;
   Member *m = new Member(un, pw, pubkey, true);
 
   memb_iter mitr = mgr->members.begin();
@@ -346,7 +344,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
           mitr->second.assume(m); // TODO make threadsafe and move to manager
           cout << rightnow() << mitr->second.username
              << " entered group " << mgr->group.url << endl <<
-             "with public key:\n" << mitr->second.publicKey << endl;
+             /*"with public key:\n" << mitr->second.publicKey << */endl;
           baton->getGroupEntry();
           // TODO: check if all members have arrived and begin round
         }

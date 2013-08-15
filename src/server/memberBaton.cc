@@ -72,9 +72,9 @@ MemberBaton::getNeedCredential() {
 // May overlap if all members arrive at once
 void
 MemberBaton::getGroupEntry() {
-  uv_mutex_lock(&mutex);
+  // uv_mutex_lock(&mutex);
   BatonUtil::groupEntryBuf(this);
-  uv_mutex_unlock(&mutex);
+  // uv_mutex_unlock(&mutex);
 }
 
 

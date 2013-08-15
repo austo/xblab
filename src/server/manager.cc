@@ -75,9 +75,10 @@ Manager::Manager(string url) {
   // We've got the room ID, now get our members
   members = Db::getMembers(group.id);  
 
-  // TODO: move to separate broadcast type,
-  // initiated when all members have arrived
-  fillMemberSchedules(); 
+  memb_iter mitr = members.begin();
+  for (; mitr != members.end(); ++mitr) {
+    mitr->second.manager = this;
+  }
 
   currentRound_ = 0;
   chatStarted_ = false;
@@ -102,7 +103,6 @@ Manager::fillMemberSchedules() {
   // Each member has a reference to the manager
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
-    mitr->second.manager = this;
     schedules.push_back(&mitr->second.schedule);
   }
 

@@ -7,6 +7,8 @@
 #include <map>
 #include <string>
 
+#include <botan/init.h>
+
 #include "common/macros.h"
 #include "common/common.h"
 #include "server.h"
@@ -47,9 +49,11 @@ main(int argc, char** argv) {
     return 1;
   }
 
-  if (xblab::Crypto::init() != XBGOOD) {
-    return 1;
-  }
+  // if (xblab::Crypto::init() != XBGOOD) {
+  //   return 1;
+  // }
+
+  Botan::LibraryInitializer init("thread_safe=true");
 
   int port = atoi(xblab::xbPort.c_str());
 
