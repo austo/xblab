@@ -390,7 +390,7 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
     logger.setFile(logname());
     
     if (!Crypto::verify(baton->member->publicKey, datastr, signature)) {       
-      F_LOG(ERROR) << "offending public key for " <<
+      F_LOG(logger, ERROR) << "offending public key for " <<
         baton->member->handle << ":\n" <<
         baton->member->publicKey << endl <<
         "signature:\n" << signature << endl << 
@@ -401,7 +401,7 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
       baton->member->manager->setRoundMessage(payload.content());     
     }
     else {      
-      F_LOG(DEBUG) <<
+      F_LOG(logger, DEBUG) <<
         baton->member->handle << " has nothing to say.";
     }
   }

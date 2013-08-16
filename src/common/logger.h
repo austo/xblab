@@ -119,12 +119,14 @@ public:
   static void output(const std::string& msg);
 };
 
-inline FILE*& LogOutput::stream() {
+inline FILE*&
+LogOutput::stream() {
   static FILE* pStream = stderr;
   return pStream;
 }
 
-inline void LogOutput::setFile(const std::string& fname) {
+inline void
+LogOutput::setFile(const std::string& fname) {
   FILE* pFile = fopen(fname.c_str(), "a");
   if (pFile == NULL) {
     // leave as stderr
@@ -133,7 +135,8 @@ inline void LogOutput::setFile(const std::string& fname) {
   LogOutput::stream() = pFile;
 }
 
-inline void LogOutput::output(const std::string& msg) {   
+inline void
+LogOutput::output(const std::string& msg) {   
   FILE* pStream = stream();
   if (!pStream) {
     return;
@@ -150,19 +153,26 @@ inline void LogOutput::output(const std::string& msg) {
 // Implementation
 #define FILELOG_DECLSPEC
 
+// Glorified typedef
 class FILELOG_DECLSPEC FileLogger : public Logger<LogOutput> {};
-// typedef Logger<LogOutput> FILELog;
 
 #ifndef FILELOG_MAX_LEVEL
 #define FILELOG_MAX_LEVEL DEBUG4
 #endif
 
-// Only log messages under threshold
-#define F_LOG(level)                                        \
+// Only log messages under threshold using new instance
+#define FF_LOG(level)                                       \
   if (level > FILELOG_MAX_LEVEL) ;                          \
   else if (level > FileLogger::reportingLevel() ||          \
     !LogOutput::stream()) ;                                 \
   else FileLogger().get(level)
+
+// Use existing instance
+#define F_LOG(logger, level)                                \
+  if (level > FILELOG_MAX_LEVEL) ;                          \
+  else if (level > FileLogger::reportingLevel() ||          \
+    !LogOutput::stream()) ;                                 \
+  else logger.get(level)
 
 
 } // namespace xblab
