@@ -1,3 +1,4 @@
+
 #ifndef MANAGER_NATIVE_H
 #define MANAGER_NATIVE_H
 
@@ -46,7 +47,7 @@ public:
 
   bool
   roundIsImportant() {
-    return this->flags.roundIsImportant;
+    return flags.roundIsImportant;
   }
 
   void
@@ -117,14 +118,14 @@ private:
   uv_mutex_t classMutex_;
   uv_mutex_t propertyMutex_;
 
-  struct flags {
+  struct stateFlags {
     bool moduloCalculated;
     bool chatStarted;
     bool roundIsImportant;
     bool schedulesDelivered;
   };
 
-  flags flags;
+  stateFlags flags;
 
   template <class T>
   void

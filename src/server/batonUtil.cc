@@ -11,6 +11,7 @@
 
 #include "common/macros.h"
 #include "common/common.h"
+#include "common/logger.h"
 #include "batonUtil.h"
 #include "common/crypto.h"
 #include "manager.h"
@@ -401,10 +402,14 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
       baton->member->manager->setRoundMessage(payload.content());     
     }
     else {
-      fstream lg; // logging test
-      lg.open(logname().c_str(), fstream::out | fstream::app);
-      lg << baton->member->handle << " has nothing to say.\n";
-      lg.close();
+      FILELog logger;
+      logger.setFile(logname());
+
+      // fstream lg; // logging test
+      // lg.open(logname().c_str(), fstream::out | fstream::app);
+      FILE_LOG(DEBUG) << baton->member->handle <<
+        " has nothing to say.";
+      // lg.close();
     }
   }
   uv_mutex_unlock(&xbMutex);
