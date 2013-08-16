@@ -386,30 +386,23 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
    */
   uv_mutex_lock(&xbMutex);
   if (Manager::memberCanTransmit(baton->member->manager, baton->member)) {
-    if (!Crypto::verify(baton->member->publicKey, datastr, signature)) { 
-    #ifdef DEBUG // TODO: LOGGING!!
-      fstream fs;
-      fs.open(logname().c_str(), fstream::out | fstream::app);
-      fs << "offending public key for " << baton->member->handle <<
-        ":\n" << baton->member->publicKey << endl <<
+    FileLogger logger;
+    logger.setFile(logname());
+    
+    if (!Crypto::verify(baton->member->publicKey, datastr, signature)) {       
+      F_LOG(ERROR) << "offending public key for " <<
+        baton->member->handle << ":\n" <<
+        baton->member->publicKey << endl <<
         "signature:\n" << signature << endl << 
-        "msg:\n" << datastr << endl;
-      fs.close();
-    #endif
+        "msg:\n" << datastr;      
       throw util_exception("User key not verified.");
     }
     if (payload.is_important()) {
       baton->member->manager->setRoundMessage(payload.content());     
     }
-    else {
-      FILELog logger;
-      logger.setFile(logname());
-
-      // fstream lg; // logging test
-      // lg.open(logname().c_str(), fstream::out | fstream::app);
-      FILE_LOG(DEBUG) << baton->member->handle <<
-        " has nothing to say.";
-      // lg.close();
+    else {      
+      F_LOG(DEBUG) <<
+        baton->member->handle << " has nothing to say.";
     }
   }
   uv_mutex_unlock(&xbMutex);

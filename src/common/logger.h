@@ -150,7 +150,7 @@ inline void LogOutput::output(const std::string& msg) {
 // Implementation
 #define FILELOG_DECLSPEC
 
-class FILELOG_DECLSPEC FILELog : public Logger<LogOutput> {};
+class FILELOG_DECLSPEC FileLogger : public Logger<LogOutput> {};
 // typedef Logger<LogOutput> FILELog;
 
 #ifndef FILELOG_MAX_LEVEL
@@ -158,11 +158,11 @@ class FILELOG_DECLSPEC FILELog : public Logger<LogOutput> {};
 #endif
 
 // Only log messages under threshold
-#define FILE_LOG(level)                                     \
+#define F_LOG(level)                                        \
   if (level > FILELOG_MAX_LEVEL) ;                          \
-  else if (level > FILELog::reportingLevel() ||             \
+  else if (level > FileLogger::reportingLevel() ||          \
     !LogOutput::stream()) ;                                 \
-  else FILELog().get(level)
+  else FileLogger().get(level)
 
 
 } // namespace xblab
