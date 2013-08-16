@@ -46,7 +46,7 @@ public:
 
   bool
   roundIsImportant() {
-    return roundIsImportant_;
+    return this->flags.roundIsImportant;
   }
 
   void
@@ -114,13 +114,17 @@ private:
   std::string privateKey_;
   std::string roundMessage_;
 
-  bool moduloCalculated_;
-  bool chatStarted_;
-  bool roundIsImportant_;
-  bool schedulesDelivered_;
-
   uv_mutex_t classMutex_;
   uv_mutex_t propertyMutex_;
+
+  struct flags {
+    bool moduloCalculated;
+    bool chatStarted;
+    bool roundIsImportant;
+    bool schedulesDelivered;
+  };
+
+  flags flags;
 
   template <class T>
   void
