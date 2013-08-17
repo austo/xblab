@@ -24,24 +24,30 @@ enum LogLevel {
 
 template <typename T>
 class Logger {
+
 public:
   Logger();
   virtual ~Logger();
   std::ostringstream& get(LogLevel level = INFO);
   void setFile(const std::string& fname);
-public:
+
+// static
   static LogLevel& reportingLevel();
   static std::string toString(LogLevel level);
   static LogLevel fromString(const std::string& level);
+
 protected:
   std::ostringstream os;
+
 private:
   Logger(const Logger&);
   Logger& operator =(const Logger&);
 };
 
+
 template <typename T>
 Logger<T>::Logger() {}
+
 
 template <typename T>
 std::ostringstream&
@@ -52,11 +58,13 @@ Logger<T>::get(LogLevel level) {
   return os;
 }
 
+
 template <typename T>
 void
 Logger<T>::setFile(const std::string& fname) {
   T::setFile(fname);
 }
+
 
 template <typename T>
 Logger<T>::~Logger() {
@@ -64,12 +72,14 @@ Logger<T>::~Logger() {
   T::output(os.str());
 }
 
+
 template <typename T>
 LogLevel& 
 Logger<T>::reportingLevel() {
   static LogLevel reportingLevel = DEBUG4;
   return reportingLevel;
 }
+
 
 template <typename T>
 std::string 
@@ -86,6 +96,7 @@ Logger<T>::toString(LogLevel level) {
   };
   return buffer[level];
 }
+
 
 template <typename T>
 LogLevel 
@@ -112,6 +123,7 @@ Logger<T>::fromString(const std::string& level) {
   return INFO;
 }
 
+
 class LogOutput {
 public:
   static FILE*& stream();
@@ -119,11 +131,13 @@ public:
   static void output(const std::string& msg);
 };
 
+
 inline FILE*&
 LogOutput::stream() {
   static FILE* pStream = stderr;
   return pStream;
 }
+
 
 inline void
 LogOutput::setFile(const std::string& fname) {
@@ -134,6 +148,7 @@ LogOutput::setFile(const std::string& fname) {
   }
   LogOutput::stream() = pFile;
 }
+
 
 inline void
 LogOutput::output(const std::string& msg) {   
