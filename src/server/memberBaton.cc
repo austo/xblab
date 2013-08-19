@@ -24,10 +24,7 @@ extern uv_loop_t *loop;
 MemberBaton::MemberBaton() {
   uvClient.data = this;
   member = NULL; // memberBaton does not own member
-  if (uv_mutex_init(&mutex) != XBGOOD) {
-    fprintf(stderr, "Error initializing MemberBaton mutex\n");
-    throw runtime_error("Error initializing MemberBaton mutex\n");
-  }
+  INIT_MUTEX(mutex, "MemberBaton");  
 }
 
 

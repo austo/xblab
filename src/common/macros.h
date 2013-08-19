@@ -89,4 +89,11 @@
 
 #define log(x) printf("%s\n", x);
 
+#define INIT_MUTEX(p, name) {                                 \
+  if (uv_mutex_init(&p) != XBGOOD) {                          \
+    fprintf(stderr, "Error initializing %s mutex\n", name);   \
+    throw runtime_error("Error initializing mutex\n");        \
+  }                                                           \
+}
+
 #endif

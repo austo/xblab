@@ -189,13 +189,14 @@ BatonUtil::packageTransmission(MemberBaton *baton) {
   Transmission::Payload *payload = new Transmission::Payload();
 
   if (baton->member.canTransmit()) {
+
     payload->set_is_important(baton->member.hasMessage);    
 
     payload->set_content(
       baton->member.hasMessage ?
       baton->member.message :
       Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
-    
+    baton->member.hasMessage = false;    
   }
   else {
     payload->set_is_important(false);

@@ -59,15 +59,8 @@ Manager::cleanMemberSchedules(
 
 Manager::Manager(string url) {
 
-  if (uv_mutex_init(&classMutex_) != XBGOOD) {
-    fprintf(stderr, "Error initializing MemberBaton mutex\n");
-    throw runtime_error("Error initializing MemberBaton mutex\n");
-  }
-
-  if (uv_mutex_init(&propertyMutex_) != XBGOOD) {
-    fprintf(stderr, "Error initializing MemberBaton mutex\n");
-    throw runtime_error("Error initializing MemberBaton mutex\n");
-  }
+  INIT_MUTEX(classMutex_, "Manager: class");
+  INIT_MUTEX(propertyMutex_, "Manager: property");
 
   Crypto::generateKey(this->privateKey_, this->publicKey);
   group = Db::getGroup(url);

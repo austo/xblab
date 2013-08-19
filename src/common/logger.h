@@ -166,25 +166,22 @@ LogOutput::output(const std::string& msg) {
 }
 
 // Implementation
-#define FILELOG_DECLSPEC
+class FileLogger : public Logger<LogOutput> {};
 
-// Glorified typedef
-class FILELOG_DECLSPEC FileLogger : public Logger<LogOutput> {};
-
-#ifndef FILELOG_MAX_LEVEL
-#define FILELOG_MAX_LEVEL DEBUG4
+#ifndef MAX_LOG_LEVEL
+#define MAX_LOG_LEVEL DEBUG4
 #endif
 
-// Only log messages under threshold using new instance
+// Log messages under threshold using new instance
 #define FF_LOG(level)                                       \
-  if (level > FILELOG_MAX_LEVEL) ;                          \
+  if (level > MAX_LOG_LEVEL) ;                              \
   else if (level > FileLogger::reportingLevel() ||          \
     !LogOutput::stream()) ;                                 \
   else FileLogger().get(level)
 
 // Use existing instance
 #define F_LOG(logger, level)                                \
-  if (level > FILELOG_MAX_LEVEL) ;                          \
+  if (level > MAX_LOG_LEVEL) ;                              \
   else if (level > FileLogger::reportingLevel() ||          \
     !LogOutput::stream()) ;                                 \
   else logger.get(level)

@@ -241,21 +241,22 @@ XbClient::SendCredential(const Arguments& args) {
   return scope.Close(Undefined());
 }
 
-// TODO: currently dead code - use or lose
+// TODO: should be called Transmit Message if not handling files
 Handle<Value>
 XbClient::Transmit(const Arguments& args) {
   HandleScope scope;
 
-  if (!args[0]->IsObject() || !args[1]->IsFunction()) {
-    THROW("xblab: transmit() requires object and callback arguments");
+  if (!args[0]->IsString() || !args[1]->IsFunction()) {
+    THROW("xblab: transmit() requires sting and callback arguments");
   }
 
-  Local<Object> transmission = Local<Object>::Cast(args[0]);
-  Local<Value> pload = transmission->Get(String::New(XBPAYLOAD));
+  // Local<Object> transmission = Local<Object>::Cast(args[0]);
+  Local<Value> pload = args[0]->ToString();
 
   XbClient* instance = ObjectWrap::Unwrap<XbClient>(args.This());
   instance->baton->wrapper = instance; // seems to be necessary
 
+  // TODO: add lock
   instance->baton->member.message = NodeUtil::v8ToString(pload);
   instance->baton->member.hasMessage = true;
   // Should be able to hold onto this message until it's our turn to send
@@ -354,7 +355,10 @@ extern "C" {
       t, "connect", xblab::XbClient::Connect);
     NODE_SET_PROTOTYPE_METHOD(
       t, "sendCredential", xblab::XbClient::SendCredential);
-    module->Set(String::NewSymbol("Client"), t->GetFunction());        
+    NODE_SET_PROTOTYPE_METHOD(
+      t, "transmit", xblab::XbClient::Transmit);
+    module->Set(String::NewSymbol("Client"), t->GetFunction());   
+
   }
 
   NODE_MODULE(xblab, init);
