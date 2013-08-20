@@ -181,7 +181,7 @@ BatonUtil::messageBuf(MemberBaton *baton) {
 
   payload->set_modulo(baton->member->manager->getTargetModulo());
   payload->set_content(baton->member->manager->getRoundMessage());
-  payload->set_is_important(baton->member->manager->roundIsImportant());
+  payload->set_is_important(baton->member->manager->getRoundIsImportant());
 
   data->set_type(Broadcast::BROADCAST);
   data->set_nonce(baton->nonce);
@@ -398,13 +398,16 @@ BatonUtil::processMessage(MemberBaton *baton, string& datastr,
       throw util_exception("User key not verified.");
     }
     if (payload.is_important()) {
-      baton->member->manager->setRoundMessage(payload.content());     
+      baton->member->manager->setRoundMessage(payload.content());
+      F_LOG(logger, DEBUG) <<
+        baton->member->handle << " says " << payload.content();   
     }
     else {      
       F_LOG(logger, DEBUG) <<
         baton->member->handle << " has nothing to say.";
     }
   }
+  baton->member->messageProcessed = true;
   uv_mutex_unlock(&xbMutex);
 }
 

@@ -91,10 +91,10 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         startChat(baton, data);
         return;
       }
-
-
+      case Broadcast::BROADCAST: {
+        // process broadcast
+      }
       case Broadcast::GROUPLIST:
-      case Broadcast::BROADCAST:
       case Broadcast::GROUPEXIT:
       case Broadcast::QUIT: {
         throw util_exception("Broadcast type not implemented.");

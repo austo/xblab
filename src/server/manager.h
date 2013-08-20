@@ -46,7 +46,7 @@ public:
   canDeliverSchedules(); // not thread-safe
 
   bool
-  roundIsImportant() {
+  getRoundIsImportant() {
     return flags.roundIsImportant;
   }
 
@@ -64,6 +64,9 @@ public:
 
   void
   getSetupBuffers();
+
+  void
+  getMessageBuffers();
 
   void
   broadcast();
@@ -123,6 +126,7 @@ private:
     bool chatStarted;
     bool roundIsImportant;
     bool schedulesDelivered;
+    bool messagesDelivered;
   };
 
   stateFlags flags;

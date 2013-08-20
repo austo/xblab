@@ -11,6 +11,7 @@
 #include "db_exception.h"
 #include "common/crypto.h"
 #include "common/macros.h"
+#include "common/logger.h"
 
 
 using namespace std;
@@ -77,6 +78,7 @@ Manager::Manager(string url) {
   flags.chatStarted = false;
   flags.moduloCalculated = false;
   flags.schedulesDelivered = false;
+  flags.messagesDelivered = false;
   roundMessage_ = "";
   cout << rightnow() << "Manager created for group "
     << group.url << " (\"" << group.name << "\")" << endl;  
@@ -171,11 +173,9 @@ Manager::allMessagesProcessed() { // not threadsafe
 
 
 void
-Manager::setRoundMessage(string msg) {
-  uv_mutex_lock(&propertyMutex_);
+Manager::setRoundMessage(string msg) { // not threadsafe
   roundMessage_ = msg;
   flags.roundIsImportant = true;
-  uv_mutex_unlock(&propertyMutex_);
 }
 
 
@@ -279,11 +279,34 @@ Manager::getSetupBuffers() {
 
 
 void
+Manager::getMessageBuffers() {
+#ifdef TRACE
+  // logging
+#endif
+  uv_mutex_lock(&classMutex_);
+
+  if (!flags.messagesDelivered) {
+    cout << rightnow() << 
+      "getting message buffers for " << group.name << endl;    
+
+    memb_iter mitr = members.begin();
+    for (; mitr != members.end(); ++mitr) {
+      mitr->second.baton->getMessage();            
+    }
+    flags.messagesDelivered = true;
+  }    
+
+  uv_mutex_unlock(&classMutex_);
+}
+
+
+void
 Manager::broadcast() {
 
     uv_mutex_lock(&classMutex_);
 
-    cout << rightnow() << "broadcasting start chat to " << group.name << endl;
+    // cout << rightnow() <<
+    //  "broadcasting start chat to " << group.name << endl;
 
     memb_iter mitr = members.begin();
     for (; mitr != members.end(); ++mitr) {
@@ -311,7 +334,7 @@ Manager::onSetupWork(uv_work_t *r) {
 void
 Manager::onBroadcastWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
-  mgr->getStartChatBuffers();
+  mgr->getMessageBuffers();
 }
 
 
@@ -320,6 +343,7 @@ Manager::afterRoundWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
   mgr->broadcast();
   mgr->flags.roundIsImportant = false;
+  mgr->flags.messagesDelivered = false;
   r->data = NULL;
   free(r);
 }
