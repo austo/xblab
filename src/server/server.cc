@@ -232,16 +232,18 @@ Server::afterOnRead(uv_work_t *r) {
 void
 Server::respondAfterRead(Manager *mgr) {
 
+  if (mgr->allMessagesProcessed()) {
+    mgr->broadcastIfNecessary();
+    return;
+  }
   if (mgr->canStartChat()) {
     mgr->startChatIfNecessary();
+    return;
   }
-  else if (mgr->canDeliverSchedules()) {
+  if (mgr->canDeliverSchedules()) {
     mgr->deliverSchedulesIfNecessary();
-  }
-  else if (mgr->allMessagesProcessed()) {
-    mgr->broadcastIfNecessary();
-  }
-  return;
+    return;
+  }  
 }
 
 
