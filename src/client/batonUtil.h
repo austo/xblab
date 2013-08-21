@@ -31,6 +31,9 @@ class BatonUtil {
   chatReady(MemberBaton *baton, const Broadcast::Data& data);
 
   static void
+  handleBroadcast(MemberBaton *baton, const Broadcast::Data& data);
+
+  static void
   packageTransmission(MemberBaton *baton);
 
   static void

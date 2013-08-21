@@ -168,6 +168,32 @@ XbClient::emitStartChat() {
     return scope.Close(Undefined());
 }
 
+
+v8::Handle<v8::Value>
+XbClient::emitBroadcast() {
+  HandleScope scope;
+
+  try {
+      char buf[30];
+      sprintf(buf, "Begin chat");
+
+      Handle<Value> argv[XBEMITARGS] = {
+        String::New("broadcast"),
+        String::New(buf)
+      };
+      XBEMITCALLBACK(pHandle_, argv);
+    }
+
+    catch (util_exception& e) {
+      Handle<Value> argv[2] = {
+        String::New("error"),
+        String::New(e.what())
+      };
+      XBEMITCALLBACK(pHandle_, argv);
+    }
+    return scope.Close(Undefined());
+}
+
 /* static member functions */
 
 // NOTE: look into converting object args to array Gets
@@ -289,6 +315,11 @@ XbClient::endConnectionFactory(XbClient *xbClient) {
 v8::Handle<v8::Value>
 XbClient::startChatFactory(XbClient *xbClient) {
   return xbClient->emitStartChat();
+}
+
+v8::Handle<v8::Value>
+XbClient::broadcastMessageFactory(XbClient *xbClient) {
+  return xbClient->emitBroadcast();
 }
 
 

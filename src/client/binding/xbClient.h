@@ -39,6 +39,9 @@ public:
   static v8::Handle<v8::Value>
   startChatFactory(XbClient*);
 
+  static v8::Handle<v8::Value>
+  broadcastMessageFactory(XbClient*);
+
   // static v8::Handle<v8::Value>
   // errorFactory(XbClient*);
 
@@ -74,6 +77,9 @@ private:
 
   v8::Handle<v8::Value>
   emitStartChat();
+
+  v8::Handle<v8::Value>
+  emitBroadcast();
 
   // v8::Handle<v8::Value>
   // emitError();  

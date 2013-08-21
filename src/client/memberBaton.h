@@ -31,6 +31,9 @@ public:
   uv_connect_t uvConnect;  
   uv_connect_cb uvConnectCb;
 
+  std::string roundMessage;
+  bool hasRoundMessage;
+
   XbClient *wrapper;
   bool needsJsCallback;
   JsCallbackFactory jsCallbackFactory;

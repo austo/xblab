@@ -47,7 +47,7 @@ message Broadcast {
   }
 
   message Data {
-    //type and nonce are required for all messages
+    // type and nonce are required for all messages
     required Type type = 1;
     required string nonce = 2;
     optional string return_nonce = 3;

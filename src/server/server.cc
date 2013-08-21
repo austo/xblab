@@ -238,9 +238,9 @@ Server::respondAfterRead(Manager *mgr) {
   else if (mgr->canDeliverSchedules()) {
     mgr->deliverSchedulesIfNecessary();
   }
-  // else if (mgr->allMessagesProcessed()) {
-  //   mgr->broadcastIfNecessary();
-  // }
+  else if (mgr->allMessagesProcessed()) {
+    mgr->broadcastIfNecessary();
+  }
   return;
 }
 

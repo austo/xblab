@@ -92,7 +92,9 @@ BatonUtil::digestBroadcast(MemberBaton *baton) {
         return;
       }
       case Broadcast::BROADCAST: {
-        // process broadcast
+        cout << rightnow() << "received BROADCAST\n";
+        handleBroadcast(baton, data);
+        return;
       }
       case Broadcast::GROUPLIST:
       case Broadcast::GROUPEXIT:
@@ -179,6 +181,28 @@ BatonUtil::startChat(
 
 
 void
+BatonUtil::handleBroadcast(
+  MemberBaton *baton, const Broadcast::Data& data) {
+
+  const Broadcast::Payload& payload = data.payload();
+
+  baton->member.modulo = payload.modulo();
+  baton->hasRoundMessage = bool(payload.is_important());
+
+  if (baton->hasRoundMessage) {
+    baton->roundMessage = string(payload.content());
+    baton->jsCallbackFactory = XbClient::broadcastMessageFactory;
+    baton->needsJsCallback = true;
+  }
+  else {
+    baton->needsJsCallback = false;
+  }
+  
+  packageTransmission(baton);
+}
+
+
+void
 BatonUtil::packageTransmission(MemberBaton *baton) {
   Transmission trans;
   Transmission::Data *data = new Transmission::Data();
@@ -207,6 +231,7 @@ BatonUtil::packageTransmission(MemberBaton *baton) {
   signData(baton->member.privateKey, trans, data);
   serializeToBuffer(baton, trans);
   baton->needsUvWrite = true;
+  ++baton->member.currentRound;
 }
 
 

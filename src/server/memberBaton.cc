@@ -90,6 +90,7 @@ MemberBaton::getStartChat() {
 void
 MemberBaton::getMessage() {
   BatonUtil::messageBuf(this);
+  member->messageProcessed = false;
 }
 
 

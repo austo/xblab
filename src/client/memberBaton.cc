@@ -19,14 +19,16 @@ MemberBaton::MemberBaton(uv_connect_t *req) {
 
 MemberBaton::MemberBaton() {
   uvConnect.data = this;
-  needsJsCallback = false;    
+  needsJsCallback = false;
+  hasRoundMessage = false;  
 }
 
 
 MemberBaton::MemberBaton(uv_connect_cb cb) {
   uvConnect.data = this;
   uvConnectCb = cb;
-  needsJsCallback = false;  
+  needsJsCallback = false;
+  hasRoundMessage = false;
 }
 
 
@@ -43,7 +45,7 @@ MemberBaton::digestBroadcast() {
 }
 
 
-void 
+void
 MemberBaton::packageCredential() {
   BatonUtil::packageCredential(this);
 }

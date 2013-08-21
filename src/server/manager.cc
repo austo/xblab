@@ -162,9 +162,13 @@ Manager::canStartChat() { // not threadsafe
 
 bool
 Manager::allMessagesProcessed() { // not threadsafe
+  if (flags.messagesDelivered) {
+    return false;
+  }
   memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
-    if (!mitr->second.messageProcessed) {
+    if (!mitr->second.messageProcessed || !mitr->second.present ||
+      !mitr->second.ready || !mitr->second.clientHasSchedule) {
       return false;
     }
   }
@@ -342,8 +346,10 @@ void
 Manager::afterRoundWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
   mgr->broadcast();
+  ++mgr->currentRound_;
   mgr->flags.roundIsImportant = false;
   mgr->flags.messagesDelivered = false;
+  mgr->flags.moduloCalculated = false;
   r->data = NULL;
   free(r);
 }
