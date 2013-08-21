@@ -75,10 +75,6 @@ Manager::Manager(string url) {
   }
 
   currentRound_ = 0;
-  flags.chatStarted = false;
-  flags.moduloCalculated = false;
-  flags.schedulesDelivered = false;
-  flags.messagesDelivered = false;
   roundMessage_ = "";
   cout << rightnow() << "Manager created for group "
     << group.url << " (\"" << group.name << "\")" << endl;  
@@ -347,9 +343,7 @@ Manager::afterRoundWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
   mgr->broadcast();
   ++mgr->currentRound_;
-  mgr->flags.roundIsImportant = false;
-  mgr->flags.messagesDelivered = false;
-  mgr->flags.moduloCalculated = false;
+  mgr->flags.resetRoundFlags();
   r->data = NULL;
   free(r);
 }

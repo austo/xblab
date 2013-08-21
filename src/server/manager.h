@@ -127,6 +127,20 @@ private:
     bool roundIsImportant;
     bool schedulesDelivered;
     bool messagesDelivered;
+
+    stateFlags() :
+      moduloCalculated(false),
+      chatStarted(false),
+      roundIsImportant(false),
+      schedulesDelivered(false),
+      messagesDelivered(false) { }
+
+    void
+    resetRoundFlags() {
+      roundIsImportant = false;
+      messagesDelivered = false;
+      moduloCalculated = false;
+    }
   };
 
   stateFlags flags;

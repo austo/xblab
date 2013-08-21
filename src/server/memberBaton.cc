@@ -98,6 +98,7 @@ MemberBaton::getMessage() {
 // TODO: move to BatonUtil?
 void
 MemberBaton::unicast() {
+  uv_mutex_lock(&mutex);
   size_t len = xBuffer.size();
   // allocate contiguous block to enable single free call in on_write
   uv_write_t *req = (uv_write_t*)malloc(sizeof(uv_write_t) + len);
@@ -109,6 +110,7 @@ MemberBaton::unicast() {
       rightnow().c_str(), member->username.c_str());  
 #endif
   uv_write(req, (uv_stream_t*)&uvClient, &buf, 1, on_write);
+  uv_mutex_unlock(&mutex);
 }
 
 } // namespace xblab
