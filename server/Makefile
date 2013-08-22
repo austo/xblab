@@ -32,7 +32,7 @@ all:	$(TARGET)
 clean:
 	rm -f core $(TARGET) *.o *.log
 
-debug:	CFLAGS += -D DEBUG=1 -D TRACE=1
+debug:	CFLAGS += -D TRACE=1
 
 debug:	$(TARGET)
 
