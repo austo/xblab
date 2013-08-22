@@ -217,7 +217,9 @@ BatonUtil::processTransmission(MemberBaton* baton) {
   }
 
   if (baton->nonce != trans.data().return_nonce()) {
-    throw util_exception("Last nonce does not match transmission nonce.");
+    cout << "Last nonce for " << baton->member->handle <<
+      " does not match transmission nonce." << endl;
+    // throw util_exception("Last nonce does not match transmission nonce.");
   }
   // Save incoming nonce for rebroadcast
   baton->returnNonce = string(trans.data().nonce());

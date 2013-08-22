@@ -136,11 +136,21 @@ private:
       messagesDelivered(false) { }
 
     void
-    resetRoundFlags() {
+    resetRound() {
       roundIsImportant = false;
       messagesDelivered = false;
       moduloCalculated = false;
     }
+
+    void
+    reset() {
+      chatStarted = false;
+      schedulesDelivered = false;
+      roundIsImportant = false;
+      messagesDelivered = false;
+      moduloCalculated = false;
+    }
+
   };
 
   stateFlags flags;

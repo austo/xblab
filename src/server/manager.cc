@@ -343,7 +343,7 @@ Manager::afterRoundWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
   mgr->broadcast();
   ++mgr->currentRound_;
-  mgr->flags.resetRoundFlags();
+  mgr->flags.resetRound();
   r->data = NULL;
   free(r);
 }
@@ -366,8 +366,7 @@ Manager::endChat() {
     uv_mutex_lock(&classMutex_);
     if (flags.chatStarted) {
       cout << rightnow() << "ending chat for " << group.name << endl;
-      flags.chatStarted = false;
-      flags.schedulesDelivered = false;
+      flags.reset();
     }
     uv_mutex_unlock(&classMutex_);
   }
