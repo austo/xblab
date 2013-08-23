@@ -237,6 +237,7 @@ BatonUtil::routeTransmission(
       if (!baton->hasMember()) {
         processCredential(baton, datastr, trans.signature(),
           trans.data().credential());
+        baton->needsUvWrite = true;
       }
       return; 
     }
@@ -244,11 +245,13 @@ BatonUtil::routeTransmission(
       cout << "ENTER message recieved from " << baton->member->handle << endl;
       // baton->getSetup();
       baton->member->ready = true;
+      baton->needsUvWrite = false;
       return;
     }
     case Transmission::READY: {
       cout << "READY message recieved from " << baton->member->handle << endl;
-      baton->member->clientHasSchedule = true;    
+      baton->member->clientHasSchedule = true;
+      baton->needsUvWrite = false;  
       return;
     }
     case Transmission::TRANSMIT: {
@@ -256,6 +259,7 @@ BatonUtil::routeTransmission(
       try {
         processMessage(
           baton, datastr, trans.signature(), trans.data().payload());
+        baton->needsUvWrite = false;
       }
       catch (util_exception& e) {
         baton->err = e.what();

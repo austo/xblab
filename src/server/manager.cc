@@ -318,12 +318,12 @@ Manager::processMemberMessage(int memberId, string& datastr,
   string signature, const Transmission::Payload& payload) {
   
   /* Can user broadcast?
-   * If so, decrypt and verify message.
+   * If so, verify message.
    * If message is okay, is the message important?
    * If so, set manager round message and broadcast with next round modulo.
    * If not, broadcast no message with next round modulo. 
    */
-  
+
   uv_mutex_lock(&classMutex_);
 
   Member& member = members[memberId];
@@ -343,15 +343,15 @@ Manager::processMemberMessage(int memberId, string& datastr,
         "signature:\n" << signature << endl << 
         "msg:\n" << datastr;      
       // throw util_exception("User key not verified.");
-    }
+    }    
     if (payload.is_important()) {
       
       setRoundMessage(payload.content());
-      F_LOG(logger, DEBUG) <<
+      F_LOG(logger, DEBUG) << "round " << currentRound_ << ": " <<
         member.handle << " says " << payload.content();   
     }
     else {      
-      F_LOG(logger, DEBUG) <<
+      F_LOG(logger, DEBUG) << "round " << currentRound_ << ": " <<
         member.handle << " has nothing to say.";
     }
     flags.messagesDelivered = false;
@@ -414,9 +414,17 @@ Manager::onBroadcastWork(uv_work_t *r) {
 
 void
 Manager::afterRoundWork(uv_work_t *r) {
+#ifdef TRACE
+  FileLogger logger;
+  logger.setFile(logname());  
+#endif
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
   mgr->broadcast();
   ++mgr->currentRound_;
+#ifdef TRACE
+  F_LOG(logger, DEBUG) << "round incremented to " <<
+    mgr->currentRound_ << endl;
+#endif
   mgr->flags.resetRound();
   r->data = NULL;
   free(r);
@@ -447,11 +455,16 @@ Manager::endChat() {
 }
 
 
+// TODO: should be const, threadsafe, with modulo calculated elsewhere
 sched_t
 Manager::getTargetModulo() {
   if (!flags.moduloCalculated) {
-    targetModulo_ = (Crypto::generateRandomInt<sched_t>() % members.size());
-    flags.moduloCalculated = true;
+    uv_mutex_lock(&propertyMutex_);
+    if (!flags.moduloCalculated) {
+      targetModulo_ = (Crypto::generateRandomInt<sched_t>() % members.size());
+      flags.moduloCalculated = true;
+    }
+    uv_mutex_unlock(&propertyMutex_);
   }
   return targetModulo_;
 }

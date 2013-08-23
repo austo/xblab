@@ -218,23 +218,21 @@ Server::afterOnRead(uv_work_t *r) {
     return;
   }
 
-  uv_write(
-    &baton->uvWrite,
-    (uv_stream_t*)&baton->uvClient,
-    &baton->uvBuf,
-    1,
-    baton->uvWriteCb);
+  if (baton->needsUvWrite) {
+    uv_write(
+      &baton->uvWrite,
+      (uv_stream_t*)&baton->uvClient,
+      &baton->uvBuf,
+      1,
+      baton->uvWriteCb);
+  }
 
   respondAfterRead(baton->member->manager);
 }
 
 
 void
-Server::respondAfterRead(Manager *mgr) {
-  // if (mgr->allMessagesProcessed()) {
-  //   mgr->broadcastIfNecessary();
-  //   return;
-  // }
+Server::respondAfterRead(Manager *mgr) {  
   if (mgr->canStartChat()) {
     mgr->startChatIfNecessary();
     return;
