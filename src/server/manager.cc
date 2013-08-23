@@ -21,6 +21,7 @@ namespace xblab {
 extern uv_loop_t *loop;
 
 typedef map<int, Member>::iterator memb_iter;
+typedef map<int, Member>::const_iterator const_memb_iter;
 
 template <class T>
 void
@@ -34,13 +35,13 @@ Manager::cleanMemberSchedules(
   for (; i < n; i++) {
     curr = (*firstSched)[i];
 
-  #ifdef DEBUG
+  #ifdef TRACE
     std::cout << "\n(0) " << curr << ", ";
   #endif
 
     for (s = 1; s < schedules.size(); s++) {
 
-    #ifdef DEBUG
+    #ifdef TRACE
       std::cout << "(" << s << ") " << (*schedules.at(s))[i] << ", ";
     #endif
 
@@ -48,7 +49,7 @@ Manager::cleanMemberSchedules(
         (*schedules.at(s))[i] += 1;
         ++curr;
 
-      #ifdef DEBUG
+      #ifdef TRACE
         std::cout << "\nincremented curr: " << curr << std::endl;
       #endif
 
@@ -99,7 +100,7 @@ Manager::fillMemberSchedules() {
 
   Crypto::fillDisjointVectors(schedules, XBSCHEDULESIZE);
 
-#ifdef DEBUG
+#ifdef TRACE
   cout << "after fillDisjointVectors:\n";
   unsigned i, j;
   for (i = 0; i < schedules.size(); i++) {
@@ -114,8 +115,8 @@ Manager::fillMemberSchedules() {
 
 
 bool
-Manager::allMembersPresent() {
-  memb_iter mitr = members.begin();
+Manager::allMembersPresent() const {
+  const_memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     if (!mitr->second.present) {
       return false;
@@ -126,11 +127,11 @@ Manager::allMembersPresent() {
 
 
 bool
-Manager::canDeliverSchedules() {
+Manager::canDeliverSchedules() const {
   if (flags.schedulesDelivered) {
     return false;
   }
-  memb_iter mitr = members.begin();
+  const_memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     if (!mitr->second.present || !mitr->second.ready) {
       return false;
@@ -141,11 +142,11 @@ Manager::canDeliverSchedules() {
 
 
 bool
-Manager::canStartChat() { // not threadsafe
+Manager::canStartChat() const {
   if (flags.chatStarted) {
     return false;
   }
-  memb_iter mitr = members.begin();
+  const_memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     if (!mitr->second.present ||
       !mitr->second.ready || !mitr->second.clientHasSchedule) {
@@ -157,11 +158,11 @@ Manager::canStartChat() { // not threadsafe
 
 
 bool
-Manager::allMessagesProcessed() { // not threadsafe
+Manager::allMessagesProcessed() const {
   if (flags.messagesDelivered) {
     return false;
   }
-  memb_iter mitr = members.begin();
+  const_memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
     if (!mitr->second.messageProcessed || !mitr->second.present ||
       !mitr->second.ready || !mitr->second.clientHasSchedule) {

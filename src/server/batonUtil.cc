@@ -285,7 +285,7 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
   if (!Crypto::verify(pubkey, datastr, signature)) { 
     throw util_exception("User key not verified.");
   }
-#ifdef DEBUG
+#ifdef TRACE
   cout << rightnow() << "Process credential: user signature verified.\n";
 #endif
   string un(cred.username());

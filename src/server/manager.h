@@ -34,16 +34,16 @@ public:
   fillMemberSchedules();
 
   bool
-  allMembersPresent();
+  allMembersPresent() const;
 
   bool
-  canStartChat(); // not thread-safe
+  canStartChat() const;
 
   bool
-  allMessagesProcessed(); // not thread-safe
+  allMessagesProcessed() const;
 
   bool
-  canDeliverSchedules(); // not thread-safe
+  canDeliverSchedules() const;
 
   bool
   getRoundIsImportant() {
