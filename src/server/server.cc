@@ -231,10 +231,10 @@ Server::afterOnRead(uv_work_t *r) {
 
 void
 Server::respondAfterRead(Manager *mgr) {
-  if (mgr->allMessagesProcessed()) {
-    mgr->broadcastIfNecessary();
-    return;
-  }
+  // if (mgr->allMessagesProcessed()) {
+  //   mgr->broadcastIfNecessary();
+  //   return;
+  // }
   if (mgr->canStartChat()) {
     mgr->startChatIfNecessary();
     return;

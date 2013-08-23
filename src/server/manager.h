@@ -12,6 +12,7 @@
 #include "group.h"
 #include "member.h"
 #include "common/common.h"
+#include "protobuf/xblab.pb.h"
 
 
 namespace xblab {
@@ -67,6 +68,10 @@ public:
 
   void
   getMessageBuffers();
+
+  void
+  processMemberMessage(int memberId, std::string& datastr,
+    std::string signature, const Transmission::Payload& payload);
 
   void
   broadcast();

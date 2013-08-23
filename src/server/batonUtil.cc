@@ -378,39 +378,10 @@ BatonUtil::processCredential(MemberBaton *baton, string& datastr,
 
 void
 BatonUtil::processMessage(MemberBaton *baton, string& datastr,
-  string signature, const Transmission::Payload& payload) {  
+  string signature, const Transmission::Payload& payload) {   
   
-  /* Can user broadcast?
-   * If so, decrypt and verify message.
-   * If message is okay, is the message important?
-   * If so, set manager round message and broadcast with next round modulo.
-   * If not, broadcast no message with next round modulo. 
-   */
-  uv_mutex_lock(&xbMutex);
-  if (Manager::memberCanTransmit(baton->member->manager, baton->member)) {
-    FileLogger logger;
-    logger.setFile(logname());
-    
-    if (!Crypto::verify(baton->member->publicKey, datastr, signature)) {       
-      F_LOG(logger, ERROR) << "offending public key for " <<
-        baton->member->handle << ":\n" <<
-        baton->member->publicKey << endl <<
-        "signature:\n" << signature << endl << 
-        "msg:\n" << datastr;      
-      throw util_exception("User key not verified.");
-    }
-    if (payload.is_important()) {
-      baton->member->manager->setRoundMessage(payload.content());
-      F_LOG(logger, DEBUG) <<
-        baton->member->handle << " says " << payload.content();   
-    }
-    else {      
-      F_LOG(logger, DEBUG) <<
-        baton->member->handle << " has nothing to say.";
-    }
-  }
-  baton->member->messageProcessed = true;
-  uv_mutex_unlock(&xbMutex);
+  baton->member->manager->processMemberMessage(
+    baton->member->id, datastr, signature, payload);  
 }
 
 

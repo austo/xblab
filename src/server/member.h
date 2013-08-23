@@ -36,9 +36,11 @@ public:
  * members into the group at arbitrary times.
  */
   Member(
+    int id,
     std::string username,
     std::string password,
     std::string handle) :
+    id(id),
     username(username),
     password(password),
     handle(handle),    
@@ -82,6 +84,7 @@ public:
       Crypto::checkPasshash(password, other.password);          
   }
 
+  int id;
   std::string username;
   std::string password;
   std::string handle;

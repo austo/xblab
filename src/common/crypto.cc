@@ -297,7 +297,7 @@ Crypto::hybridEncrypt(
 
 string
 Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
-#ifdef DEBUG
+#ifdef TRACE
   cout << "inside hybridDecrypt(string&, string&)\n";
 #endif
   AutoSeeded_RNG rng;
@@ -310,7 +310,7 @@ Crypto::hybridDecrypt(string& privateKey, string& ciphertext){
     throw crypto_exception("Invalid key");
   }
 
-#ifdef DEBUG
+#ifdef TRACE
   cout << "after got key\n";
 #endif
   stringstream ctstream(ciphertext);
@@ -327,7 +327,7 @@ Crypto::hybridDecrypt(AutoSeeded_RNG& rng,
 
     string encryptingMasterKeyString;
     getline(in, encryptingMasterKeyString);
-#ifdef DEBUG
+#ifdef TRACE
     cout << "encryptingMasterKeyString:\n" 
          << encryptingMasterKeyString << endl;
 #endif
@@ -335,7 +335,7 @@ Crypto::hybridDecrypt(AutoSeeded_RNG& rng,
     string macString;
     getline(in, macString);
 
-#ifdef DEBUG
+#ifdef TRACE
     cout << "macString:\n" << macString << endl;
 #endif
 
@@ -428,7 +428,7 @@ Crypto::hashPassword(string& pw){
 
 bool
 Crypto::checkPasshash(string pw, string ph){
-#ifdef DEBUG
+#ifdef TRACE
   // cout << "password: " << pw << endl << "passhash: " << ph << endl;
   // cout << "passhash length: " << ph.size() << endl;
 #endif

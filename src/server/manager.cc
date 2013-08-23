@@ -164,8 +164,20 @@ Manager::allMessagesProcessed() const {
   }
   const_memb_iter mitr = members.begin();
   for (; mitr != members.end(); ++mitr) {
-    if (!mitr->second.messageProcessed || !mitr->second.present ||
-      !mitr->second.ready || !mitr->second.clientHasSchedule) {
+    if (!mitr->second.messageProcessed) {
+      cout << mitr->second.handle << " message not processed\n";
+      return false;
+    }
+    if (!mitr->second.present) {
+      cout << mitr->second.handle << " not present\n";
+      return false;
+    }
+    if (!mitr->second.ready) {
+      cout << mitr->second.handle << " not ready\n";
+      return false;
+    }
+    if (!mitr->second.clientHasSchedule) {
+      cout << mitr->second.handle << " does not have schedule\n";
       return false;
     }
   }
@@ -302,6 +314,67 @@ Manager::getMessageBuffers() {
 
 
 void
+Manager::processMemberMessage(int memberId, string& datastr,
+  string signature, const Transmission::Payload& payload) {
+  
+  /* Can user broadcast?
+   * If so, decrypt and verify message.
+   * If message is okay, is the message important?
+   * If so, set manager round message and broadcast with next round modulo.
+   * If not, broadcast no message with next round modulo. 
+   */
+  
+  uv_mutex_lock(&classMutex_);
+
+  Member& member = members[memberId];
+
+#ifdef TRACE
+  cout << "processMemberMessage for " << member.handle << endl;
+#endif
+
+  if (memberCanTransmit(this, &member)) {
+    FileLogger logger;
+    logger.setFile(logname());
+    
+    if (!Crypto::verify(member.publicKey, datastr, signature)) {       
+      F_LOG(logger, ERROR) << "offending public key for " <<
+        member.handle << ":\n" <<
+        member.publicKey << endl <<
+        "signature:\n" << signature << endl << 
+        "msg:\n" << datastr;      
+      // throw util_exception("User key not verified.");
+    }
+    if (payload.is_important()) {
+      
+      setRoundMessage(payload.content());
+      F_LOG(logger, DEBUG) <<
+        member.handle << " says " << payload.content();   
+    }
+    else {      
+      F_LOG(logger, DEBUG) <<
+        member.handle << " has nothing to say.";
+    }
+    flags.messagesDelivered = false;
+  }
+
+#ifdef TRACE
+  cout << "setting messageProcessed for " << member.handle << " to true.\n";
+#endif
+
+  member.messageProcessed = true;
+
+  uv_mutex_unlock(&classMutex_);
+  
+  if (allMessagesProcessed()) {
+    broadcastIfNecessary();
+  }
+  else {
+    cout << "all messages not processed\n";
+  }
+}
+
+
+void
 Manager::broadcast() {
 
     uv_mutex_lock(&classMutex_);
@@ -374,7 +447,6 @@ Manager::endChat() {
 }
 
 
-// NOTE: mutex may not actually be necessary here
 sched_t
 Manager::getTargetModulo() {
   if (!flags.moduloCalculated) {

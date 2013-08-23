@@ -63,7 +63,9 @@ map<int, Member> Db::getMembers(string conn, int group_id){
   result::const_iterator row = members.begin();
   for (; row != members.end(); ++row){
     retval[row["id"].as<int>()] = 
-      Member(row["username"].as<string>(),
+      Member(
+        row["id"].as<int>(),
+        row["username"].as<string>(),
         row["password"].as<string>(),
         row["handle"].as<string>()
       );
