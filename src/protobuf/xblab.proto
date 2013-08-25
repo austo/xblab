@@ -18,9 +18,7 @@ message Broadcast {
   }
 
   message Session {
-    required string pub_key = 1;
-    // required bytes schedule = 2;
-    // optional fixed32 schedule_size = 3;
+    required string pub_key = 1;    
   }
 
   message Setup {
@@ -86,6 +84,7 @@ message Transmission {
   message Payload {
     required bool is_important = 1;
     required string content = 2;
+    required bool need_schedule = 3;
   }
 
   message Error {

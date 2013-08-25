@@ -227,11 +227,14 @@ BatonUtil::packageTransmission(MemberBaton *baton) {
     payload->set_content(Crypto::generateRandomMessage(XBMAXMESSAGELENGTH));
   }
 
+  // if this is the end of our schedule, say so
+  payload->set_need_schedule(
+    ++baton->member.currentRound == baton->member.schedule.size());
+
   data->set_allocated_payload(payload);
   signData(baton->member.privateKey, trans, data);
   serializeToBuffer(baton, trans);
-  baton->needsUvWrite = true;
-  ++baton->member.currentRound;
+  baton->needsUvWrite = true;  
 }
 
 

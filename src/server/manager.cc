@@ -193,8 +193,10 @@ Manager::setRoundMessage(string msg) { // not threadsafe
 
 
 void
-Manager::startChatIfNecessary() {
-  uv_mutex_lock(&classMutex_);
+Manager::startChatIfNecessary(bool lock) {
+  if (lock) {
+    uv_mutex_lock(&classMutex_);
+  }
 
   if (canStartChat()) {
     uv_work_t *req = ALLOC(uv_work_t);
@@ -202,13 +204,17 @@ Manager::startChatIfNecessary() {
     uv_queue_work(loop, req, onStartChatWork,
       (uv_after_work_cb)afterRoundWork);
   }
-  uv_mutex_unlock(&classMutex_);
+  if (lock) {
+    uv_mutex_unlock(&classMutex_);
+  }
 }
 
 
 void
-Manager::deliverSchedulesIfNecessary() {
-  uv_mutex_lock(&classMutex_);
+Manager::deliverSchedulesIfNecessary(bool lock) {
+  if (lock) {
+    uv_mutex_lock(&classMutex_);
+  }
 
   if (canDeliverSchedules()) {
     uv_work_t *req = ALLOC(uv_work_t);
@@ -216,23 +222,28 @@ Manager::deliverSchedulesIfNecessary() {
     uv_queue_work(loop, req, onSetupWork,
       (uv_after_work_cb)afterSetupWork);
   }
-
-  uv_mutex_unlock(&classMutex_);
+  if (lock) {
+    uv_mutex_unlock(&classMutex_);
+  }
 }
 
 
+// NOTE: this should probably be called from a uv_async send
 void
-Manager::broadcastIfNecessary() {
-  uv_mutex_lock(&classMutex_);
+Manager::broadcastIfNecessary(bool lock) {
+  if (lock) {
+    uv_mutex_lock(&classMutex_);
+  }
 
   if (allMessagesProcessed()) {
     uv_work_t *req = ALLOC(uv_work_t);
     req->data = this;
     uv_queue_work(loop, req, onBroadcastWork,
       (uv_after_work_cb)afterRoundWork);
+  }  
+  if (lock) {
+    uv_mutex_unlock(&classMutex_);
   }
-
-  uv_mutex_unlock(&classMutex_);
 }
 
 
@@ -363,14 +374,40 @@ Manager::processMemberMessage(int memberId, string& datastr,
 
   member.messageProcessed = true;
 
+  if (payload.need_schedule()) {
+    member.clientHasSchedule = false;
+    flags.schedulesDelivered = false;
+    // need to wait for all schedule requests to come in,
+    // then send setup
+  } 
+
   uv_mutex_unlock(&classMutex_);
   
   if (allMessagesProcessed()) {
-    broadcastIfNecessary();
+    broadcastIfNecessary(true);
   }
   else {
     cout << "all messages not processed\n";
   }
+}
+
+
+void
+Manager::respondAfterRead() {
+  
+  uv_mutex_lock(&classMutex_);
+
+  if (allMessagesProcessed()) {
+    broadcastIfNecessary();
+  }  
+  else if (canStartChat()) {
+    startChatIfNecessary();
+  }
+  else if (canDeliverSchedules()) {
+    deliverSchedulesIfNecessary();
+  }
+
+  uv_mutex_unlock(&classMutex_);
 }
 
 

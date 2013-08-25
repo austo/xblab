@@ -1153,18 +1153,28 @@ class Transmission_Payload : public ::google::protobuf::MessageLite {
   inline ::std::string* release_content();
   inline void set_allocated_content(::std::string* content);
 
+  // required bool need_schedule = 3;
+  inline bool has_need_schedule() const;
+  inline void clear_need_schedule();
+  static const int kNeedScheduleFieldNumber = 3;
+  inline bool need_schedule() const;
+  inline void set_need_schedule(bool value);
+
   // @@protoc_insertion_point(class_scope:xblab.Transmission.Payload)
  private:
   inline void set_has_is_important();
   inline void clear_has_is_important();
   inline void set_has_content();
   inline void clear_has_content();
+  inline void set_has_need_schedule();
+  inline void clear_has_need_schedule();
 
   ::std::string* content_;
   bool is_important_;
+  bool need_schedule_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
 
   #ifdef GOOGLE_PROTOBUF_NO_STATIC_INITIALIZER
   friend void  protobuf_AddDesc_xblab_2eproto_impl();
@@ -3017,6 +3027,28 @@ inline void Transmission_Payload::set_allocated_content(::std::string* content) 
     clear_has_content();
     content_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
+}
+
+// required bool need_schedule = 3;
+inline bool Transmission_Payload::has_need_schedule() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void Transmission_Payload::set_has_need_schedule() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void Transmission_Payload::clear_has_need_schedule() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void Transmission_Payload::clear_need_schedule() {
+  need_schedule_ = false;
+  clear_has_need_schedule();
+}
+inline bool Transmission_Payload::need_schedule() const {
+  return need_schedule_;
+}
+inline void Transmission_Payload::set_need_schedule(bool value) {
+  set_has_need_schedule();
+  need_schedule_ = value;
 }
 
 // -------------------------------------------------------------------

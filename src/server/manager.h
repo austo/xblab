@@ -52,13 +52,16 @@ public:
   }
 
   void
-  startChatIfNecessary();
+  respondAfterRead();
 
   void
-  deliverSchedulesIfNecessary();
+  startChatIfNecessary(bool lock = false);
 
   void
-  broadcastIfNecessary();
+  deliverSchedulesIfNecessary(bool lock = false);
+
+  void
+  broadcastIfNecessary(bool lock = false);
 
   void
   getStartChatBuffers();

@@ -2343,6 +2343,7 @@ void Transmission_Credential::Swap(Transmission_Credential* other) {
 #ifndef _MSC_VER
 const int Transmission_Payload::kIsImportantFieldNumber;
 const int Transmission_Payload::kContentFieldNumber;
+const int Transmission_Payload::kNeedScheduleFieldNumber;
 #endif  // !_MSC_VER
 
 Transmission_Payload::Transmission_Payload()
@@ -2363,6 +2364,7 @@ void Transmission_Payload::SharedCtor() {
   _cached_size_ = 0;
   is_important_ = false;
   content_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  need_schedule_ = false;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2410,6 +2412,7 @@ void Transmission_Payload::Clear() {
         content_->clear();
       }
     }
+    need_schedule_ = false;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -2445,6 +2448,22 @@ bool Transmission_Payload::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(24)) goto parse_need_schedule;
+        break;
+      }
+
+      // required bool need_schedule = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_need_schedule:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &need_schedule_)));
+          set_has_need_schedule();
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -2477,6 +2496,11 @@ void Transmission_Payload::SerializeWithCachedSizes(
       2, this->content(), output);
   }
 
+  // required bool need_schedule = 3;
+  if (has_need_schedule()) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(3, this->need_schedule(), output);
+  }
+
 }
 
 int Transmission_Payload::ByteSize() const {
@@ -2493,6 +2517,11 @@ int Transmission_Payload::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
           this->content());
+    }
+
+    // required bool need_schedule = 3;
+    if (has_need_schedule()) {
+      total_size += 1 + 1;
     }
 
   }
@@ -2516,6 +2545,9 @@ void Transmission_Payload::MergeFrom(const Transmission_Payload& from) {
     if (from.has_content()) {
       set_content(from.content());
     }
+    if (from.has_need_schedule()) {
+      set_need_schedule(from.need_schedule());
+    }
   }
 }
 
@@ -2526,7 +2558,7 @@ void Transmission_Payload::CopyFrom(const Transmission_Payload& from) {
 }
 
 bool Transmission_Payload::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
 
   return true;
 }
@@ -2535,6 +2567,7 @@ void Transmission_Payload::Swap(Transmission_Payload* other) {
   if (other != this) {
     std::swap(is_important_, other->is_important_);
     std::swap(content_, other->content_);
+    std::swap(need_schedule_, other->need_schedule_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     std::swap(_cached_size_, other->_cached_size_);
   }
