@@ -30,10 +30,7 @@ private:
   onReadWork(uv_work_t *r);
 
   static void
-  afterOnRead (uv_work_t *r);
-
-  static void
-  respondAfterRead(Manager *mgr);
+  afterOnRead (uv_work_t *r);  
 
 
 public:

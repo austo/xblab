@@ -227,21 +227,7 @@ Server::afterOnRead(uv_work_t *r) {
       baton->uvWriteCb);
   }
 
-  respondAfterRead(baton->member->manager);
-}
-
-
-void
-Server::respondAfterRead(Manager *mgr) {
-  
-  if (mgr->canStartChat()) {
-    mgr->startChatIfNecessary(true);
-    return;
-  }
-  if (mgr->canDeliverSchedules()) {
-    mgr->deliverSchedulesIfNecessary(true);
-    return;
-  }
+  baton->member->manager->respondAfterRead();
 }
 
 

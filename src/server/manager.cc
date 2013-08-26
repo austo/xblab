@@ -425,21 +425,14 @@ Manager::broadcastRoundIfNecessary() {
 
 
 void
-Manager::respondAfterRead() {
+Manager::respondAfterRead() {  
   
-  uv_mutex_lock(&classMutex_);
-
-  if (allMessagesProcessed()) {
-    broadcastIfNecessary();
-  }  
-  else if (canStartChat()) {
-    startChatIfNecessary();
+  if (canStartChat()) {
+    startChatIfNecessary(true);
   }
   else if (canDeliverSchedules()) {
-    deliverSchedulesIfNecessary();
+    deliverSchedulesIfNecessary(true);
   }
-
-  uv_mutex_unlock(&classMutex_);
 }
 
 
