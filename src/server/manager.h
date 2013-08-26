@@ -64,20 +64,23 @@ public:
   broadcastIfNecessary(bool lock = false);
 
   void
+  broadcastRoundIfNecessary();
+
+  void
   getStartChatBuffers();
 
   void
   getSetupBuffers();
 
   void
-  getMessageBuffers();
+  getMessageBuffers(bool lock = false);
 
   void
   processMemberMessage(int memberId, std::string& datastr,
     std::string signature, const Transmission::Payload& payload);
 
   void
-  broadcast();
+  broadcast(bool lock);
 
   void
   endChat();

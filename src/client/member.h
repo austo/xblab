@@ -27,7 +27,7 @@ struct Member {
   std::vector<sched_t> schedule;
   std::string message;
   sched_t modulo;
-  int currentRound;
+  unsigned currentRound;
   bool ready;
   bool hasMessage; // must be set to false on msg hand-off
 

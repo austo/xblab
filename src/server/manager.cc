@@ -303,11 +303,13 @@ Manager::getSetupBuffers() {
 
 
 void
-Manager::getMessageBuffers() {
+Manager::getMessageBuffers(bool lock) {
 #ifdef TRACE
   // logging
 #endif
-  uv_mutex_lock(&classMutex_);
+  if (lock) {
+    uv_mutex_lock(&classMutex_);
+  }
 
   if (!flags.messagesDelivered) {
     cout << rightnow() << 
@@ -318,9 +320,11 @@ Manager::getMessageBuffers() {
       mitr->second.baton->getMessage();            
     }
     flags.messagesDelivered = true;
-  }    
+  }
 
-  uv_mutex_unlock(&classMutex_);
+  if (lock) {
+    uv_mutex_unlock(&classMutex_);
+  }
 }
 
 
@@ -377,14 +381,42 @@ Manager::processMemberMessage(int memberId, string& datastr,
   if (payload.need_schedule()) {
     member.clientHasSchedule = false;
     flags.schedulesDelivered = false;
-    // need to wait for all schedule requests to come in,
-    // then send setup
+    // TODO: wait for all schedule reqs then send setup
   } 
 
-  uv_mutex_unlock(&classMutex_);
-  
+  // TODO: seems to break when refactored...
+  // broadcastRoundIfNecessary();
   if (allMessagesProcessed()) {
-    broadcastIfNecessary(true);
+    getMessageBuffers();
+
+    memb_iter mitr = members.begin();
+    for (; mitr != members.end(); ++mitr) {
+      mitr->second.baton->unicast();            
+    }
+
+    ++currentRound_;
+    flags.resetRound();
+
+  }
+  else {
+    cout << "all messages not processed\n";
+  }
+
+  uv_mutex_unlock(&classMutex_);
+
+}
+
+
+void
+Manager::broadcastRoundIfNecessary() {
+  if (allMessagesProcessed()) {
+    getMessageBuffers();
+
+    broadcast(false);
+
+    ++currentRound_;
+    flags.resetRound();
+
   }
   else {
     cout << "all messages not processed\n";
@@ -412,16 +444,20 @@ Manager::respondAfterRead() {
 
 
 void
-Manager::broadcast() {
+Manager::broadcast(bool lock) {
 
+  if (lock) {
     uv_mutex_lock(&classMutex_);
+  }
 
-    memb_iter mitr = members.begin();
-    for (; mitr != members.end(); ++mitr) {
-      mitr->second.baton->unicast();            
-    }
+  memb_iter mitr = members.begin();
+  for (; mitr != members.end(); ++mitr) {
+    mitr->second.baton->unicast();            
+  }
 
+  if (lock) {
     uv_mutex_unlock(&classMutex_);
+  }
 }
 
 
@@ -453,7 +489,7 @@ Manager::afterRoundWork(uv_work_t *r) {
   logger.setFile(logname());  
 #endif
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
-  mgr->broadcast();
+  mgr->broadcast(true);
   ++mgr->currentRound_;
 #ifdef TRACE
   F_LOG(logger, DEBUG) << "round incremented to " <<
@@ -468,7 +504,7 @@ Manager::afterRoundWork(uv_work_t *r) {
 void
 Manager::afterSetupWork(uv_work_t *r) {
   Manager *mgr = reinterpret_cast<Manager *>(r->data);
-  mgr->broadcast();
+  mgr->broadcast(true);
   r->data = NULL;
   free(r);
 }

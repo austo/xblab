@@ -227,17 +227,13 @@ Server::afterOnRead(uv_work_t *r) {
       baton->uvWriteCb);
   }
 
-  // baton->member->manager->respondAfterRead();
   respondAfterRead(baton->member->manager);
 }
 
 
 void
 Server::respondAfterRead(Manager *mgr) {
-  // if (mgr->allMessagesProcessed()) {
-  //   mgr->broadcastIfNecessary(true);
-  //   return;
-  // }  
+  
   if (mgr->canStartChat()) {
     mgr->startChatIfNecessary(true);
     return;
