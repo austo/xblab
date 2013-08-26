@@ -416,9 +416,6 @@ Manager::broadcast() {
 
     uv_mutex_lock(&classMutex_);
 
-    // cout << rightnow() <<
-    //  "broadcasting start chat to " << group.name << endl;
-
     memb_iter mitr = members.begin();
     for (; mitr != members.end(); ++mitr) {
       mitr->second.baton->unicast();            
