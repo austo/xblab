@@ -384,26 +384,9 @@ Manager::processMemberMessage(int memberId, string& datastr,
     // TODO: wait for all schedule reqs then send setup
   } 
 
-  // TODO: seems to break when refactored...
-  // broadcastRoundIfNecessary();
-  if (allMessagesProcessed()) {
-    getMessageBuffers();
-
-    memb_iter mitr = members.begin();
-    for (; mitr != members.end(); ++mitr) {
-      mitr->second.baton->unicast();            
-    }
-
-    ++currentRound_;
-    flags.resetRound();
-
-  }
-  else {
-    cout << "all messages not processed\n";
-  }
+  broadcastRoundIfNecessary();  
 
   uv_mutex_unlock(&classMutex_);
-
 }
 
 
@@ -416,7 +399,6 @@ Manager::broadcastRoundIfNecessary() {
 
     ++currentRound_;
     flags.resetRound();
-
   }
   else {
     cout << "all messages not processed\n";
